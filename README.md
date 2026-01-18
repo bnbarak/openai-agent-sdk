@@ -13,6 +13,7 @@ A modern Java SDK for building AI agents with OpenAI's API, similar to the TypeS
 - **🤝 Agents as tools / Handoffs**: A powerful mechanism for coordinating and delegating work across multiple agents.
 - **🔒 Guardrails**: Run input validation and safety checks in parallel with agent execution, and fail fast when checks do not pass.
 - **🔧 Function tools**: Turn any Java function into a tool with automatic schema generation and validation.
+- **🌐 Hosted tools**: Built-in support for OpenAI hosted tools like web search and image generation.
 - **TBD: MCP server tool calling**: Built-in MCP server tool integration that works the same way as function tools.
 - **💾 Sessions**: A persistent memory layer for maintaining working context within an agent loop.
 - **🙋 Human in the loop**: Built-in mechanisms for involving humans across agent runs.
@@ -47,47 +48,239 @@ Set your OpenAI API key as an environment variable:
 export OPENAI_API_KEY='your-api-key-here'
 ```
 
-See `src/main/java/com/acoliteai/agentsdk/examples/AgentConfigurationExample.java` for programmatic
-model configuration and `src/main/java/com/acoliteai/agentsdk/examples/BasicTextOutputExample.java`
-for end-to-end usage.
+### Basic Usage
 
-### Usage
+```java
+import com.acoliteai.agentsdk.core.Agent;
+import com.acoliteai.agentsdk.core.RunResult;
+import com.acoliteai.agentsdk.core.Runner;
+import com.acoliteai.agentsdk.core.types.TextOutput;
+import com.acoliteai.agentsdk.core.types.UnknownContext;
 
-See `src/main/java/com/acoliteai/agentsdk/examples/BasicTextOutputExample.java`.
+public class HelloWorld {
+    public static void main(String[] args) {
+        // Create a simple agent
+        Agent<UnknownContext, TextOutput> agent =
+            Agent.<UnknownContext, TextOutput>builder()
+                .name("Assistant")
+                .instructions("You are a helpful assistant.")
+                .build();
+
+        // Run the agent
+        RunResult<UnknownContext, ?> result =
+            Runner.run(agent, "What is the capital of France?");
+
+        // Print the response
+        System.out.println(result.getFinalOutput());
+    }
+}
+```
 
 ## Core Concepts
 
 ### Agents
 
-Agents are the core building blocks. They encapsulate a model, instructions, and optional tools:
+Agents are the core building blocks. They encapsulate instructions and optional tools:
 
-See `src/main/java/com/acoliteai/agentsdk/examples/WellTypedToolsExample.java`.
+```java
+Agent<UnknownContext, TextOutput> agent =
+    Agent.<UnknownContext, TextOutput>builder()
+        .name("MathAssistant")
+        .instructions("You are a math tutor. Use the calculator tool to perform calculations.")
+        .tools(List.of(new CalculatorTool()))
+        .build();
+```
 
 ### Tool Calling
 
-Define custom tools that agents can invoke:
+Define custom tools that agents can invoke. Tools use type-safe input/output with automatic JSON schema generation:
 
-See `src/main/java/com/acoliteai/agentsdk/examples/tools/CalculatorTool.java` and
-`src/main/java/com/acoliteai/agentsdk/examples/WellTypedToolsExample.java`.
+```java
+public class CalculatorTool
+    implements FunctionTool<Object, CalculatorTool.Input, CalculatorTool.Output> {
+
+  @Data
+  @JsonClassDescription("Input parameters for arithmetic operations")
+  public static class Input {
+    @JsonPropertyDescription("The arithmetic operation: add, subtract, multiply, or divide")
+    private String operation;
+    @JsonPropertyDescription("The first number")
+    private double a;
+    @JsonPropertyDescription("The second number")
+    private double b;
+  }
+
+  @Data
+  @AllArgsConstructor
+  public static class Output {
+    private double result;
+    private String operation;
+    private String expression;
+  }
+
+  @Override
+  public String getName() {
+    return "calculator";
+  }
+
+  @Override
+  public String getDescription() {
+    return "Performs basic arithmetic operations.";
+  }
+
+  @Override
+  public Object getParameters() {
+    return Input.class;
+  }
+
+  @Override
+  public CompletableFuture<Output> invoke(RunContext<Object> context, Input input) {
+    return CompletableFuture.supplyAsync(() -> {
+      double result = switch (input.getOperation()) {
+        case "add" -> input.getA() + input.getB();
+        case "subtract" -> input.getA() - input.getB();
+        case "multiply" -> input.getA() * input.getB();
+        case "divide" -> input.getA() / input.getB();
+        default -> throw new IllegalArgumentException("Unknown operation");
+      };
+      return new Output(result, input.getOperation(),
+          String.format("%.2f %s %.2f = %.2f", input.getA(),
+              input.getOperation(), input.getB(), result));
+    });
+  }
+}
+```
+
+[View complete tool example →](src/main/java/com/acoliteai/agentsdk/examples/tools/CalculatorTool.java)
+
+### Hosted Tools
+
+Use OpenAI's hosted tools for web search and image generation:
+
+```java
+import com.acoliteai.agentsdk.core.HostedTool;
+
+// Web search
+Agent<UnknownContext, TextOutput> searchAgent =
+    Agent.<UnknownContext, TextOutput>builder()
+        .name("SearchAssistant")
+        .instructions("You can search the web for current information.")
+        .tools(List.of(HostedTool.webSearch()))
+        .build();
+
+// Image generation
+Agent<UnknownContext, TextOutput> artistAgent =
+    Agent.<UnknownContext, TextOutput>builder()
+        .name("Artist")
+        .instructions("You can generate images using DALL-E.")
+        .tools(List.of(HostedTool.imageGeneration()))
+        .build();
+```
+
+[View hosted tools example →](src/main/java/com/acoliteai/agentsdk/examples/HostedToolsExample.java)
 
 ### Multi-Agent Handoffs
 
 Transfer conversations between specialized agents:
 
-See `src/main/java/com/acoliteai/agentsdk/examples/AgentHandoffExample.java`.
+```java
+// Create specialist agents
+Agent<UnknownContext, TextOutput> supportAgent =
+    Agent.<UnknownContext, TextOutput>builder()
+        .name("Technical Support")
+        .instructions("You are a technical support specialist.")
+        .handoffDescription("Handles technical support questions")
+        .build();
+
+Agent<UnknownContext, TextOutput> billingAgent =
+    Agent.<UnknownContext, TextOutput>builder()
+        .name("Billing Support")
+        .instructions("You handle billing and payment questions.")
+        .handoffDescription("Handles billing and payment questions")
+        .build();
+
+// Create triage agent with handoffs
+Agent<UnknownContext, TextOutput> triageAgent =
+    Agent.<UnknownContext, TextOutput>builder()
+        .name("Triage")
+        .instructions("You route customer requests to the right specialist.")
+        .handoffs(List.of(supportAgent, billingAgent))
+        .build();
+
+// Run - automatically hands off to appropriate agent
+RunResult<UnknownContext, ?> result =
+    Runner.run(triageAgent, "My app keeps crashing, can you help?");
+```
+
+[View complete handoff example →](src/main/java/com/acoliteai/agentsdk/examples/AgentHandoffExample.java)
 
 ### Memory & Sessions
 
 Manage conversation history across turns:
 
-See `src/main/java/com/acoliteai/agentsdk/examples/MemorySessionExample.java` and
-`src/main/java/com/acoliteai/agentsdk/examples/SQLiteSessionExample.java`.
+```java
+import com.acoliteai.agentsdk.core.Session;
+import com.acoliteai.agentsdk.core.memory.MemorySession;
+import com.acoliteai.agentsdk.core.RunConfig;
+
+// Create an in-memory session
+Session session = new MemorySession("conversation-123");
+
+// Create agent
+Agent<UnknownContext, TextOutput> agent =
+    Agent.<UnknownContext, TextOutput>builder()
+        .name("Assistant")
+        .instructions("You are a helpful assistant with a good memory.")
+        .build();
+
+// Use session across multiple turns
+RunConfig config = RunConfig.builder().session(session).build();
+
+// Turn 1
+Runner.run(agent, "My name is Alice and I love hiking.", config);
+
+// Turn 2
+Runner.run(agent, "What's the capital of France?", config);
+
+// Turn 3 - agent remembers your name!
+RunResult<UnknownContext, ?> result =
+    Runner.run(agent, "What's my name?", config);
+// Response: "Your name is Alice!"
+```
+
+For persistent storage, use SQLiteSession:
+
+```java
+import com.acoliteai.agentsdk.core.memory.SQLiteSession;
+
+Session session = new SQLiteSession("conversations.db", "user-123");
+```
+
+[View memory example →](src/main/java/com/acoliteai/agentsdk/examples/MemorySessionExample.java) | [View SQLite example →](src/main/java/com/acoliteai/agentsdk/examples/SQLiteSessionExample.java)
 
 ### Tracing
 
 Monitor agent execution with distributed tracing:
 
-See `src/main/java/com/acoliteai/agentsdk/examples/AgentWithTracingExample.java`.
+```java
+import com.acoliteai.agentsdk.core.tracing.TraceProvider;
+import com.acoliteai.agentsdk.core.tracing.ConsoleTraceProcessor;
+
+// Enable console tracing (development)
+TraceProvider.configure(new ConsoleTraceProcessor());
+
+// All agent operations are automatically traced
+Agent<UnknownContext, TextOutput> agent =
+    Agent.<UnknownContext, TextOutput>builder()
+        .name("TracedAgent")
+        .instructions("You are a helpful assistant.")
+        .build();
+
+Runner.run(agent, "Hello!");
+// Traces will be printed to console showing execution flow
+```
+
+[View complete tracing example →](src/main/java/com/acoliteai/agentsdk/examples/AgentWithTracingExample.java)
 
 ## Development
 
@@ -123,9 +316,9 @@ mvn spotless:apply
 
 ## Documentation
 
-- [API Documentation](https://acolite.ai/docs/openai-agent-sdk)
-- [Getting Started Guide](docs/getting-started.md)
-- [API Reference](docs/api-surface.md)
+- [Full Documentation](https://bnbarak.github.io/openai-agent-sdk/)
+- [Quickstart Guide](https://bnbarak.github.io/openai-agent-sdk/quickstart/)
+- [API Reference](https://bnbarak.github.io/openai-agent-sdk/api/)
 - [Examples (full directory)](src/main/java/com/acoliteai/agentsdk/examples/)
 
 ## Contributing
