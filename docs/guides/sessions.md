@@ -1,6 +1,6 @@
 # Sessions
 
-Learn how to add conversation memory so agents remember previous interactions.
+Add conversation memory so agents remember previous interactions.
 
 ## Overview
 
