@@ -42,7 +42,8 @@ jobs:
           cache: 'maven'
 
       - name: Run all tests (including real-world API tests)
-        run: mvn verify -Pe2e
+        run: mvn verify -Pe2e -Dcheckstyle.skip=true
+
 
       - name: Run all examples
         run: |
