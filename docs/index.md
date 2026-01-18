@@ -1,6 +1,6 @@
 # OpenAI Agent SDK for Java
 
-A modern Java SDK for building AI agents with OpenAI's API, featuring multi-agent handoffs, tool calling, memory management, and distributed tracing.
+A modern Java SDK for building AI agents with OpenAI's API, similar to the TypeScript OpenAI Agents SDK (https://openai.github.io/openai-agents-js/), following its public API and implementation patterns where possible.
 
 ## Features
 

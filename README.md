@@ -63,18 +63,14 @@ import com.acoliteai.agentsdk.openai.OpenAI;
 
 public class HelloWorld {
     public static void main(String[] args) {
-        // Create an agent
         Agent agent = Agent.builder()
             .model(OpenAI.chatCompletionsModel("gpt-4o"))
             .instructions("You are a helpful assistant.")
             .build();
 
-        // Run the agent
         RunResult result = agent.run("What is the capital of France?");
 
-        // Get the response
         System.out.println(result.getTextOutput());
-        // Output: "The capital of France is Paris."
     }
 }
 ```

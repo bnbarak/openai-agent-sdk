@@ -2,6 +2,8 @@
 
 Get started with the OpenAI Agent SDK in 5 minutes. By the end of this guide, you'll have a working agent.
 
+A modern Java SDK for building AI agents with OpenAI's API, similar to the TypeScript OpenAI Agents SDK (https://openai.github.io/openai-agents-js/), following its public API and implementation patterns where possible.
+
 ## Prerequisites
 
 - Java 21+
