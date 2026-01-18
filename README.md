@@ -230,6 +230,7 @@ This project is licensed under the Apache License 2.0 - see the [LICENSE](LICENS
 
 ## Acknowledgments
 
+- We are appreciative of the great work Stainless is doing on the [OpenAI Java SDK](https://github.com/openai/openai-java), which enabled this SDK.
 - Built on top of the official [OpenAI Java SDK](https://github.com/openai/openai-java)
 - Inspired by the [OpenAI Agents TypeScript SDK](https://github.com/openai/openai-agents-js)
 
