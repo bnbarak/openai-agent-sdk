@@ -3,6 +3,15 @@
 Tracing captures workflows and spans for observability. The tracing system is available today,
 but it is not auto-wired into the Runner yet, so you create traces and spans explicitly.
 
+## Overview
+
+Tracing is built from:
+
+- `TraceProvider` for global configuration and processor registration
+- `TraceContext` for context propagation
+- `Trace` and `Span` for the actual trace data
+- Processors/exporters for output (console or OpenAI)
+
 ## Quick Start (Console Tracing)
 
 ```java

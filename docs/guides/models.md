@@ -2,6 +2,14 @@
 
 This guide covers model selection, defaults, and how models are resolved at runtime.
 
+## Overview
+
+Model configuration is controlled in three places:
+
+- Agent default model (`Agent.model`)
+- Run-time override (`RunConfig.model`)
+- Provider behavior (`ModelProvider`)
+
 ## Defaults and Overrides
 
 Model selection follows this order:
@@ -10,8 +18,6 @@ Model selection follows this order:
 2. `Agent.model` if provided.
 3. `OPENAI_MODEL` environment variable.
 4. Fallback to `gpt-4.1`.
-
-Example:
 
 ```java
 Agent<UnknownContext, TextOutput> agent =
@@ -27,13 +33,15 @@ RunResult<UnknownContext, ?> result = Runner.run(agent, "Hello", config);
 
 ## Model Providers
 
-The SDK uses a `ModelProvider` to fetch a `Model` by name:
+The SDK uses a `ModelProvider` to resolve a `Model` by name.
 
-- Default provider: `OpenAIProvider`
-- Default provider API key source: `OPENAI_API_KEY`
-- Default model implementation: `OpenAIResponsesModel` (OpenAI Responses API)
+Defaults:
 
-You can provide a custom `ModelProvider` in `RunConfig`:
+- Provider: `OpenAIProvider`
+- API key: `OPENAI_API_KEY`
+- Implementation: `OpenAIResponsesModel` (OpenAI Responses API)
+
+Custom provider example:
 
 ```java
 public class MyProvider implements ModelProvider {
@@ -63,12 +71,12 @@ RunConfig config =
 ## Structured Outputs
 
 When you use `JsonSchemaOutput`, the OpenAI provider uses structured responses under the hood.
-This lets you get typed outputs instead of raw text.
+This lets you return typed data instead of raw text.
 
 ## Model Settings (Advanced)
 
-`ModelSettings` exists and is plumbed through `Agent`, but it is not fully exposed yet (no public
-setters at the moment). Expect this surface to expand as more model configuration is wired up.
+`ModelSettings` exists and is plumbed through `Agent`, but it is not fully exposed yet.
+Expect this surface to expand as more configuration is wired up.
 
 ## Notes
 

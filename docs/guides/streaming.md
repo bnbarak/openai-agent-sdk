@@ -3,6 +3,14 @@
 Streaming lets you consume run events as they happen. In this SDK, streaming emits run items
 as they are produced (message outputs, tool calls, tool outputs, and handoffs).
 
+## Overview
+
+Streaming is event-based, not token-based. You receive structured events as the run progresses:
+
+- Message outputs
+- Tool calls and tool outputs
+- Handoff calls and outputs
+
 ## Start a Streamed Run
 
 Use `Runner.runStreamed()`:
@@ -46,7 +54,7 @@ The stream currently emits `RunItemStreamEvent` for items produced during the ru
 
 Each event also includes the `turnIndex` and the underlying `RunItem`.
 
-## Current Limitations
+## Limitations
 
 - The OpenAI provider does not implement model-level token streaming yet.
   `OpenAIResponsesModel.getStreamedResponse()` throws `NotImplementedException`.

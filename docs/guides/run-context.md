@@ -3,7 +3,9 @@
 RunContext carries application data through a run, controls tool approvals, and tracks usage.
 It is the shared state object that tools, guardrails, and the runner can read and update.
 
-## What RunContext Does
+## Overview
+
+RunContext is used for:
 
 - **Application data**: user, session, org, feature flags, service clients, etc.
 - **Tool approvals**: allow or block tool calls per-call or permanently.
