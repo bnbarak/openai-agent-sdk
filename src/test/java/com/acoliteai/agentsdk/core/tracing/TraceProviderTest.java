@@ -41,7 +41,7 @@ class TraceProviderTest {
 
     Trace trace =
         provider.createTrace(
-                Trace.builder().traceId(TracingUtils.generateTraceId()).name("Test trace").build());
+            Trace.builder().traceId(TracingUtils.generateTraceId()).name("Test trace").build());
 
     assertNotNull(trace);
     assertFalse(trace instanceof NoopTrace);
@@ -54,7 +54,7 @@ class TraceProviderTest {
 
     Trace trace =
         provider.createTrace(
-                Trace.builder().traceId(TracingUtils.generateTraceId()).name("Test trace").build());
+            Trace.builder().traceId(TracingUtils.generateTraceId()).name("Test trace").build());
 
     assertNotNull(trace);
     assertSame(NoopTrace.INSTANCE, trace);
@@ -65,16 +65,17 @@ class TraceProviderTest {
     provider.setDisabled(false);
     Trace trace =
         provider.createTrace(
-                Trace.builder().traceId(TracingUtils.generateTraceId()).name("Test trace").build());
+            Trace.builder().traceId(TracingUtils.generateTraceId()).name("Test trace").build());
 
     TraceContext.withTrace(
         trace,
         () -> {
           Span<AgentSpanData> span =
               provider.createSpan(
-                      Span.<AgentSpanData>builder()
-                          .spanId(TracingUtils.generateSpanId())
-                          .data(AgentSpanData.builder().agentName("TestAgent").build()).build());
+                  Span.<AgentSpanData>builder()
+                      .spanId(TracingUtils.generateSpanId())
+                      .data(AgentSpanData.builder().agentName("TestAgent").build())
+                      .build());
 
           assertNotNull(span);
           assertFalse(span instanceof NoopSpan);
@@ -89,9 +90,10 @@ class TraceProviderTest {
 
     Span<AgentSpanData> span =
         provider.createSpan(
-                Span.<AgentSpanData>builder()
-                    .spanId(TracingUtils.generateSpanId())
-                    .data(AgentSpanData.builder().agentName("TestAgent").build()).build());
+            Span.<AgentSpanData>builder()
+                .spanId(TracingUtils.generateSpanId())
+                .data(AgentSpanData.builder().agentName("TestAgent").build())
+                .build());
 
     assertNotNull(span);
     assertInstanceOf(NoopSpan.class, span);
@@ -102,16 +104,17 @@ class TraceProviderTest {
     provider.setDisabled(true);
     Trace trace =
         provider.createTrace(
-                Trace.builder().traceId(TracingUtils.generateTraceId()).name("Test trace").build());
+            Trace.builder().traceId(TracingUtils.generateTraceId()).name("Test trace").build());
 
     TraceContext.withTrace(
         trace,
         () -> {
           Span<AgentSpanData> span =
               provider.createSpan(
-                      Span.<AgentSpanData>builder()
-                          .spanId(TracingUtils.generateSpanId())
-                          .data(AgentSpanData.builder().agentName("TestAgent").build()).build());
+                  Span.<AgentSpanData>builder()
+                      .spanId(TracingUtils.generateSpanId())
+                      .data(AgentSpanData.builder().agentName("TestAgent").build())
+                      .build());
 
           assertInstanceOf(NoopSpan.class, span);
           return null;
@@ -123,7 +126,7 @@ class TraceProviderTest {
     provider.setDisabled(false);
     Trace trace =
         provider.createTrace(
-                Trace.builder().traceId(TracingUtils.generateTraceId()).name("Test trace").build());
+            Trace.builder().traceId(TracingUtils.generateTraceId()).name("Test trace").build());
 
     TraceContext.withTrace(
         trace,
