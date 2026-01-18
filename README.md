@@ -34,7 +34,7 @@ Add to your `pom.xml`:
 
 ```xml
 <dependency>
-    <groupId>com.acoliteai</groupId>
+    <groupId>ai.acolite</groupId>
     <artifactId>openai-agent-sdk</artifactId>
     <version>0.1.0-SNAPSHOT</version>
 </dependency>
@@ -51,11 +51,11 @@ export OPENAI_API_KEY='your-api-key-here'
 ### Basic Usage
 
 ```java
-import com.acoliteai.agentsdk.core.Agent;
-import com.acoliteai.agentsdk.core.RunResult;
-import com.acoliteai.agentsdk.core.Runner;
-import com.acoliteai.agentsdk.core.types.TextOutput;
-import com.acoliteai.agentsdk.core.types.UnknownContext;
+import ai.acolite.agentsdk.core.Agent;
+import ai.acolite.agentsdk.core.RunResult;
+import ai.acolite.agentsdk.core.Runner;
+import ai.acolite.agentsdk.core.types.TextOutput;
+import ai.acolite.agentsdk.core.types.UnknownContext;
 
 public class HelloWorld {
     public static void main(String[] args) {
@@ -151,14 +151,14 @@ public class CalculatorTool
 }
 ```
 
-[View complete tool example →](src/main/java/com/acoliteai/agentsdk/examples/tools/CalculatorTool.java)
+[View complete tool example →](src/main/java/ai/acolite/agentsdk/examples/tools/CalculatorTool.java)
 
 ### Hosted Tools
 
 Use OpenAI's hosted tools for web search and image generation:
 
 ```java
-import com.acoliteai.agentsdk.core.HostedTool;
+import ai.acolite.agentsdk.core.HostedTool;
 
 // Web search
 Agent<UnknownContext, TextOutput> searchAgent =
@@ -177,7 +177,7 @@ Agent<UnknownContext, TextOutput> artistAgent =
         .build();
 ```
 
-[View hosted tools example →](src/main/java/com/acoliteai/agentsdk/examples/HostedToolsExample.java)
+[View hosted tools example →](src/main/java/ai/acolite/agentsdk/examples/HostedToolsExample.java)
 
 ### Multi-Agent Handoffs
 
@@ -212,16 +212,16 @@ RunResult<UnknownContext, ?> result =
     Runner.run(triageAgent, "My app keeps crashing, can you help?");
 ```
 
-[View complete handoff example →](src/main/java/com/acoliteai/agentsdk/examples/AgentHandoffExample.java)
+[View complete handoff example →](src/main/java/ai/acolite/agentsdk/examples/AgentHandoffExample.java)
 
 ### Memory & Sessions
 
 Manage conversation history across turns:
 
 ```java
-import com.acoliteai.agentsdk.core.Session;
-import com.acoliteai.agentsdk.core.memory.MemorySession;
-import com.acoliteai.agentsdk.core.RunConfig;
+import ai.acolite.agentsdk.core.Session;
+import ai.acolite.agentsdk.core.memory.MemorySession;
+import ai.acolite.agentsdk.core.RunConfig;
 
 // Create an in-memory session
 Session session = new MemorySession("conversation-123");
@@ -251,20 +251,20 @@ RunResult<UnknownContext, ?> result =
 For persistent storage, use SQLiteSession:
 
 ```java
-import com.acoliteai.agentsdk.core.memory.SQLiteSession;
+import ai.acolite.agentsdk.core.memory.SQLiteSession;
 
 Session session = new SQLiteSession("conversations.db", "user-123");
 ```
 
-[View memory example →](src/main/java/com/acoliteai/agentsdk/examples/MemorySessionExample.java) | [View SQLite example →](src/main/java/com/acoliteai/agentsdk/examples/SQLiteSessionExample.java)
+[View memory example →](src/main/java/ai/acolite/agentsdk/examples/MemorySessionExample.java) | [View SQLite example →](src/main/java/ai/acolite/agentsdk/examples/SQLiteSessionExample.java)
 
 ### Tracing
 
 Monitor agent execution with distributed tracing:
 
 ```java
-import com.acoliteai.agentsdk.core.tracing.TraceProvider;
-import com.acoliteai.agentsdk.core.tracing.ConsoleTraceProcessor;
+import ai.acolite.agentsdk.core.tracing.TraceProvider;
+import ai.acolite.agentsdk.core.tracing.ConsoleTraceProcessor;
 
 // Enable console tracing (development)
 TraceProvider.configure(new ConsoleTraceProcessor());
@@ -280,7 +280,7 @@ Runner.run(agent, "Hello!");
 // Traces will be printed to console showing execution flow
 ```
 
-[View complete tracing example →](src/main/java/com/acoliteai/agentsdk/examples/AgentWithTracingExample.java)
+[View complete tracing example →](src/main/java/ai/acolite/agentsdk/examples/AgentWithTracingExample.java)
 
 ## Development
 
@@ -319,7 +319,7 @@ mvn spotless:apply
 - [Full Documentation](https://bnbarak.github.io/openai-agent-sdk/)
 - [Quickstart Guide](https://bnbarak.github.io/openai-agent-sdk/quickstart/)
 - [API Reference](https://bnbarak.github.io/openai-agent-sdk/api/)
-- [Examples (full directory)](src/main/java/com/acoliteai/agentsdk/examples/)
+- [Examples (full directory)](src/main/java/ai/acolite/agentsdk/examples/)
 
 ## Contributing
 

@@ -79,7 +79,7 @@ Agent<UnknownContext, TextOutput> agent =
 RunResult<UnknownContext, ?> result = Runner.run(agent, "User message");
 ```
 
-[View complete example →](https://github.com/bnbarak/openai-agent-sdk/blob/main/src/main/java/com/acoliteai/agentsdk/examples/guardrails/ContentModerationGuardrail.java)
+[View complete example →](https://github.com/bnbarak/openai-agent-sdk/blob/main/src/main/java/ai/acolite/agentsdk/examples/guardrails/ContentModerationGuardrail.java)
 
 ## Output Guardrails
 
@@ -155,7 +155,7 @@ RunResult<UnknownContext, ?> result = Runner.run(
 );
 ```
 
-[View complete example →](https://github.com/bnbarak/openai-agent-sdk/blob/main/src/main/java/com/acoliteai/agentsdk/examples/guardrails/PIIDetectionGuardrail.java)
+[View complete example →](https://github.com/bnbarak/openai-agent-sdk/blob/main/src/main/java/ai/acolite/agentsdk/examples/guardrails/PIIDetectionGuardrail.java)
 
 ## Tool Guardrails
 
@@ -217,7 +217,7 @@ Agent<UnknownContext, TextOutput> agent =
         .build();
 ```
 
-[View complete example →](https://github.com/bnbarak/openai-agent-sdk/blob/main/src/main/java/com/acoliteai/agentsdk/examples/guardrails/SecretBlockingToolGuardrail.java)
+[View complete example →](https://github.com/bnbarak/openai-agent-sdk/blob/main/src/main/java/ai/acolite/agentsdk/examples/guardrails/SecretBlockingToolGuardrail.java)
 
 ## Guardrail Behavior
 
@@ -463,7 +463,7 @@ public class RateLimitGuardrail implements InputGuardrail {
 
 ## Additional Resources
 
-- [PIIDetectionGuardrail.java](https://github.com/bnbarak/openai-agent-sdk/blob/main/src/main/java/com/acoliteai/agentsdk/examples/guardrails/PIIDetectionGuardrail.java) - Output guardrail example
-- [ContentModerationGuardrail.java](https://github.com/bnbarak/openai-agent-sdk/blob/main/src/main/java/com/acoliteai/agentsdk/examples/guardrails/ContentModerationGuardrail.java) - Input guardrail example
-- [SecretBlockingToolGuardrail.java](https://github.com/bnbarak/openai-agent-sdk/blob/main/src/main/java/com/acoliteai/agentsdk/examples/guardrails/SecretBlockingToolGuardrail.java) - Tool guardrail example
+- [PIIDetectionGuardrail.java](https://github.com/bnbarak/openai-agent-sdk/blob/main/src/main/java/ai/acolite/agentsdk/examples/guardrails/PIIDetectionGuardrail.java) - Output guardrail example
+- [ContentModerationGuardrail.java](https://github.com/bnbarak/openai-agent-sdk/blob/main/src/main/java/ai/acolite/agentsdk/examples/guardrails/ContentModerationGuardrail.java) - Input guardrail example
+- [SecretBlockingToolGuardrail.java](https://github.com/bnbarak/openai-agent-sdk/blob/main/src/main/java/ai/acolite/agentsdk/examples/guardrails/SecretBlockingToolGuardrail.java) - Tool guardrail example
 - [API Reference](../javadoc/index.html) - Complete Javadoc documentation

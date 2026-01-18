@@ -15,11 +15,11 @@ A modern Java SDK for building AI agents with OpenAI's API, similar to the TypeS
 ## Example
 
 ```java
-import com.acoliteai.agentsdk.core.Agent;
-import com.acoliteai.agentsdk.core.RunResult;
-import com.acoliteai.agentsdk.core.Runner;
-import com.acoliteai.agentsdk.core.types.TextOutput;
-import com.acoliteai.agentsdk.core.types.UnknownContext;
+import ai.acolite.agentsdk.core.Agent;
+import ai.acolite.agentsdk.core.RunResult;
+import ai.acolite.agentsdk.core.Runner;
+import ai.acolite.agentsdk.core.types.TextOutput;
+import ai.acolite.agentsdk.core.types.UnknownContext;
 
 public class Example {
   public static void main(String[] args) {
@@ -63,7 +63,7 @@ Add to your `pom.xml`:
 
 ```xml
 <dependency>
-    <groupId>com.acoliteai</groupId>
+    <groupId>ai.acolite</groupId>
     <artifactId>openai-agent-sdk</artifactId>
     <version>0.1.0-SNAPSHOT</version>
 </dependency>

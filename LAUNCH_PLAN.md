@@ -54,29 +54,29 @@ Checklist to ship a Maven library on GitHub (modern, low overhead)
 #### Pick the public API packages
 
 - [ ] Decide on public API packages:
-  - [ ] `com.acoliteai.agentsdk` - public entrypoint
-  - [ ] `com.acoliteai.agentsdk.core` - stable public types that users import often
-  - [ ] `com.acoliteai.agentsdk.openai` - provider types if users need direct provider control
-  - [ ] `com.acoliteai.agentsdk.extensions` - optional add ons
-  - [ ] `com.acoliteai.agentsdk.exceptions` - your public exceptions
+  - [ ] `ai.acolite.agentsdk` - public entrypoint
+  - [ ] `ai.acolite.agentsdk.core` - stable public types that users import often
+  - [ ] `ai.acolite.agentsdk.openai` - provider types if users need direct provider control
+  - [ ] `ai.acolite.agentsdk.extensions` - optional add ons
+  - [ ] `ai.acolite.agentsdk.exceptions` - your public exceptions
 
 **Not recommended as public API:**
-- `com.acoliteai.agentsdk.examples` - should not be depended on
-- `com.acoliteai.agentsdk.realtime` - should not be a package users import from. Keep this as docs only, or move real types to `extensions.realtime`
+- `ai.acolite.agentsdk.examples` - should not be depended on
+- `ai.acolite.agentsdk.realtime` - should not be a package users import from. Keep this as docs only, or move real types to `extensions.realtime`
 
 #### Create a single front door class
 
-- [ ] Create `com.acoliteai.agentsdk.AgentSdk` or `AcoliteAgentSdk` class
+- [ ] Create `ai.acolite.agentsdk.AgentSdk` or `AcoliteAgentSdk` class
 - [ ] Add static factory methods for common operations
 
 Example shape:
 
 ```java
-package com.acoliteai.agentsdk;
+package ai.acolite.agentsdk;
 
-import com.acoliteai.agentsdk.core.Agent;
-import com.acoliteai.agentsdk.core.AgentRunner;
-import com.acoliteai.agentsdk.openai.OpenAiClient;
+import ai.acolite.agentsdk.core.Agent;
+import ai.acolite.agentsdk.core.AgentRunner;
+import ai.acolite.agentsdk.openai.OpenAiClient;
 
 public final class AgentSdk {
 
@@ -104,18 +104,18 @@ This keeps discovery simple and prevents import soup.
 #### Package documentation
 
 - [ ] Add `package-info.java` to each public package
-- [ ] Create internal package for non-public code: `com.acoliteai.agentsdk.internal`
+- [ ] Create internal package for non-public code: `ai.acolite.agentsdk.internal`
 - [ ] Refactor or relocate `realtime` package (docs only or `extensions.realtime`)
 
-Example `com.acoliteai.agentsdk.core` package info:
+Example `ai.acolite.agentsdk.core` package info:
 
 ```java
 /**
  * Core SDK types: agents, tools, memory, runner, tracing.
  *
- * <p>Most users only need this package plus {@code com.acoliteai.agentsdk}.</p>
+ * <p>Most users only need this package plus {@code ai.acolite.agentsdk}.</p>
  */
-package com.acoliteai.agentsdk.core;
+package ai.acolite.agentsdk.core;
 ```
 
 ---
@@ -351,7 +351,7 @@ Example `docs/api-surface.md` structure:
   - [ ] Contains runnable example mains
   - [ ] Contains tests that run them
   - [ ] Docs reference these sources
-- [ ] This prevents `com.acoliteai.agentsdk.examples` from becoming accidental API
+- [ ] This prevents `ai.acolite.agentsdk.examples` from becoming accidental API
 
 **Why separate module?**
 - Examples don't bloat the published JAR
@@ -385,7 +385,7 @@ In the Javadoc for your public API, include it:
 /**
  * Creates a trace.
  *
- * {@snippet file="com/acoliteai/agentsdk/examples/TracingExample.java"
+ * {@snippet file="ai/acolite/agentsdk/examples/TracingExample.java"
  *   region="tracing-create-trace"}
  */
 ```
@@ -398,7 +398,7 @@ For small examples:
 /**
  * Full tracing example.
  *
- * {@snippet file="com/acoliteai/agentsdk/examples/TracingExample.java"}
+ * {@snippet file="ai/acolite/agentsdk/examples/TracingExample.java"}
  */
 ```
 
@@ -451,7 +451,7 @@ Your docs page:
 ```markdown
 ## Tracing Example
 
-See the [complete example on GitHub](https://github.com/your-org/agentsdk/blob/main/agentsdk-examples/src/main/java/com/acoliteai/agentsdk/examples/TracingExample.java).
+See the [complete example on GitHub](https://github.com/your-org/agentsdk/blob/main/agentsdk-examples/src/main/java/ai/acolite/agentsdk/examples/TracingExample.java).
 ```
 
 **Approach 2: Include file content directly in MkDocs**
@@ -462,7 +462,7 @@ Use [mkdocs-include-markdown-plugin](https://github.com/mondeja/mkdocs-include-m
 ## Tracing Example
 
 ```java
---8<-- "agentsdk-examples/src/main/java/com/acoliteai/agentsdk/examples/TracingExample.java"
+--8<-- "agentsdk-examples/src/main/java/ai/acolite/agentsdk/examples/TracingExample.java"
 ```
 ```
 

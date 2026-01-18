@@ -7,7 +7,7 @@
     </appender>
 
     <logger name="com.github.victools.jsonschema.generator" level="OFF"/>
-    <logger name="com.acoliteai.agentsdk.core.Runner" level="DEBUG"/>
+    <logger name="ai.acolite.agentsdk.core.Runner" level="DEBUG"/>
 
     <root level="INFO">
         <appender-ref ref="STDOUT"/>

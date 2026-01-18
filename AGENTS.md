@@ -2,7 +2,7 @@
 
 ## Project Structure & Module Organization
 - `src/main/java/` contains the SDK implementation.
-- `src/main/java/com/acoliteai/agentsdk/examples/` holds runnable examples (for docs and demos).
+- `src/main/java/ai/acolite/agentsdk/examples/` holds runnable examples (for docs and demos).
 - `src/test/java/` contains unit and integration tests.
 - `docs/` and `mkdocs.yml` drive documentation content and site structure.
 - `target/` is build output (generated; do not commit).
@@ -13,7 +13,7 @@
 - `mvn verify -Pe2e` runs unit + integration + e2e tests (expects real API access).
 - `mvn spotless:check` verifies formatting and import order.
 - `mvn spotless:apply` formats code using Google Java Format.
-- Avoid running `src/main/java/com/acoliteai/agentsdk/examples/RealWorldRunContextExample.java` and `@Tag("realworld")` tests unless you are doing an e2e run; they are slow and costly.
+- Avoid running `src/main/java/ai/acolite/agentsdk/examples/RealWorldRunContextExample.java` and `@Tag("realworld")` tests unless you are doing an e2e run; they are slow and costly.
 
 ## Coding Style & Naming Conventions
 - Java 21; formatting is enforced by Spotless (Google Java Format). Do not hand-format.

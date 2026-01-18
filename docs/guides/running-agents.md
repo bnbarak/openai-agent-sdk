@@ -24,7 +24,7 @@ System.out.println(result.getFinalOutput());
 // Output: "An AI agent is a software system..."
 ```
 
-[View complete example →](https://github.com/bnbarak/openai-agent-sdk/blob/main/src/main/java/com/acoliteai/agentsdk/examples/BasicTextOutput.java)
+[View complete example →](https://github.com/bnbarak/openai-agent-sdk/blob/main/src/main/java/ai/acolite/agentsdk/examples/BasicTextOutput.java)
 
 ## Runner Methods
 
@@ -165,7 +165,7 @@ Each turn represents one request-response cycle with the model. Multi-turn execu
 - The agent uses handoffs to delegate to other agents
 - The agent performs multi-step reasoning
 
-[View complete example →](https://github.com/bnbarak/openai-agent-sdk/blob/main/src/main/java/com/acoliteai/agentsdk/examples/MultiTurnExecution.java)
+[View complete example →](https://github.com/bnbarak/openai-agent-sdk/blob/main/src/main/java/ai/acolite/agentsdk/examples/MultiTurnExecution.java)
 
 ## Per-Turn Usage Tracking
 
@@ -308,6 +308,6 @@ See the [Run Context guide](run-context.md) for advanced context patterns.
 
 ## Additional Resources
 
-- [BasicTextOutput.java](https://github.com/bnbarak/openai-agent-sdk/blob/main/src/main/java/com/acoliteai/agentsdk/examples/BasicTextOutput.java) - Simple execution
-- [MultiTurnExecution.java](https://github.com/bnbarak/openai-agent-sdk/blob/main/src/main/java/com/acoliteai/agentsdk/examples/MultiTurnExecution.java) - Multi-turn tracking
+- [BasicTextOutput.java](https://github.com/bnbarak/openai-agent-sdk/blob/main/src/main/java/ai/acolite/agentsdk/examples/BasicTextOutput.java) - Simple execution
+- [MultiTurnExecution.java](https://github.com/bnbarak/openai-agent-sdk/blob/main/src/main/java/ai/acolite/agentsdk/examples/MultiTurnExecution.java) - Multi-turn tracking
 - [API Reference](../javadoc/index.html) - Complete Javadoc documentation

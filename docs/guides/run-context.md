@@ -64,7 +64,7 @@ public class DatabaseTool implements FunctionTool<AppContext, Input, Output> {
 }
 ```
 
-[View complete example →](https://github.com/bnbarak/openai-agent-sdk/blob/main/src/main/java/com/acoliteai/agentsdk/examples/RunContextExample.java)
+[View complete example →](https://github.com/bnbarak/openai-agent-sdk/blob/main/src/main/java/ai/acolite/agentsdk/examples/RunContextExample.java)
 
 ## Tool Approval System
 
@@ -264,7 +264,7 @@ The `RunContextExample` covers:
 
 ## Real-World Example
 
-[RealWorldRunContextExample.java →](https://github.com/bnbarak/openai-agent-sdk/blob/main/src/main/java/com/acoliteai/agentsdk/examples/RealWorldRunContextExample.java)
+[RealWorldRunContextExample.java →](https://github.com/bnbarak/openai-agent-sdk/blob/main/src/main/java/ai/acolite/agentsdk/examples/RealWorldRunContextExample.java)
 
 ## Best Practices
 
