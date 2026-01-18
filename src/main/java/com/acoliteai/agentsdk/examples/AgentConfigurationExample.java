@@ -8,13 +8,13 @@ import com.acoliteai.agentsdk.core.types.TextOutput;
 import com.acoliteai.agentsdk.core.types.UnknownContext;
 
 /**
- * AgentConfiguration
+ * AgentConfigurationExample
  *
  * <p>Example demonstrating various agent configuration options.
  *
- * <p>Usage: OPENAI_API_KEY=sk-... java com.openai.agents.examples.AgentConfiguration
+ * <p>Usage: OPENAI_API_KEY=sk-... java com.acoliteai.agentsdk.examples.AgentConfigurationExample
  */
-public class AgentConfiguration {
+public class AgentConfigurationExample {
 
   public static void main(String[] args) {
     String apiKey = System.getenv("OPENAI_API_KEY");

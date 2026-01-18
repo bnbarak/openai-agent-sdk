@@ -5,7 +5,7 @@ import com.acoliteai.agentsdk.core.types.TextOutput;
 import com.acoliteai.agentsdk.core.types.UnknownContext;
 
 /**
- * MultiTurnExecution
+ * MultiTurnExecutionExample
  *
  * <p>Example demonstrating multi-turn agent execution with detailed tracking.
  *
@@ -13,16 +13,16 @@ import com.acoliteai.agentsdk.core.types.UnknownContext;
  * Tracking usage across multiple turns - Monitoring generated conversation items - Accessing
  * detailed execution metrics
  *
- * <p>Usage: OPENAI_API_KEY=sk-... java com.openai.agents.examples.MultiTurnExecution
+ * <p>Usage: OPENAI_API_KEY=sk-... java com.acoliteai.agentsdk.examples.MultiTurnExecutionExample
  */
-public class MultiTurnExecution {
+public class MultiTurnExecutionExample {
 
   public static void main(String[] args) {
     String apiKey = System.getenv("OPENAI_API_KEY");
     if (apiKey == null || apiKey.isEmpty()) {
       System.err.println("Error: OPENAI_API_KEY environment variable not set");
       System.err.println(
-          "Usage: OPENAI_API_KEY=sk-... java com.openai.agents.examples.MultiTurnExecution");
+          "Usage: OPENAI_API_KEY=sk-... java com.acoliteai.agentsdk.examples.MultiTurnExecutionExample");
       System.exit(1);
     }
 

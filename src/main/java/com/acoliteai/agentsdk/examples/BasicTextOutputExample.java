@@ -7,23 +7,23 @@ import com.acoliteai.agentsdk.core.types.TextOutput;
 import com.acoliteai.agentsdk.core.types.UnknownContext;
 
 /**
- * BasicTextOutput
+ * BasicTextOutputExample
  *
  * <p>Simplest example demonstrating text-based agent interactions.
  *
  * <p>This example shows: - Creating a basic agent with instructions - Running the agent with a text
  * prompt - Accessing the text response and usage statistics
  *
- * <p>Usage: OPENAI_API_KEY=sk-... java com.openai.agents.examples.BasicTextOutput
+ * <p>Usage: OPENAI_API_KEY=sk-... java com.acoliteai.agentsdk.examples.BasicTextOutputExample
  */
-public class BasicTextOutput {
+public class BasicTextOutputExample {
 
   public static void main(String[] args) {
     String apiKey = System.getenv("OPENAI_API_KEY");
     if (apiKey == null || apiKey.isEmpty()) {
       System.err.println("Error: OPENAI_API_KEY environment variable not set");
       System.err.println(
-          "Usage: OPENAI_API_KEY=sk-... java com.openai.agents.examples.BasicTextOutput");
+          "Usage: OPENAI_API_KEY=sk-... java com.acoliteai.agentsdk.examples.BasicTextOutputExample");
       System.exit(1);
     }
 
