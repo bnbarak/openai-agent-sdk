@@ -18,7 +18,7 @@ These define how we write code and tests.
 
 ### 2. Create Branch from Main
 
-Always branch from main:
+Always branch from main and always verify where we are with `git status`:
 
 ```bash
 git checkout main
