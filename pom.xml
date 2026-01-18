@@ -264,6 +264,10 @@
                 <version>3.6.3</version>
                 <configuration>
                     <excludePackageNames>*.examples.*</excludePackageNames>
+                    <!-- Ignore Lombok-generated code that Javadoc can't see -->
+                    <doclint>none</doclint>
+                    <quiet>true</quiet>
+                    <additionalOptions>-Xdoclint:none</additionalOptions>
                 </configuration>
                 <executions>
                     <execution>
