@@ -26,6 +26,7 @@ public class StructuredOutput {
     public String conditions;
     public String recommendation;
   }
+
   // endregion define-schema
 
   public static void main(String[] args) {

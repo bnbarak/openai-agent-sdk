@@ -37,6 +37,7 @@ public class CalculatorTool
     @JsonPropertyDescription("The second number")
     private double b;
   }
+
   // endregion define-input
 
   // region define-output
@@ -48,6 +49,7 @@ public class CalculatorTool
     private String operation;
     private String expression;
   }
+
   // endregion define-output
 
   @Override
@@ -103,6 +105,7 @@ public class CalculatorTool
           return new Output(result, input.getOperation(), expression);
         });
   }
+
   // endregion implement-invoke
 
   @Override

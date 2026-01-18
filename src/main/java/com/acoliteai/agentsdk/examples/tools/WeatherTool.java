@@ -31,6 +31,7 @@ public class WeatherTool implements FunctionTool<Object, WeatherTool.Input, Weat
     @JsonPropertyDescription("Optional: Include forecast for next N days (0-7)")
     private int forecastDays = 0;
   }
+
   // endregion define-input
 
   // region define-output
@@ -71,6 +72,7 @@ public class WeatherTool implements FunctionTool<Object, WeatherTool.Input, Weat
       this.forecast = forecast;
     }
   }
+
   // endregion define-output
 
   @Override
