@@ -301,22 +301,21 @@ openAIAgentSDK/
 
 ## Current Status
 
-### Completed
-- [x] Project structure analysis
-- [x] TypeScript SDK documentation review
-- [x] Clone guidelines documentation
-- [x] Implementation plan creation
-- [x] Maven project initialization
+### Status Update
+Most of the core SDK, runner, guardrails, tracing, and OpenAI integration are implemented in this repo.
+This plan is now mainly used to track the remaining production-parity gaps.
 
-### In Progress
-- [ ] Phase 1.2: Generate Core Skeletons
+### Remaining Priorities (Production Parity)
+1. **OpenAI Hosted Tools**: Web search, file search/RAG, code execution.
+2. **Responses/Conversations API**: Core platform integration and server-side compaction.
+3. **Realtime Agents**: Voice/realtime agent support (defer if not needed).
+4. **Advanced MCP**: Deeper MCP tool ecosystem support.
+5. **Multimodal**: Audio/vision support if required.
 
 ### Next Steps
-1. Write Python script to scan TypeScript files
-2. Generate Java class skeletons
-3. Create exception classes
-4. Validate generated structure
-5. Begin Phase 2: Core Implementation
+1. Implement OpenAI Hosted Tools end-to-end (API models, tool plumbing, examples, tests).
+2. Add Responses/Conversations API support and compaction-aware sessions.
+3. Decide on Realtime Agents scope and timeline.
 
 ## Success Criteria
 
