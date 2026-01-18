@@ -18,9 +18,6 @@ import org.junitpioneer.jupiter.SetEnvironmentVariable;
  * <p>These tests verify that agents can successfully use tools during conversations, including tool
  * registration, execution, and result synthesis.
  *
- * <p>Requirements: 1. OPENAI_API_KEY environment variable must be set 2. Tool calling
- * implementation must be complete
- *
  * <p>Usage: OPENAI_API_KEY=sk-... mvn test -Dtest=ToolCallingRealAPITest
  */
 @SetEnvironmentVariable(key = "OPENAI_MODEL", value = "gpt-4.1-nano")
@@ -38,29 +35,20 @@ class ToolCallingRealAPITest {
     Agent<UnknownContext, TextOutput> agent =
         Agent.<UnknownContext, TextOutput>builder()
             .name("MathAssistant")
-            .instructions(
-                "You are a math assistant. Use the calculator tool to perform calculations accurately.")
+            .instructions("You are a math assistant. Use the calculator tool.")
             .tools(List.of(new CalculatorTool()))
             .build();
 
     RunResult<UnknownContext, ?> result =
-        Runner.run(
-            agent, "What is 123 multiplied by 456? Use the calculator tool to compute this.");
+        Runner.run(agent, "What is 123 multiplied by 456? Use the calculator tool.");
 
     assertNotNull(result);
     assertNotNull(result.getFinalOutput());
-
     String output = result.getFinalOutput().toString();
-    boolean containsCorrectAnswer = output.contains("56088") || output.contains("56,088");
-    assertTrue(containsCorrectAnswer);
-
-    boolean hasToolCalls =
-        result.getNewItems().stream().anyMatch(item -> item instanceof RunToolCallItem);
-    assertTrue(hasToolCalls);
-
-    boolean hasToolOutputs =
-        result.getNewItems().stream().anyMatch(item -> item instanceof RunToolCallOutputItem);
-    assertTrue(hasToolOutputs);
+    assertTrue(output.contains("56088") || output.contains("56,088"));
+    assertTrue(result.getNewItems().stream().anyMatch(item -> item instanceof RunToolCallItem));
+    assertTrue(
+        result.getNewItems().stream().anyMatch(item -> item instanceof RunToolCallOutputItem));
   }
 
   @Test
@@ -68,7 +56,7 @@ class ToolCallingRealAPITest {
     Agent<UnknownContext, TextOutput> agent =
         Agent.<UnknownContext, TextOutput>builder()
             .name("MathAssistant")
-            .instructions("You are a math assistant. Use the calculator tool for all calculations.")
+            .instructions("You are a math assistant. Use the calculator tool.")
             .tools(List.of(new CalculatorTool()))
             .build();
 
@@ -76,10 +64,8 @@ class ToolCallingRealAPITest {
 
     assertNotNull(result);
     assertNotNull(result.getFinalOutput());
-
     String output = result.getFinalOutput().toString();
-    boolean containsCorrectAnswer = output.contains("1110") || output.contains("1,110");
-    assertTrue(containsCorrectAnswer);
+    assertTrue(output.contains("1110") || output.contains("1,110"));
   }
 
   @Test
@@ -87,7 +73,7 @@ class ToolCallingRealAPITest {
     Agent<UnknownContext, TextOutput> agent =
         Agent.<UnknownContext, TextOutput>builder()
             .name("MathAssistant")
-            .instructions("You are a math assistant. Use the calculator tool for all calculations.")
+            .instructions("You are a math assistant. Use the calculator tool.")
             .tools(List.of(new CalculatorTool()))
             .build();
 
@@ -95,10 +81,8 @@ class ToolCallingRealAPITest {
 
     assertNotNull(result);
     assertNotNull(result.getFinalOutput());
-
     String output = result.getFinalOutput().toString();
-    boolean containsCorrectAnswer = output.contains("25");
-    assertTrue(containsCorrectAnswer);
+    assertTrue(output.contains("25"));
   }
 
   @Test
@@ -111,21 +95,15 @@ class ToolCallingRealAPITest {
             .build();
 
     RunResult<UnknownContext, ?> result =
-        Runner.run(
-            agent, "First calculate 50 + 30, then multiply that result by 2. Show both steps.");
+        Runner.run(agent, "First calculate 50 + 30, then multiply that result by 2.");
 
     assertNotNull(result);
     assertNotNull(result.getFinalOutput());
-
     String output = result.getFinalOutput().toString();
-    boolean containsIntermediateResult = output.contains("80");
-    boolean containsFinalResult = output.contains("160");
-    assertTrue(containsIntermediateResult && containsFinalResult);
-
+    assertTrue(output.contains("80") && output.contains("160"));
     long toolCallCount =
         result.getNewItems().stream().filter(item -> item instanceof RunToolCallItem).count();
-    boolean usedMultipleTools = toolCallCount >= 2;
-    assertTrue(usedMultipleTools);
+    assertTrue(toolCallCount >= 2);
   }
 
   @Test
@@ -146,7 +124,6 @@ class ToolCallingRealAPITest {
             .toList();
 
     assertFalse(toolCalls.isEmpty());
-
     RunToolCallItem toolCall = toolCalls.get(0);
     assertEquals("calculator", toolCall.getName());
     assertNotNull(toolCall.getId());
@@ -171,7 +148,6 @@ class ToolCallingRealAPITest {
             .toList();
 
     assertFalse(toolOutputs.isEmpty());
-
     RunToolCallOutputItem output = toolOutputs.get(0);
     assertNotNull(output.getToolCallId());
     assertNotNull(output.getResult());
@@ -190,13 +166,8 @@ class ToolCallingRealAPITest {
 
     assertNotNull(result);
     assertNotNull(result.getFinalOutput());
-
     String output = result.getFinalOutput().toString();
-    boolean containsFour = output.contains("4");
-    assertTrue(containsFour);
-
-    boolean noToolCalls =
-        result.getNewItems().stream().noneMatch(item -> item instanceof RunToolCallItem);
-    assertTrue(noToolCalls);
+    assertTrue(output.contains("4"));
+    assertTrue(result.getNewItems().stream().noneMatch(item -> item instanceof RunToolCallItem));
   }
 }

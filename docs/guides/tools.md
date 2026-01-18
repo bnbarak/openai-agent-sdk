@@ -349,6 +349,75 @@ RunResult<UnknownContext, ?> result = Runner.run(
 
 The agent selects the appropriate tool(s) based on the task and available functions.
 
+## Hosted Tools
+
+Hosted tools execute on OpenAI's infrastructure rather than in your application. These tools are provided and maintained by OpenAI, so you configure them but don't implement their logic.
+
+### Currently Supported Hosted Tools
+
+This SDK currently supports:
+
+- **`web_search`** - Search the web for current information
+- **`image_generation`** - Generate images using DALL-E
+
+!!! warning "Limited Support"
+    Other OpenAI hosted tools like `file_search`, `code_interpreter`, and `computer_use` are not yet supported by this SDK. Attempting to use them will throw an `UnsupportedOperationException`.
+
+### Web Search Example
+
+```java
+Agent<UnknownContext, TextOutput> agent =
+    Agent.<UnknownContext, TextOutput>builder()
+        .name("SearchAssistant")
+        .instructions("You can search the web for current information.")
+        .tools(List.of(HostedTool.webSearch()))
+        .build();
+
+RunResult<UnknownContext, ?> result = Runner.run(
+    agent,
+    "What is the current weather in Tokyo?"
+);
+
+System.out.println(result.getFinalOutput());
+```
+
+### Image Generation Example
+
+```java
+Agent<UnknownContext, TextOutput> agent =
+    Agent.<UnknownContext, TextOutput>builder()
+        .name("Artist")
+        .instructions("You can generate images using DALL-E.")
+        .tools(List.of(HostedTool.imageGeneration()))
+        .build();
+
+RunResult<UnknownContext, ?> result = Runner.run(
+    agent,
+    "Generate an image of a serene mountain landscape"
+);
+
+System.out.println(result.getFinalOutput());
+```
+
+### Combining Hosted and Function Tools
+
+You can use hosted tools alongside your custom function tools:
+
+```java
+Agent<UnknownContext, TextOutput> agent =
+    Agent.<UnknownContext, TextOutput>builder()
+        .name("MultiToolAssistant")
+        .instructions("Use available tools to answer questions.")
+        .tools(List.of(
+            new CalculatorTool(),           // Custom function tool
+            HostedTool.webSearch(),         // Hosted tool
+            HostedTool.imageGeneration()    // Hosted tool
+        ))
+        .build();
+```
+
+[View complete example →](https://github.com/bnbarak/openai-agent-sdk/blob/main/src/main/java/com/acoliteai/agentsdk/examples/HostedToolsExample.java)
+
 ## Error Handling in Tools
 
 Handle errors gracefully within tool implementations:

@@ -283,7 +283,7 @@ See the [Run Context guide](run-context.md) for advanced context patterns.
 
 !!! tip "Optimize Token Usage"
     - Monitor `result.getUsage()` to track costs
-    - Use `gpt-4o-mini` for simple tasks to reduce costs
+    - Use `gpt-4.1-mini` for simple tasks to reduce costs
     - Set appropriate `maxTurns` to prevent runaway executions
     - Use sessions to maintain context without repeating information
 

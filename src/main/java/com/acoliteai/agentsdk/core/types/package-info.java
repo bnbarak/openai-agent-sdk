@@ -24,7 +24,7 @@
  *
  * Agent<UnknownContext, JsonSchemaOutput<WeatherReport>> agent =
  *     Agent.<UnknownContext, JsonSchemaOutput<WeatherReport>>builder()
- *         .model("gpt-4o")
+ *         .model("gpt-4.1")
  *         .outputType(outputType)
  *         .build();
  * }</pre>

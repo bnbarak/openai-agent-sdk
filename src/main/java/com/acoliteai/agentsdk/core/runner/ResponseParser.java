@@ -6,6 +6,8 @@ import com.acoliteai.agentsdk.core.RunMessageOutputItem;
 import com.acoliteai.agentsdk.core.RunToolCallItem;
 import com.acoliteai.agentsdk.openai.SerializationUtils;
 import com.openai.models.responses.ResponseFunctionToolCall;
+import com.openai.models.responses.ResponseFunctionWebSearch;
+import com.openai.models.responses.ResponseOutputItem;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -69,6 +71,25 @@ public class ResponseParser {
           .build();
     }
 
+    // Handle hosted tool calls
+    if (outputItem instanceof ResponseFunctionWebSearch webSearchCall) {
+      return RunToolCallItem.builder()
+          .id(webSearchCall.id())
+          .name("web_search")
+          .parameters(webSearchCall.action())
+          .build();
+    }
+
+    if (outputItem instanceof ResponseOutputItem.ImageGenerationCall imageGenCall) {
+      return RunToolCallItem.builder()
+          .id(imageGenCall.id())
+          .name("image_generation")
+          .parameters(null)
+          .build();
+    }
+
+    // TODO: Add handlers for other hosted tool types when class names are confirmed
+    // For now, if it's an unknown type (likely another hosted tool), convert to message
     return RunMessageOutputItem.builder().content(outputItem).role("assistant").build();
   }
 

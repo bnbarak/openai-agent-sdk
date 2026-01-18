@@ -20,7 +20,7 @@ import lombok.Value;
 @Builder
 public final class GenerationSpanData implements SpanData {
 
-  /** Model identifier (e.g., "gpt-4o", "gpt-4o-mini") */
+  /** Model identifier (e.g., "gpt-4.1", "gpt-4.1-mini") */
   String model;
 
   /** Input messages/items to the model */

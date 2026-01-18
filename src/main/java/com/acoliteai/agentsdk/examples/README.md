@@ -171,7 +171,7 @@ Various agent configuration patterns and options.
 
 **What you'll learn:**
 - Writing effective agent instructions
-- Selecting different models (gpt-4o, gpt-3.5-turbo)
+- Selecting different models (gpt-4.1, gpt-4.1-mini)
 - Using `RunConfig` for execution options
 - Customizing agent behavior
 

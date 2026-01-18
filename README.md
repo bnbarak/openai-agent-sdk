@@ -47,33 +47,13 @@ Set your OpenAI API key as an environment variable:
 export OPENAI_API_KEY='your-api-key-here'
 ```
 
-Or configure programmatically:
-
-```java
-OpenAI openai = new OpenAI(apiKey);
-Model model = openai.chatCompletionsModel("gpt-4o");
-```
+See `src/main/java/com/acoliteai/agentsdk/examples/AgentConfigurationExample.java` for programmatic
+model configuration and `src/main/java/com/acoliteai/agentsdk/examples/BasicTextOutputExample.java`
+for end-to-end usage.
 
 ### Usage
 
-```java
-import com.acoliteai.agentsdk.core.Agent;
-import com.acoliteai.agentsdk.core.RunResult;
-import com.acoliteai.agentsdk.openai.OpenAI;
-
-public class HelloWorld {
-    public static void main(String[] args) {
-        Agent agent = Agent.builder()
-            .model(OpenAI.chatCompletionsModel("gpt-4o"))
-            .instructions("You are a helpful assistant.")
-            .build();
-
-        RunResult result = agent.run("What is the capital of France?");
-
-        System.out.println(result.getTextOutput());
-    }
-}
-```
+See `src/main/java/com/acoliteai/agentsdk/examples/BasicTextOutputExample.java`.
 
 ## Core Concepts
 
@@ -81,89 +61,33 @@ public class HelloWorld {
 
 Agents are the core building blocks. They encapsulate a model, instructions, and optional tools:
 
-```java
-Agent agent = Agent.builder()
-    .model(OpenAI.chatCompletionsModel("gpt-4o"))
-    .instructions("You are a math tutor.")
-    .tools(calculatorTool)
-    .build();
-```
+See `src/main/java/com/acoliteai/agentsdk/examples/WellTypedToolsExample.java`.
 
 ### Tool Calling
 
 Define custom tools that agents can invoke:
 
-```java
-FunctionTool calculatorTool = FunctionTool.builder()
-    .name("calculator")
-    .description("Perform basic math operations")
-    .inputSchema(CalculatorInput.class)
-    .function(input -> {
-        int result = switch(input.operation) {
-            case "add" -> input.a + input.b;
-            case "multiply" -> input.a * input.b;
-            default -> 0;
-        };
-        return String.valueOf(result);
-    })
-    .build();
-```
+See `src/main/java/com/acoliteai/agentsdk/examples/tools/CalculatorTool.java` and
+`src/main/java/com/acoliteai/agentsdk/examples/WellTypedToolsExample.java`.
 
 ### Multi-Agent Handoffs
 
 Transfer conversations between specialized agents:
 
-```java
-Agent triage = Agent.builder()
-    .model(OpenAI.chatCompletionsModel("gpt-4o"))
-    .instructions("You triage customer requests.")
-    .handoffs(billingAgent, technicalAgent)
-    .build();
-
-RunResult result = triage.run("I have a billing question");
-// Automatically hands off to billingAgent
-```
+See `src/main/java/com/acoliteai/agentsdk/examples/AgentHandoffExample.java`.
 
 ### Memory & Sessions
 
 Manage conversation history across turns:
 
-```java
-// In-memory session
-Session session = new MemorySession();
-
-// SQLite session (persistent)
-Session session = new SQLiteSession("conversations.db");
-
-Agent agent = Agent.builder()
-    .model(OpenAI.chatCompletionsModel("gpt-4o"))
-    .session(session)
-    .build();
-
-// Conversations are automatically persisted
-agent.run("Remember: my name is Alice");
-agent.run("What's my name?"); // "Your name is Alice"
-```
+See `src/main/java/com/acoliteai/agentsdk/examples/MemorySessionExample.java` and
+`src/main/java/com/acoliteai/agentsdk/examples/SQLiteSessionExample.java`.
 
 ### Tracing
 
 Monitor agent execution with distributed tracing:
 
-```java
-// Console tracing (development)
-TraceProvider.configure(new ConsoleSpanExporter());
-
-// OpenAI platform tracing (production)
-TraceProvider.configure(
-    new OpenAITracingExporter(System.getenv("OPENAI_API_KEY"))
-);
-
-// All agent operations are automatically traced
-Agent agent = Agent.builder()
-    .model(OpenAI.chatCompletionsModel("gpt-4o"))
-    .tracing(TraceOptions.builder().enabled(true).build())
-    .build();
-```
+See `src/main/java/com/acoliteai/agentsdk/examples/AgentWithTracingExample.java`.
 
 ## Development
 

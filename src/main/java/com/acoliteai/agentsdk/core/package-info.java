@@ -15,7 +15,7 @@
  *
  * <pre>{@code
  * Agent<UnknownContext, TextOutput> agent = Agent.<UnknownContext, TextOutput>builder()
- *     .model("gpt-4o")
+ *     .model("gpt-4.1")
  *     .instructions("You are a helpful assistant.")
  *     .build();
  *

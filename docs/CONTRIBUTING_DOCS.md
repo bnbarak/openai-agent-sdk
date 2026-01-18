@@ -97,13 +97,10 @@ Brief 1-2 sentence overview of what this guide covers.
 ## Quick Example
 
 ```java
-// Show the working code first
-Agent agent = Agent.builder()
-    .model(OpenAI.chatCompletionsModel("gpt-4o"))
-    .build();
+--8<-- "src/main/java/com/acoliteai/agentsdk/examples/BasicTextOutputExample.java:create-agent"
 ```
 
-[Link to complete example](https://github.com/...)
+[Link to complete example](https://github.com/bnbarak/openai-agent-sdk/blob/main/src/main/java/com/acoliteai/agentsdk/examples/BasicTextOutputExample.java)
 
 ## Concepts
 
@@ -142,19 +139,19 @@ This is the **best approach** - it shows code inline while keeping examples test
 
 Mark regions in your example files:
 
-**In `HelloWorld.java`:**
+**In `BasicTextOutputExample.java`:**
 ```java
-public class HelloWorld {
-    public static void main(String[] args) {
-        // region:create-agent
-        Agent agent = Agent.builder()
-            .model(OpenAI.chatCompletionsModel("gpt-4o"))
-            .instructions("You are a helpful assistant.")
+public class BasicTextOutputExample {
+  public static void main(String[] args) {
+    // region create-agent
+    // Create a simple agent
+    Agent<UnknownContext, TextOutput> agent =
+        Agent.<UnknownContext, TextOutput>builder()
+            .name("Assistant")
+            .instructions("You are a helpful assistant. Keep responses concise and clear.")
             .build();
-        // endregion:create-agent
-
-        RunResult result = agent.run("Hello!");
-    }
+    // endregion create-agent
+  }
 }
 ```
 
@@ -165,10 +162,10 @@ public class HelloWorld {
 Here's how to create a basic agent:
 
 ```java
---8<-- "src/main/java/.../HelloWorld.java:create-agent"
+--8<-- "src/main/java/com/acoliteai/agentsdk/examples/BasicTextOutputExample.java:create-agent"
 ```
 
-[View complete example](https://github.com/.../HelloWorld.java)
+[View complete example](https://github.com/bnbarak/openai-agent-sdk/blob/main/src/main/java/com/acoliteai/agentsdk/examples/BasicTextOutputExample.java)
 ```
 
 **Why this is best:**
@@ -185,7 +182,7 @@ For very small examples (< 30 lines), include the entire file:
 ## Example: Creating an Agent
 
 ```java
---8<-- "src/main/java/com/acoliteai/agentsdk/examples/HelloWorld.java"
+--8<-- "src/main/java/com/acoliteai/agentsdk/examples/BasicTextOutputExample.java"
 ```
 ```
 
@@ -246,7 +243,7 @@ See the [Tools Guide](guides/tools.md) for more information on custom tools.
 Always use full URLs:
 
 ```markdown
-Learn more about [OpenAI's Chat Completions API](https://platform.openai.com/docs/api-reference/chat).
+Learn more about [OpenAI's Responses API](https://platform.openai.com/docs/api-reference/responses).
 ```
 
 ---
@@ -411,23 +408,23 @@ This guide shows you how to create a basic agent and run your first conversation
 ## Quick Start
 
 ```java
---8<-- "src/main/java/com/acoliteai/agentsdk/examples/HelloWorld.java:create-agent"
+--8<-- "src/main/java/com/acoliteai/agentsdk/examples/BasicTextOutputExample.java:create-agent"
 ```
 
-[View complete example](https://github.com/bnbarak/openai-agent-sdk/blob/main/src/main/java/com/acoliteai/agentsdk/examples/HelloWorld.java)
+[View complete example](https://github.com/bnbarak/openai-agent-sdk/blob/main/src/main/java/com/acoliteai/agentsdk/examples/BasicTextOutputExample.java)
 
 ## Running the Agent
 
 Once you have an agent, run it with a message:
 
 ```java
---8<-- "src/main/java/com/acoliteai/agentsdk/examples/HelloWorld.java:run-agent"
+--8<-- "src/main/java/com/acoliteai/agentsdk/examples/BasicTextOutputExample.java:run-agent"
 ```
 
 ## How It Works
 
 The `Agent.builder()` creates a new agent with:
-- **model**: The OpenAI model to use (gpt-4o, gpt-3.5-turbo, etc.)
+- **model**: The OpenAI model to use (gpt-4.1, gpt-4.1-mini, etc.)
 - **instructions**: The system prompt that defines agent behavior
 
 When you call `agent.run()`, the agent:
@@ -442,7 +439,7 @@ When you call `agent.run()`, the agent:
 ```
 
 **Why this is good:**
-- Shows real, tested code inline (pulled from HelloWorld.java)
+- Shows real, tested code inline (pulled from BasicTextOutputExample.java)
 - Links to complete example for context
 - Multiple code snippets with region markers
 - Clear explanations after each code block

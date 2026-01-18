@@ -39,7 +39,7 @@ public class RunConfig {
   ModelProvider modelProvider;
 
   /**
-   * Optional model name override (e.g., "gpt-4o", "gpt-3.5-turbo"). If specified, overrides the
+   * Optional model name override (e.g., "gpt-4.1", "gpt-4.1-mini"). If specified, overrides the
    * agent's model setting.
    */
   String model;

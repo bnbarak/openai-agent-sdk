@@ -24,10 +24,10 @@ Agent<UnknownContext, TextOutput> agent =
     Agent.<UnknownContext, TextOutput>builder()
         .name("Assistant")
         .instructions("You are a helpful assistant.")
-        .model("gpt-4o-mini")
+        .model("gpt-4.1-mini")
         .build();
 
-RunConfig config = RunConfig.builder().model("gpt-4o").build();
+RunConfig config = RunConfig.builder().model("gpt-4.1").build();
 RunResult<UnknownContext, ?> result = Runner.run(agent, "Hello", config);
 ```
 

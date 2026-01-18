@@ -57,7 +57,7 @@ public class AgentWithTracingExample {
               .name("Math_Specialist")
               .instructions("You are a math specialist. Solve math problems step by step.")
               .handoffDescription("Handles complex mathematical calculations")
-              .model("gpt-4o-mini")
+              .model("gpt-4.1-mini")
               .build();
 
       // Create triage agent with handoff to specialist
@@ -68,7 +68,7 @@ public class AgentWithTracingExample {
                   "You are a triage agent. For math problems, transfer to Math_Specialist. "
                       + "For simple greetings, respond directly.")
               .handoffs(List.of(mathAgent))
-              .model("gpt-4o-mini")
+              .model("gpt-4.1-mini")
               .build();
 
       String userInput = "Calculate 123 multiplied by 456";

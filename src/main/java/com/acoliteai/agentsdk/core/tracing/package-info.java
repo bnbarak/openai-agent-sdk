@@ -7,8 +7,8 @@
  *   <li>{@link com.acoliteai.agentsdk.core.tracing.TraceProvider} - Global trace management
  *   <li>{@link com.acoliteai.agentsdk.core.tracing.Trace} - Trace context for tracking execution
  *   <li>{@link com.acoliteai.agentsdk.core.tracing.Span} - Individual operation tracking
- *   <li>{@link com.acoliteai.agentsdk.core.tracing.TraceProcessor} - Interface for processing
- *       trace events
+ *   <li>{@link com.acoliteai.agentsdk.core.tracing.TraceProcessor} - Interface for processing trace
+ *       events
  * </ul>
  *
  * <h2>Example: Custom Trace Processor</h2>
