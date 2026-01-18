@@ -1,6 +1,6 @@
 # Run Context
 
-RunContext lets you carry application data through a run, control tool approvals, and track usage.
+RunContext carries application data through a run, controls tool approvals, and tracks usage.
 It is the shared state object that tools, guardrails, and the runner can read and update.
 
 ## What RunContext Does
@@ -133,10 +133,23 @@ public class SensitiveTool implements FunctionTool<AppContext, Input, Output> {
 When `needsApproval()` returns `true`, the runner checks
 `context.isToolApproved(toolName, toolCallId)` before executing the tool.
 
+### Mixed Approval Modes
+
+```java
+RunContext<UnknownContext> context = new RunContext<>();
+
+context.approveTool(
+    RunToolApprovalItem.builder().toolName("calculator").toolCallId("calc_001").build(), true);
+context.approveTool(
+    RunToolApprovalItem.builder().toolName("send_email").toolCallId("email_001").build(), false);
+context.rejectTool(
+    RunToolApprovalItem.builder().toolName("delete_file").toolCallId("delete_001").build(), true);
+```
+
 ## Usage Tracking
 
-When you pass a RunContext via RunConfig, the runner accumulates usage automatically.
-If you want to aggregate usage yourself (outside the runner), use `addUsage()`:
+When you pass a RunContext via RunConfig, the runner accumulates usage automatically for each
+model response. Use `addUsage()` only if you are aggregating usage from other sources or runs.
 
 ```java
 RunContext<UnknownContext> context = new RunContext<>();
@@ -183,6 +196,69 @@ RunConfig config =
 
 RunResult<AppContext, ?> result = Runner.run(agent, "My name is Alice", config);
 ```
+
+## Advanced Patterns
+
+### Dynamic Approval Based on Input
+
+```java
+@Override
+public boolean needsApproval(RunContext<AppContext> context, Input input) {
+  if (input.getAmount() < 10.0) {
+    return false;
+  }
+  if (input.getAmount() > 1000.0) {
+    return true;
+  }
+  return !context.getContext().isPreApproved(input.getOperation());
+}
+```
+
+### Budget Enforcement
+
+```java
+public class BudgetContext {
+  double budget;
+  double spent;
+
+  boolean canSpend(double amount) {
+    return (spent + amount) <= budget;
+  }
+}
+
+@Override
+public boolean needsApproval(RunContext<BudgetContext> context, Input input) {
+  return !context.getContext().canSpend(input.getAmount());
+}
+```
+
+### Approval Chains
+
+```java
+@Override
+public boolean needsApproval(RunContext<AppContext> context, Input input) {
+  AppContext appContext = context.getContext();
+  if ("admin".equals(appContext.getUserRole())) {
+    return false;
+  }
+  if (appContext.hasPermission(input.getOperation())) {
+    return false;
+  }
+  return input.getAmount() >= appContext.getApprovalThreshold();
+}
+```
+
+## Example Index
+
+The `RunContextExample` covers:
+
+1. Basic context storage
+2. Usage tracking
+3. Per-call tool approvals
+4. Permanent tool approvals
+5. Tool rejection
+6. Mixed approval modes
+7. Serialization
 
 ## Real-World Example
 
