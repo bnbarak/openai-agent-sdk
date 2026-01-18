@@ -53,7 +53,7 @@ jobs:
           echo "Running all example files..."
 
           # Find all example files with main methods
-          EXAMPLES=$(find src/main/java/com/acoliteai/agentsdk/examples -name "*Example.java" -type f | sort)
+          EXAMPLES=$(find src/main/java/ai/acolite/agentsdk/examples -name "*Example.java" -type f | sort)
 
           for example in $EXAMPLES; do
             # Extract class name from file path
