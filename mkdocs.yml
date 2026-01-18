@@ -49,6 +49,7 @@ nav:
     - Handoffs: guides/handoffs.md
     - Sessions: guides/sessions.md
     - Models: guides/models.md
+    - Realtime API: guides/realtime.md
     - Guardrails: guides/guardrails.md
     - Streaming: guides/streaming.md
     - Tracing: guides/tracing.md
