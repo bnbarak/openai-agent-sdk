@@ -88,3 +88,12 @@ Desktop.ini
 *.db-wal
 .claude
 .clauderc
+
+# Python virtual environment
+.venv/
+venv/
+ENV/
+env/
+
+# MkDocs
+site/
