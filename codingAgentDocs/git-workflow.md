@@ -53,7 +53,6 @@ git status    # Verify success
 
 **Key points:**
 - ALWAYS use HEREDOC for commit messages
-- ALWAYS include Co-Authored-By attribution
 - Run `git status` AFTER commit completes (not in parallel)
 - If pre-commit hook fails: fix issue and create NEW commit (never skip hooks)
 
