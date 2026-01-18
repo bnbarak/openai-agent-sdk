@@ -17,6 +17,7 @@ import lombok.Data;
  */
 public class WeatherTool implements FunctionTool<Object, WeatherTool.Input, WeatherTool.Output> {
 
+  // region define-input
   /** Input parameters with validation and descriptions */
   @Data
   @JsonClassDescription("Parameters for getting weather information")
@@ -31,6 +32,9 @@ public class WeatherTool implements FunctionTool<Object, WeatherTool.Input, Weat
     private int forecastDays = 0;
   }
 
+  // endregion define-input
+
+  // region define-output
   /** Structured output with nested data */
   @Data
   public static class Output {
@@ -68,6 +72,8 @@ public class WeatherTool implements FunctionTool<Object, WeatherTool.Input, Weat
       this.forecast = forecast;
     }
   }
+
+  // endregion define-output
 
   @Override
   public String getType() {

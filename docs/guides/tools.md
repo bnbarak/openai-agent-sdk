@@ -4,42 +4,474 @@ Learn how to define custom tools that agents can invoke.
 
 ## Overview
 
-Tools allow agents to perform actions beyond text generation. You define tools as Java functions, and the agent decides when to call them.
+Tools allow agents to perform actions beyond text generation. Tools are Java functions that agents call autonomously to access data, perform calculations, or interact with external systems. The agent decides when to invoke tools based on the conversation context.
+
+Each tool is defined using the `FunctionTool` interface with:
+
+- Type-safe input parameters
+- Type-safe output values
+- Automatic JSON schema generation
+- Optional approval requirements
+- Enable/disable logic
 
 ## Creating a Simple Tool
 
-```java
-// TODO: Add region marker from WellTypedToolsExample.java
-// --8<-- "src/main/java/com/acoliteai/agentsdk/examples/WellTypedToolsExample.java:define-tool"
-```
-
-[View complete example](https://github.com/bnbarak/openai-agent-sdk/blob/main/src/main/java/com/acoliteai/agentsdk/examples/WellTypedToolsExample.java)
-
-## Tool Input Schema
-
-Define the input structure for your tool:
+Implement `FunctionTool` with typed input and output classes:
 
 ```java
-// TODO: Add example showing input schema definition
+public class CalculatorTool
+    implements FunctionTool<Object, CalculatorTool.Input, CalculatorTool.Output> {
+
+  @Data
+  @JsonClassDescription("Input parameters for arithmetic operations")
+  public static class Input {
+    @JsonPropertyDescription("The arithmetic operation: add, subtract, multiply, or divide")
+    private String operation;
+
+    @JsonPropertyDescription("The first number")
+    private double a;
+
+    @JsonPropertyDescription("The second number")
+    private double b;
+  }
+
+  @Data
+  @AllArgsConstructor
+  public static class Output {
+    private double result;
+    private String operation;
+    private String expression;
+  }
+
+  @Override
+  public String getName() {
+    return "calculator";
+  }
+
+  @Override
+  public String getDescription() {
+    return "Performs basic arithmetic operations: add, subtract, multiply, divide.";
+  }
+
+  @Override
+  public Object getParameters() {
+    return Input.class;  // Jackson auto-generates JSON schema
+  }
+
+  @Override
+  public CompletableFuture<Output> invoke(RunContext<Object> context, Input input) {
+    return CompletableFuture.supplyAsync(() -> {
+      double result = switch (input.getOperation()) {
+        case "add" -> input.getA() + input.getB();
+        case "subtract" -> input.getA() - input.getB();
+        case "multiply" -> input.getA() * input.getB();
+        case "divide" -> {
+          if (input.getB() == 0) throw new IllegalArgumentException("Cannot divide by zero");
+          yield input.getA() / input.getB();
+        }
+        default -> throw new IllegalArgumentException("Unknown operation: " + input.getOperation());
+      };
+
+      String expression = String.format("%.2f %s %.2f = %.2f",
+          input.getA(), getOperatorSymbol(input.getOperation()), input.getB(), result);
+
+      return new Output(result, input.getOperation(), expression);
+    });
+  }
+
+  @Override
+  public boolean needsApproval(RunContext<Object> context, Input input) {
+    return false;  // Calculator doesn't need approval
+  }
+
+  @Override
+  public boolean isEnabled(RunContext<Object> context) {
+    return true;  // Always enabled
+  }
+}
 ```
+
+[View complete example →](https://github.com/bnbarak/openai-agent-sdk/blob/main/src/main/java/com/acoliteai/agentsdk/examples/tools/CalculatorTool.java)
 
 ## Adding Tools to an Agent
 
+Pass tools to the agent builder:
+
 ```java
-// TODO: Add example showing how to add tools to agent
+Agent<UnknownContext, TextOutput> agent =
+    Agent.<UnknownContext, TextOutput>builder()
+        .name("MathAssistant")
+        .instructions("You are a math assistant. Use the calculator tool to perform calculations.")
+        .tools(List.of(new CalculatorTool()))
+        .build();
+
+RunResult<UnknownContext, ?> result = Runner.run(
+    agent,
+    "What is 123 multiplied by 456? Please use the calculator."
+);
+
+System.out.println(result.getFinalOutput());
+// Output: "123 multiplied by 456 equals 56,088. I used the calculator to compute this: 123.00 × 456.00 = 56088.00"
 ```
+
+The agent automatically calls the tool when needed and incorporates the result into its response.
+
+[View complete example →](https://github.com/bnbarak/openai-agent-sdk/blob/main/src/main/java/com/acoliteai/agentsdk/examples/WellTypedToolsExample.java)
+
+## Type-Safe Input Parameters
+
+Use Lombok `@Data` and Jackson annotations for clean, type-safe parameter definitions:
+
+```java
+@Data
+@JsonClassDescription("Parameters for getting weather information")
+public static class Input {
+    @JsonPropertyDescription("The city name (e.g., 'San Francisco', 'New York')")
+    private String city;
+
+    @JsonPropertyDescription("Optional: Units for temperature (celsius or fahrenheit)")
+    private String units = "fahrenheit";  // Default value
+
+    @JsonPropertyDescription("Optional: Include forecast for next N days (0-7)")
+    private int forecastDays = 0;
+}
+```
+
+Benefits:
+
+- **Type Safety**: Compile-time checking of all parameters
+- **Auto-complete**: IDE support for parameter names and types
+- **Documentation**: Annotations describe parameters for the model
+- **Schema Generation**: Jackson automatically generates JSON schema
+- **Validation**: Type system prevents invalid inputs
+
+[View complex example with nested types →](https://github.com/bnbarak/openai-agent-sdk/blob/main/src/main/java/com/acoliteai/agentsdk/examples/tools/WeatherTool.java)
+
+## Type-Safe Output Values
+
+Define structured output using POJOs:
+
+```java
+@Data
+public static class Output {
+    private String city;
+    private Current current;
+    private List<Forecast> forecast;
+
+    @Data
+    public static class Current {
+        private double temperature;
+        private String conditions;
+        private int humidity;
+        private String units;
+    }
+
+    @Data
+    @AllArgsConstructor
+    public static class Forecast {
+        private String date;
+        private double highTemp;
+        private double lowTemp;
+        private String conditions;
+    }
+}
+```
+
+The agent receives the structured output and can reference specific fields in its response.
+
+## FunctionTool Interface
+
+All tools implement the `FunctionTool<TContext, TInput, TOutput>` interface:
+
+```java
+public interface FunctionTool<TContext, TInput, TOutput> {
+    // Required: Tool identification
+    String getName();
+    String getDescription();
+    Object getParameters();  // Usually returns Input.class
+
+    // Required: Tool execution
+    CompletableFuture<TOutput> invoke(RunContext<TContext> context, TInput input);
+
+    // Optional: Control flow
+    boolean needsApproval(RunContext<TContext> context, TInput input);
+    boolean isEnabled(RunContext<TContext> context);
+
+    // Optional: Configuration
+    String getType();  // Default: "function"
+    boolean isStrict();  // Default: false
+}
+```
+
+### Type Parameters
+
+| Parameter | Description | Example |
+|-----------|-------------|---------|
+| `TContext` | Custom context type for approval/tracking | `Object`, `MyContext` |
+| `TInput` | Tool input parameter type | `CalculatorTool.Input` |
+| `TOutput` | Tool return value type | `CalculatorTool.Output` |
+
+## JSON Schema Generation
+
+The SDK automatically generates JSON schemas from your input classes using Jackson annotations:
+
+```java
+@Data
+@JsonClassDescription("Input parameters for arithmetic operations")
+public static class Input {
+    @JsonPropertyDescription("The arithmetic operation to perform")
+    private String operation;
+
+    @JsonPropertyDescription("The first number")
+    private double a;
+
+    @JsonPropertyDescription("The second number")
+    private double b;
+}
+```
+
+Generated schema:
+
+```json
+{
+  "type": "object",
+  "description": "Input parameters for arithmetic operations",
+  "properties": {
+    "operation": {
+      "type": "string",
+      "description": "The arithmetic operation to perform"
+    },
+    "a": {
+      "type": "number",
+      "description": "The first number"
+    },
+    "b": {
+      "type": "number",
+      "description": "The second number"
+    }
+  },
+  "required": ["operation", "a", "b"]
+}
+```
+
+The model uses this schema to generate valid tool calls.
+
+## Tool Approval System
+
+Control tool execution with the `needsApproval()` method:
+
+```java
+@Override
+public boolean needsApproval(RunContext<Object> context, Input input) {
+    // Require approval for delete operations
+    return input.getOperation().equals("delete");
+}
+```
+
+When a tool needs approval:
+
+1. Execution pauses before invoking the tool
+2. Your context can implement approval logic
+3. The tool runs only if approved
+
+See the [Run Context guide](run-context.md) for implementing approval workflows.
+
+### Example: Approval for Sensitive Operations
+
+```java
+public class FileOperationsTool implements FunctionTool<MyContext, Input, Output> {
+    @Override
+    public boolean needsApproval(RunContext<MyContext> context, Input input) {
+        // Require approval for writes and deletes
+        return input.getOperation().equals("write") || input.getOperation().equals("delete");
+    }
+
+    @Override
+    public CompletableFuture<Output> invoke(RunContext<MyContext> context, Input input) {
+        // Tool only runs if approved by context
+        return CompletableFuture.supplyAsync(() -> {
+            // Perform file operation
+            return new Output(/* ... */);
+        });
+    }
+}
+```
+
+## Conditional Tool Enabling
+
+Control tool availability with `isEnabled()`:
+
+```java
+@Override
+public boolean isEnabled(RunContext<MyContext> context) {
+    // Only enable if user has premium access
+    return context.getContextData().hasPremiumAccess();
+}
+```
+
+Disabled tools are not presented to the model as available functions.
+
+### Example: Feature Flags
+
+```java
+public class AdvancedSearchTool implements FunctionTool<MyContext, Input, Output> {
+    @Override
+    public boolean isEnabled(RunContext<MyContext> context) {
+        // Check feature flag
+        return context.getContextData().isFeatureEnabled("advanced_search");
+    }
+}
+```
+
+## Multiple Tools
+
+Agents can use multiple tools simultaneously:
+
+```java
+Agent<UnknownContext, TextOutput> agent =
+    Agent.<UnknownContext, TextOutput>builder()
+        .name("GeneralAssistant")
+        .instructions("Use available tools to answer questions accurately.")
+        .tools(List.of(
+            new CalculatorTool(),
+            new WeatherTool(),
+            new SearchTool()
+        ))
+        .build();
+
+RunResult<UnknownContext, ?> result = Runner.run(
+    agent,
+    "What's the weather in NYC? Also, what's 65°F in Celsius? Use (F - 32) * 5/9"
+);
+
+// Agent will call WeatherTool, then CalculatorTool to answer both questions
+```
+
+The agent selects the appropriate tool(s) based on the task and available functions.
+
+## Error Handling in Tools
+
+Handle errors gracefully within tool implementations:
+
+```java
+@Override
+public CompletableFuture<Output> invoke(RunContext<Object> context, Input input) {
+    return CompletableFuture.supplyAsync(() -> {
+        try {
+            // Validate input
+            if (input.getB() == 0 && input.getOperation().equals("divide")) {
+                throw new IllegalArgumentException("Cannot divide by zero");
+            }
+
+            // Perform operation
+            double result = performCalculation(input);
+            return new Output(result, "success", null);
+
+        } catch (IllegalArgumentException e) {
+            // Return error in output
+            return new Output(0, "error", e.getMessage());
+        }
+    });
+}
+```
+
+!!! warning "Exception Handling"
+    Uncaught exceptions in tools will fail the entire agent execution. Always handle errors within the tool and return meaningful error messages in the output.
 
 ## Best Practices
 
-- Keep tools focused on a single task
-- Provide clear descriptions so the agent knows when to use them
-- Validate inputs
-- Handle errors gracefully
+!!! tip "Tool Design"
+    - **Single Responsibility**: Each tool should do one thing well
+    - **Clear Naming**: Use descriptive names like `get_weather`, not `tool1`
+    - **Rich Descriptions**: Help the agent understand when to use the tool
+    - **Validate Inputs**: Check parameters before performing operations
+    - **Meaningful Errors**: Return clear error messages in the output
+
+!!! tip "Type Safety"
+    - Use Lombok `@Data` to eliminate boilerplate
+    - Add Jackson `@JsonPropertyDescription` for all fields
+    - Use primitive types for required parameters
+    - Use wrapper types or defaults for optional parameters
+    - Leverage Java's type system for compile-time safety
+
+!!! tip "Performance"
+    - Return `CompletableFuture` for async operations
+    - Use connection pools for database/API tools
+    - Cache frequently accessed data
+    - Set reasonable timeouts for external calls
+    - Log tool execution for monitoring
+
+!!! tip "Security"
+    - Use `needsApproval()` for dangerous operations
+    - Validate and sanitize all inputs
+    - Use `isEnabled()` for access control
+    - Never expose sensitive data in error messages
+    - Log security-relevant tool calls
+
+## Common Tool Patterns
+
+### External API Tool
+
+```java
+public class WeatherTool implements FunctionTool<Object, Input, Output> {
+    private final HttpClient httpClient = HttpClient.newHttpClient();
+
+    @Override
+    public CompletableFuture<Output> invoke(RunContext<Object> context, Input input) {
+        return httpClient
+            .sendAsync(buildRequest(input), HttpResponse.BodyHandlers.ofString())
+            .thenApply(this::parseResponse);
+    }
+}
+```
+
+### Database Query Tool
+
+```java
+public class DatabaseTool implements FunctionTool<Object, Input, Output> {
+    private final DataSource dataSource;
+
+    @Override
+    public CompletableFuture<Output> invoke(RunContext<Object> context, Input input) {
+        return CompletableFuture.supplyAsync(() -> {
+            try (Connection conn = dataSource.getConnection()) {
+                return executeQuery(conn, input);
+            }
+        });
+    }
+}
+```
+
+### File System Tool
+
+```java
+public class FileReadTool implements FunctionTool<MyContext, Input, Output> {
+    @Override
+    public boolean needsApproval(RunContext<MyContext> context, Input input) {
+        // Require approval for files outside allowed directories
+        return !isAllowedPath(input.getPath());
+    }
+
+    @Override
+    public CompletableFuture<Output> invoke(RunContext<MyContext> context, Input input) {
+        return CompletableFuture.supplyAsync(() -> {
+            String content = Files.readString(Path.of(input.getPath()));
+            return new Output(content);
+        });
+    }
+}
+```
 
 ## Next Steps
 
-- [Multi-agent workflows](handoffs.md)
-- [Guardrails](guardrails.md)
+- [Run Context](run-context.md) - Implement tool approval workflows
+- [Handoffs](handoffs.md) - Multi-agent systems with specialized tools
+- [Guardrails](guardrails.md) - Add safety constraints to tool usage
+- [Sessions](sessions.md) - Maintain conversation context across tool calls
 
-!!! note "Work in Progress"
-    This guide is under development. See [WellTypedToolsExample.java](https://github.com/bnbarak/openai-agent-sdk/blob/main/src/main/java/com/acoliteai/agentsdk/examples/WellTypedToolsExample.java) for a complete working example.
+## Additional Resources
+
+- [WellTypedToolsExample.java](https://github.com/bnbarak/openai-agent-sdk/blob/main/src/main/java/com/acoliteai/agentsdk/examples/WellTypedToolsExample.java) - Multiple tool examples
+- [CalculatorTool.java](https://github.com/bnbarak/openai-agent-sdk/blob/main/src/main/java/com/acoliteai/agentsdk/examples/tools/CalculatorTool.java) - Simple tool
+- [WeatherTool.java](https://github.com/bnbarak/openai-agent-sdk/blob/main/src/main/java/com/acoliteai/agentsdk/examples/tools/WeatherTool.java) - Complex nested types
+- [API Reference](../javadoc/index.html) - Complete Javadoc documentation

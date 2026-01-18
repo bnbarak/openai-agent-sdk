@@ -18,6 +18,7 @@ import com.acoliteai.agentsdk.core.types.UnknownContext;
  */
 public class StructuredOutput {
 
+  // region define-schema
   /** Data class for weather information. The agent will return an instance of this class. */
   public static class WeatherReport {
     public String location;
@@ -25,6 +26,8 @@ public class StructuredOutput {
     public String conditions;
     public String recommendation;
   }
+
+  // endregion define-schema
 
   public static void main(String[] args) {
     String apiKey = System.getenv("OPENAI_API_KEY");
@@ -37,6 +40,7 @@ public class StructuredOutput {
 
     System.out.println("=== Structured Output Example ===\n");
 
+    // region create-agent
     // Define the output type using JSON Schema
     JsonSchemaOutput<WeatherReport> outputType = JsonSchemaOutput.of(WeatherReport.class);
 
@@ -48,11 +52,14 @@ public class StructuredOutput {
                 "You are a weather assistant. Generate realistic weather data and recommendations.")
             .outputType(outputType)
             .build();
+    // endregion create-agent
 
+    // region run-agent
     // Run the agent
     RunResult<UnknownContext, ?> result =
         Runner.run(
             agent, "What's the weather like in San Francisco today? Include a recommendation.");
+    // endregion run-agent
 
     // The result is automatically deserialized to our WeatherReport class
     if (result.getFinalOutput() instanceof WeatherReport weather) {

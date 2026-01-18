@@ -38,25 +38,31 @@ public class MultiTurnExecution {
     System.out.println("Example 1: Simple Multi-Turn Execution");
     System.out.println("--------------------------------------");
 
+    // region create-agent
     // Create an agent that thinks step by step
     Agent<UnknownContext, TextOutput> agent =
         Agent.<UnknownContext, TextOutput>builder()
             .name("ThinkingAssistant")
             .instructions("Think step by step to provide thorough, well-reasoned answers.")
             .build();
+    // endregion create-agent
 
+    // region configure-run
     // Configure execution with max turns
     RunConfig config =
         RunConfig.builder()
             .maxTurns(5) // Allow up to 5 turns
             .build();
+    // endregion configure-run
 
+    // region execute-run
     // Run with a complex question
     RunResult<UnknownContext, ?> result =
         Runner.run(
             agent,
             "What are the key differences between object-oriented and functional programming?",
             config);
+    // endregion execute-run
 
     // Display results
     System.out.println("Question:");
@@ -65,6 +71,7 @@ public class MultiTurnExecution {
     System.out.println("Agent response:");
     System.out.println(result.getFinalOutput());
     System.out.println();
+    // region track-usage
     System.out.println("Execution summary:");
     System.out.println(
         "  Turns taken: "
@@ -72,6 +79,7 @@ public class MultiTurnExecution {
             + " / "
             + config.getEffectiveMaxTurns());
     System.out.println("  Total tokens: " + result.getUsage().getTotalTokens());
+    // endregion track-usage
   }
 
   /** Example 2: Detailed tracking of multi-turn execution */
