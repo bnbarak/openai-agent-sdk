@@ -59,9 +59,6 @@ docs/
 │   ├── tracing.md         # Distributed tracing and observability
 │   └── troubleshooting.md # Common issues and solutions
 ├── examples/              # Real-world examples (outcome-oriented)
-│   ├── customer-service.md
-│   ├── math-tutor.md
-│   └── research-bot.md
 └── api-reference/         # Javadoc-generated API docs
     └── (auto-generated)
 ```

@@ -34,14 +34,6 @@ Learn how to use specific features:
 - [Sessions](guides/sessions.md) - Memory and conversation history
 - [Tracing](guides/tracing.md) - Observability and debugging
 
-## Examples
-
-See complete working examples:
-
-- [Customer Service Bot](examples/customer-service.md)
-- [Math Tutor](examples/math-tutor.md)
-- [Research Bot](examples/research-bot.md)
-
 ## Requirements
 
 - Java 21 or higher
@@ -63,5 +55,5 @@ Add to your `pom.xml`:
 ## Support
 
 - [GitHub Issues](https://github.com/bnbarak/openai-agent-sdk/issues)
-- [API Reference](api/)
+- [API Reference](api/index.md)
 - Email: support@acolite.ai
