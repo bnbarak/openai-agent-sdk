@@ -47,6 +47,7 @@ public class WellTypedToolsExample {
     System.out.println("Example 1: Calculator Tool (Simple Types)");
     System.out.println("-".repeat(60));
 
+    // region create-agent
     // Create agent with calculator tool
     Agent<UnknownContext, TextOutput> agent =
         Agent.<UnknownContext, TextOutput>builder()
@@ -55,13 +56,16 @@ public class WellTypedToolsExample {
                 "You are a math assistant. Use the calculator tool to perform calculations. Always show the calculation you performed.")
             .tools(List.of(new CalculatorTool()))
             .build();
+    // endregion create-agent
 
+    // region run-with-tools
     // Ask a math question - tool will be called automatically
     String question = "What is 123 multiplied by 456? Please use the calculator.";
     System.out.println("Question: " + question);
     System.out.println();
 
     RunResult<UnknownContext, ?> result = Runner.run(agent, question);
+    // endregion run-with-tools
 
     System.out.println("Agent response:");
     System.out.println(result.getFinalOutput());

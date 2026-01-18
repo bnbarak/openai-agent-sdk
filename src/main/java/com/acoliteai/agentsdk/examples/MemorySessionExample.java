@@ -38,6 +38,7 @@ public class MemorySessionExample {
 
     System.out.println("=== Memory Session Example ===\n");
 
+    // region create-agent
     // Create a simple agent
     Agent<UnknownContext, TextOutput> agent =
         Agent.<UnknownContext, TextOutput>builder()
@@ -46,7 +47,9 @@ public class MemorySessionExample {
                 "You are a helpful assistant with a good memory. "
                     + "Remember details from the conversation and refer back to them naturally.")
             .build();
+    // endregion create-agent
 
+    // region create-session
     // Create an in-memory session
     Session session = new MemorySession("conversation-123");
     System.out.println("Created in-memory session: conversation-123");
@@ -54,7 +57,9 @@ public class MemorySessionExample {
 
     // Create RunConfig with the session
     RunConfig config = RunConfig.builder().session(session).build();
+    // endregion create-session
 
+    // region run-with-memory
     // Turn 1: Introduce yourself
     System.out.println("Turn 1: User introduces themselves");
     System.out.println("User: My name is Alice and I love hiking.");
@@ -76,6 +81,7 @@ public class MemorySessionExample {
     System.out.println("User: What's my name?");
     RunResult<UnknownContext, ?> result3 = Runner.run(agent, "What's my name?", config);
     System.out.println("Agent: " + result3.getFinalOutput());
+    // endregion run-with-memory
     System.out.println();
 
     // Turn 4: Test if agent remembers hobby

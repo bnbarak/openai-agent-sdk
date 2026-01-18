@@ -59,6 +59,7 @@ public class SQLiteSessionExample {
     System.out.println("Session ID: " + sessionId);
     System.out.println();
 
+    // region create-agent
     // Create agent
     Agent<UnknownContext, TextOutput> agent =
         Agent.<UnknownContext, TextOutput>builder()
@@ -68,7 +69,9 @@ public class SQLiteSessionExample {
                     + "Remember all details from previous conversations and refer back to them. "
                     + "If this is a continuation, acknowledge what you remember.")
             .build();
+    // endregion create-agent
 
+    // region create-session
     // Create or open SQLite session
     try (SQLiteSession session = SQLiteSession.fromFile(sessionId, dbPath)) {
 
@@ -82,7 +85,9 @@ public class SQLiteSessionExample {
 
       // Create RunConfig with the session
       RunConfig config = RunConfig.builder().session(session).build();
+      // endregion create-session
 
+      // region run-persistent
       if (isNewConversation) {
         // First conversation
         runFirstConversation(agent, config);
@@ -90,6 +95,7 @@ public class SQLiteSessionExample {
         // Continuation - test memory
         runContinuation(agent, config);
       }
+      // endregion run-persistent
 
       // Display session statistics
       System.out.println("\nSession Statistics:");

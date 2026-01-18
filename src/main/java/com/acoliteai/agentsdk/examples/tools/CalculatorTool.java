@@ -18,6 +18,7 @@ import lombok.Data;
 public class CalculatorTool
     implements FunctionTool<Object, CalculatorTool.Input, CalculatorTool.Output> {
 
+  // region define-input
   /**
    * Input parameters for the calculator tool. Uses Jackson annotations for JSON schema generation
    * and Lombok for boilerplate.
@@ -36,7 +37,9 @@ public class CalculatorTool
     @JsonPropertyDescription("The second number")
     private double b;
   }
+  // endregion define-input
 
+  // region define-output
   /** Output from the calculator tool. Fully typed return value. */
   @Data
   @AllArgsConstructor
@@ -45,6 +48,7 @@ public class CalculatorTool
     private String operation;
     private String expression;
   }
+  // endregion define-output
 
   @Override
   public String getType() {
@@ -72,6 +76,7 @@ public class CalculatorTool
     return true;
   }
 
+  // region implement-invoke
   @Override
   public CompletableFuture<Output> invoke(RunContext<Object> context, Input input) {
     return CompletableFuture.supplyAsync(
@@ -98,6 +103,7 @@ public class CalculatorTool
           return new Output(result, input.getOperation(), expression);
         });
   }
+  // endregion implement-invoke
 
   @Override
   public boolean needsApproval(RunContext<Object> context, Input input) {
