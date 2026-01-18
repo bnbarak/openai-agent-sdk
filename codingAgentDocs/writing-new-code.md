@@ -78,12 +78,12 @@ Provide usage examples:
 Before committing, format code with Spotless:
 
 ```bash
-./gradlew spotlessApply
+mvn spotless:apply
 ```
 
 Fix any issues:
 ```bash
-./gradlew spotlessCheck
+mvn spotless:check
 ```
 
 ### 8. Run Tests
@@ -91,7 +91,7 @@ Fix any issues:
 Verify all tests pass:
 
 ```bash
-./gradlew test
+mvn test
 ```
 
 Fix any failures before proceeding.
@@ -160,8 +160,8 @@ git checkout -b feature/new-feature
 # Write code + tests
 
 # Format and test
-./gradlew spotlessApply
-./gradlew test
+mvn spotless:apply
+mvn test
 
 # Commit and PR
 git add <files>

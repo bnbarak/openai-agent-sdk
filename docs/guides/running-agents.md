@@ -36,7 +36,7 @@ The `RunResult` object contains:
 
 ## Next Steps
 
-- [Understanding results](../api/)
+- [Understanding results](../api/index.md)
 - [Streaming responses](streaming.md)
 - [Adding tools](tools.md)
 

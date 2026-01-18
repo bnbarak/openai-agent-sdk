@@ -56,11 +56,7 @@ nav:
     - Streaming: guides/streaming.md
     - Tracing: guides/tracing.md
     - Troubleshooting: guides/troubleshooting.md
-  - Examples:
-    - Customer Service: examples/customer-service.md
-    - Math Tutor: examples/math-tutor.md
-    - Research Bot: examples/research-bot.md
-  - API Reference: api/
+  - API Reference: api/index.md
 
 extra:
   social:

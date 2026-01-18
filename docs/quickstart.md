@@ -85,4 +85,4 @@ java -version  # Should show 21 or higher
 
 - [Troubleshooting Guide](guides/troubleshooting.md)
 - [GitHub Issues](https://github.com/bnbarak/openai-agent-sdk/issues)
-- [API Reference](api/)
+- [API Reference](api/index.md)
