@@ -1,77 +1,64 @@
 # Run Context
 
-Learn how to use custom context for tool approval, usage tracking, and application data.
+RunContext lets you carry application data through a run, control tool approvals, and track usage.
+It is the shared state object that tools, guardrails, and the runner can read and update.
 
-## Overview
+## What RunContext Does
 
-`RunContext<TContext>` provides a way to pass custom data through agent execution and control tool behavior. Use it for:
+- **Application data**: user, session, org, feature flags, service clients, etc.
+- **Tool approvals**: allow or block tool calls per-call or permanently.
+- **Usage tracking**: accumulate token usage across turns and across runs.
 
-- **Tool Approval**: Control which tools execute during a run
-- **Usage Tracking**: Accumulate token costs across API calls
-- **Application Data**: Pass user info, session data, or configuration to tools
+If you do not supply a RunContext, the runner creates one with `UnknownContext`.
 
-Every tool invocation receives a `RunContext` instance, giving tools access to your custom data and approval logic.
+## Create and Pass a RunContext
 
-## Creating a Run Context
-
-### Simple Context
-
-Use `UnknownContext` for basic scenarios:
+### Default (UnknownContext)
 
 ```java
 RunContext<UnknownContext> context = new RunContext<>();
 
-RunResult<UnknownContext, ?> result = Runner.run(agent, "Your prompt", context);
+RunConfig config =
+    RunConfig.builder().context(java.util.Optional.of(context)).build();
+
+RunResult<UnknownContext, ?> result = Runner.run(agent, "Your prompt", config);
 ```
 
-### Custom Context
-
-Define your own context class for application data:
+### Custom Context Data
 
 ```java
 public class AppContext {
-    private String userId;
-    private String sessionId;
-    private boolean isPremiumUser;
-    private Set<String> allowedActions = new HashSet<>();
-
-    public AppContext(String userId, String sessionId) {
-        this.userId = userId;
-        this.sessionId = sessionId;
-    }
-
-    // Getters and setters...
+  String userId;
+  String sessionId;
+  boolean premiumUser;
 }
 
-// Create and use custom context
-AppContext appContext = new AppContext("user_123", "session_456");
-appContext.setPremiumUser(true);
+AppContext appContext = new AppContext();
+appContext.userId = "user_123";
+appContext.sessionId = "session_456";
+appContext.premiumUser = true;
 
 RunContext<AppContext> context = new RunContext<>(appContext);
+RunConfig config =
+    RunConfig.builder().context(java.util.Optional.of(context)).build();
 
-Agent<AppContext, TextOutput> agent = /* ... */;
-RunResult<AppContext, ?> result = Runner.run(agent, "Your prompt", context);
+RunResult<AppContext, ?> result = Runner.run(agent, "Your prompt", config);
 ```
 
-Tools can then access your custom data:
+### Access Context in Tools
+
+Every tool receives the RunContext:
 
 ```java
 public class DatabaseTool implements FunctionTool<AppContext, Input, Output> {
-    @Override
-    public CompletableFuture<Output> invoke(RunContext<AppContext> context, Input input) {
-        String userId = context.getContext().userId;
-        boolean isPremium = context.getContext().isPremiumUser();
-
-        // Use application data in tool logic
-        if (!isPremium) {
-            return CompletableFuture.completedFuture(
-                new Output("Upgrade to premium for database access")
-            );
-        }
-
-        // Execute tool with user context
-        return performDatabaseQuery(userId, input);
+  @Override
+  public CompletableFuture<Output> invoke(RunContext<AppContext> context, Input input) {
+    AppContext appContext = context.getContext();
+    if (!appContext.premiumUser) {
+      return CompletableFuture.completedFuture(new Output("Upgrade required."));
     }
+    return performDatabaseQuery(appContext.userId, input);
+  }
 }
 ```
 
@@ -79,377 +66,135 @@ public class DatabaseTool implements FunctionTool<AppContext, Input, Output> {
 
 ## Tool Approval System
 
-Control which tools execute using approval patterns:
+Approval is tri-state:
+
+- `true` = approved
+- `false` = rejected
+- `null` = pending decision
 
 ### Per-Call Approval
 
-Approve individual tool calls one at a time:
-
 ```java
 RunContext<UnknownContext> context = new RunContext<>();
 
-// Approve a specific tool call
-RunToolApprovalItem approval = RunToolApprovalItem.builder()
-    .toolName("send_email")
-    .toolCallId("call_123")  // Specific call ID
-    .build();
+RunToolApprovalItem approval =
+    RunToolApprovalItem.builder()
+        .toolName("send_email")
+        .toolCallId("call_123")
+        .build();
 
 context.approveTool(approval);
 
-// Check if approved
-boolean isApproved = context.isToolApproved("send_email", "call_123");  // true
-boolean otherCall = context.isToolApproved("send_email", "call_456");   // false
+Boolean approved = context.isToolApproved("send_email", "call_123"); // true
+Boolean other = context.isToolApproved("send_email", "call_456");    // null
 ```
-
-**Use when**: You want to approve each tool invocation explicitly.
 
 ### Permanent Approval
 
-Approve all future calls to a tool:
-
 ```java
-RunContext<UnknownContext> context = new RunContext<>();
+RunToolApprovalItem approval =
+    RunToolApprovalItem.builder()
+        .toolName("send_email")
+        .toolCallId("call_123")
+        .build();
 
-// Approve all calls to this tool
-RunToolApprovalItem approval = RunToolApprovalItem.builder()
-    .toolName("send_email")
-    .toolCallId(null)  // null = all future calls
-    .build();
+context.approveTool(approval, true);
 
-context.approveTool(approval);
-
-// All calls are now approved
-boolean call1 = context.isToolApproved("send_email", "call_123");  // true
-boolean call2 = context.isToolApproved("send_email", "call_456");  // true
-boolean call3 = context.isToolApproved("send_email", "call_789");  // true
+context.isToolApproved("send_email", "call_123"); // true
+context.isToolApproved("send_email", "call_456"); // true
 ```
 
-**Use when**: You trust a tool and want to approve it once for the entire run.
-
-### Tool Rejection
-
-Explicitly reject tool calls:
+### Rejection (Per-Call or Permanent)
 
 ```java
-RunContext<UnknownContext> context = new RunContext<>();
+RunToolApprovalItem rejection =
+    RunToolApprovalItem.builder()
+        .toolName("delete_data")
+        .toolCallId("call_999")
+        .build();
 
-// Reject a specific tool call
-RunToolApprovalItem rejection = RunToolApprovalItem.builder()
-    .toolName("delete_data")
-    .toolCallId("call_123")
-    .build();
-
-context.rejectTool(rejection);
-
-// Check if rejected
-boolean isRejected = context.isToolRejected("delete_data", "call_123");  // true
+context.rejectTool(rejection, true);
+context.isToolApproved("delete_data", "call_999"); // false
 ```
 
-**Use when**: You want to explicitly deny dangerous or inappropriate tool calls.
+### Enforcing Approval in Tools
 
-### Implementing Approval in Tools
-
-Tools check approval status in `needsApproval()`:
+Tools declare approval needs with `needsApproval()`:
 
 ```java
 public class SensitiveTool implements FunctionTool<AppContext, Input, Output> {
-    @Override
-    public boolean needsApproval(RunContext<AppContext> context, Input input) {
-        // Require approval for sensitive operations
-        return input.getOperation().equals("delete") ||
-               input.getOperation().equals("modify");
-    }
-
-    @Override
-    public CompletableFuture<Output> invoke(RunContext<AppContext> context, Input input) {
-        // This only runs if approved (or if needsApproval returned false)
-        return CompletableFuture.supplyAsync(() -> {
-            return performOperation(input);
-        });
-    }
+  @Override
+  public boolean needsApproval(RunContext<AppContext> context, Input input) {
+    return input.getOperation().equals("delete");
+  }
 }
 ```
 
-When `needsApproval()` returns `true`, the SDK checks `context.isToolApproved()` before invoking the tool.
+When `needsApproval()` returns `true`, the runner checks
+`context.isToolApproved(toolName, toolCallId)` before executing the tool.
 
 ## Usage Tracking
 
-Accumulate token usage across multiple API calls:
+When you pass a RunContext via RunConfig, the runner accumulates usage automatically.
+If you want to aggregate usage yourself (outside the runner), use `addUsage()`:
 
 ```java
 RunContext<UnknownContext> context = new RunContext<>();
 
-// First API call
-RunResult<UnknownContext, ?> result1 = Runner.run(agent, "Question 1", context);
-context.addUsage(result1.getUsage());  // Add usage from first call
+context.addUsage(Usage.builder().inputTokens(100.0).outputTokens(50.0).totalTokens(150.0).build());
+context.addUsage(Usage.builder().inputTokens(200.0).outputTokens(75.0).totalTokens(275.0).build());
 
-// Second API call
-RunResult<UnknownContext, ?> result2 = Runner.run(agent, "Question 2", context);
-context.addUsage(result2.getUsage());  // Add usage from second call
-
-// Third API call
-RunResult<UnknownContext, ?> result3 = Runner.run(agent, "Question 3", context);
-context.addUsage(result3.getUsage());  // Add usage from third call
-
-// Get total accumulated usage
-Usage totalUsage = context.getUsage();
-System.out.println("Total tokens: " + totalUsage.getTotalTokens());
-System.out.println("Input tokens: " + totalUsage.getInputTokens());
-System.out.println("Output tokens: " + totalUsage.getOutputTokens());
+Usage total = context.getUsage();
+System.out.println("Total tokens: " + total.getTotalTokens());
 ```
 
-Track costs across:
+## Serialization and Restore
 
-- Multi-turn conversations
-- Tool-heavy workflows
-- Multi-agent handoffs
-- Session-based interactions
-
-## Real-World Example: E-Commerce Agent
-
-Combine context data, approvals, and usage tracking:
+RunContext can serialize to a map for storage or debugging:
 
 ```java
-public class ECommerceContext {
-    private String userId;
-    private String cartId;
-    private double creditLimit;
-    private Set<String> preApprovedActions = new HashSet<>();
+RunContext<AppContext> context = new RunContext<>(appContext);
+context.addUsage(Usage.builder().totalTokens(500.0).build());
 
-    public boolean canAfford(double amount) {
-        return amount <= creditLimit;
-    }
+Map<String, Object> json = context.toJSON();
+```
 
-    public void recordPurchase(double amount) {
-        creditLimit -= amount;
-    }
-}
+To restore approvals from stored state, use `rebuildApprovals()`:
 
-// Create context with user data
-ECommerceContext appContext = new ECommerceContext("user_123", "cart_456", 500.0);
-appContext.getPreApprovedActions().add("view_products");
-appContext.getPreApprovedActions().add("add_to_cart");
+```java
+RunContext<AppContext> restored = new RunContext<>(appContext);
+restored.rebuildApprovals(savedApprovals);
+```
 
-RunContext<ECommerceContext> context = new RunContext<>(appContext);
+## Combine Context with Sessions
 
-// Pre-approve safe operations
-context.approveTool(RunToolApprovalItem.builder()
-    .toolName("view_products")
-    .toolCallId(null)  // Approve all calls
-    .build());
+Context and sessions solve different problems: context is app data and approvals, session is
+conversation memory. Use both via RunConfig:
 
-// Define tools that use context
-public class CheckoutTool implements FunctionTool<ECommerceContext, Input, Output> {
-    @Override
-    public boolean needsApproval(RunContext<ECommerceContext> context, Input input) {
-        // Require approval for purchases over $100
-        return input.getTotalAmount() > 100.0;
-    }
+```java
+RunContext<AppContext> context = new RunContext<>(appContext);
+Session session = new MemorySession("conversation_123");
 
-    @Override
-    public boolean isEnabled(RunContext<ECommerceContext> context) {
-        // Only enable if user can afford the purchase
-        return context.getContext().canAfford(input.getTotalAmount());
-    }
-
-    @Override
-    public CompletableFuture<Output> invoke(RunContext<ECommerceContext> context, Input input) {
-        return CompletableFuture.supplyAsync(() -> {
-            ECommerceContext appContext = context.getContext();
-
-            // Check credit limit
-            if (!appContext.canAfford(input.getTotalAmount())) {
-                return new Output("Insufficient credit limit");
-            }
-
-            // Process purchase
-            appContext.recordPurchase(input.getTotalAmount());
-
-            return new Output("Purchase successful. New limit: $" + appContext.getCreditLimit());
-        });
-    }
-}
-
-// Create agent with e-commerce tools
-Agent<ECommerceContext, TextOutput> agent =
-    Agent.<ECommerceContext, TextOutput>builder()
-        .name("ShoppingAssistant")
-        .instructions("You are a shopping assistant. Help users browse and purchase products.")
-        .tools(List.of(
-            new ViewProductsTool(),
-            new AddToCartTool(),
-            new CheckoutTool()
-        ))
+RunConfig config =
+    RunConfig.builder()
+        .context(java.util.Optional.of(context))
+        .session(session)
         .build();
 
-// Run agent
-RunResult<ECommerceContext, ?> result = Runner.run(
-    agent,
-    "I want to buy the laptop for $1200",
-    context
-);
-
-// Check final state
-System.out.println("Response: " + result.getFinalOutput());
-System.out.println("Remaining credit: $" + context.getContext().getCreditLimit());
-System.out.println("Total tokens: " + context.getUsage().getTotalTokens());
+RunResult<AppContext, ?> result = Runner.run(agent, "My name is Alice", config);
 ```
 
-[View complete example →](https://github.com/bnbarak/openai-agent-sdk/blob/main/src/main/java/com/acoliteai/agentsdk/examples/RealWorldRunContextExample.java)
+## Real-World Example
 
-## Context Serialization
-
-Contexts can be serialized for persistence or distribution:
-
-```java
-RunContext<AppContext> context = new RunContext<>(appContext);
-
-// Serialize to JSON
-String json = context.toJson();
-
-// Deserialize from JSON
-RunContext<AppContext> restored = RunContext.fromJson(json, AppContext.class);
-```
-
-Use serialization for:
-
-- Saving context between requests
-- Distributing context across services
-- Debugging and logging
-- Audit trails
-
-## Context with Sessions
-
-Combine context with sessions for stateful conversations:
-
-```java
-AppContext appContext = new AppContext("user_123", "session_456");
-RunContext<AppContext> context = new RunContext<>(appContext);
-
-Session session = new MemorySession("conversation_123");
-RunConfig config = RunConfig.builder()
-    .session(session)
-    .build();
-
-Agent<AppContext, TextOutput> agent = /* ... */;
-
-// First turn
-RunResult<AppContext, ?> result1 = Runner.run(
-    agent,
-    "My name is Alice",
-    context,
-    config
-);
-
-// Second turn - agent remembers Alice, context maintains approvals
-RunResult<AppContext, ?> result2 = Runner.run(
-    agent,
-    "What's my name?",
-    context,
-    config
-);
-```
-
-Context handles approvals and data; session handles conversation memory.
+[RealWorldRunContextExample.java →](https://github.com/bnbarak/openai-agent-sdk/blob/main/src/main/java/com/acoliteai/agentsdk/examples/RealWorldRunContextExample.java)
 
 ## Best Practices
 
-!!! tip "Context Design"
-    - **Keep Context Small**: Store only essential data
-    - **Immutable Data**: Prefer immutable context fields when possible
-    - **Clear Ownership**: Document which layer manages which context fields
-    - **Type Safety**: Use custom context classes for type-safe data access
-    - **Serializable**: Ensure context classes can be serialized if needed
-
-!!! tip "Approval Strategy"
-    - **Per-Call for Sensitive**: Use per-call approval for dangerous operations
-    - **Permanent for Safe**: Permanently approve read-only tools
-    - **Context-Based Logic**: Implement approval rules in `needsApproval()`
-    - **User Prompting**: Prompt users before approving sensitive tools
-    - **Audit Trail**: Log all approvals and rejections
-
-!!! tip "Usage Tracking"
-    - **Accumulate Properly**: Always call `context.addUsage()` after each run
-    - **Monitor Costs**: Check accumulated usage before expensive operations
-    - **Budget Limits**: Implement cost limits in context
-    - **Per-User Tracking**: Track usage per user for billing
-    - **Debug Aid**: Use usage data to optimize prompts and tools
-
-!!! warning "Common Mistakes"
-    - **Forgetting to Add Usage**: Not calling `context.addUsage()` after runs
-    - **Approval Leaks**: Approving tools too broadly (security risk)
-    - **Context Bloat**: Storing unnecessary data in context
-    - **Missing Checks**: Not checking `isToolApproved()` in tools
-    - **Shared Context**: Reusing context across unrelated operations
-
-## Advanced Patterns
-
-### Dynamic Approval Based on Input
-
-```java
-@Override
-public boolean needsApproval(RunContext<AppContext> context, Input input) {
-    // Approve automatically for small amounts
-    if (input.getAmount() < 10.0) {
-        return false;
-    }
-
-    // Require approval for large amounts
-    if (input.getAmount() > 1000.0) {
-        return true;
-    }
-
-    // Check context for mid-range amounts
-    return !context.getContext().isPreApproved(input.getOperation());
-}
-```
-
-### Cumulative Approval
-
-```java
-public class BudgetContext {
-    private double budget;
-    private double spent = 0.0;
-
-    public boolean canSpend(double amount) {
-        return (spent + amount) <= budget;
-    }
-
-    public void recordSpending(double amount) {
-        spent += amount;
-    }
-}
-
-@Override
-public boolean needsApproval(RunContext<BudgetContext> context, Input input) {
-    // Check if within budget
-    return !context.getContext().canSpend(input.getAmount());
-}
-```
-
-### Approval Chains
-
-```java
-@Override
-public boolean needsApproval(RunContext<AppContext> context, Input input) {
-    AppContext appContext = context.getContext();
-
-    // Multiple approval conditions
-    if (appContext.getUserRole().equals("admin")) {
-        return false;  // Admins don't need approval
-    }
-
-    if (appContext.hasPermission(input.getOperation())) {
-        return false;  // User has explicit permission
-    }
-
-    if (input.getAmount() < appContext.getApprovalThreshold()) {
-        return false;  // Below threshold
-    }
-
-    return true;  // Require approval
-}
-```
+- Keep context small and focused on app data and approvals.
+- Prefer immutable data where possible, or document ownership clearly.
+- Use per-call approval for sensitive tools; permanent approval for safe tools.
+- Avoid double-counting usage if the runner already tracks it.
+- Make context serializable if you need persistence across requests.
 
 ## Next Steps
 
@@ -457,9 +202,3 @@ public boolean needsApproval(RunContext<AppContext> context, Input input) {
 - [Handoffs](handoffs.md) - Pass context across agent handoffs
 - [Sessions](sessions.md) - Combine context with conversation memory
 - [Guardrails](guardrails.md) - Add safety constraints using context
-
-## Additional Resources
-
-- [RunContextExample.java](https://github.com/bnbarak/openai-agent-sdk/blob/main/src/main/java/com/acoliteai/agentsdk/examples/RunContextExample.java) - Basic context patterns
-- [RealWorldRunContextExample.java](https://github.com/bnbarak/openai-agent-sdk/blob/main/src/main/java/com/acoliteai/agentsdk/examples/RealWorldRunContextExample.java) - E-commerce scenario
-- [API Reference](../javadoc/index.html) - Complete Javadoc documentation

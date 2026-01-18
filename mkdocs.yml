@@ -44,6 +44,7 @@ nav:
   - Guides:
     - Agents: guides/agents.md
     - Running Agents: guides/running-agents.md
+    - Run Context: guides/run-context.md
     - Tools: guides/tools.md
     - Handoffs: guides/handoffs.md
     - Sessions: guides/sessions.md
