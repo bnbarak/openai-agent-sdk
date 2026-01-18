@@ -42,6 +42,7 @@ public class AgentHandoffExample {
     System.out.println("Example 1: Simple Triage to Specialist Handoff");
     System.out.println("----------------------------------------------");
 
+    // region create-specialist
     // Create a specialist agent for technical support
     Agent<UnknownContext, TextOutput> supportAgent =
         Agent.<UnknownContext, TextOutput>builder()
@@ -53,7 +54,9 @@ public class AgentHandoffExample {
             .handoffDescription(
                 "Hands off technical support and troubleshooting questions to this agent")
             .build();
+    // endregion create-specialist
 
+    // region create-triage
     // Create a triage agent that can hand off to the specialist
     Agent<UnknownContext, TextOutput> triageAgent =
         Agent.<UnknownContext, TextOutput>builder()
@@ -64,12 +67,15 @@ public class AgentHandoffExample {
                     + "DO NOT try to help directly. ALWAYS transfer.")
             .handoffs(java.util.List.of(supportAgent))
             .build();
+    // endregion create-triage
 
+    // region run-handoff
     // Run with a technical question (should trigger handoff)
     RunResult<UnknownContext, ?> result =
         Runner.run(
             triageAgent,
             "My application keeps crashing when I click the save button. How do I fix this?");
+    // endregion run-handoff
 
     // Display results
     System.out.println("User question:");
@@ -106,6 +112,7 @@ public class AgentHandoffExample {
     System.out.println("Example 2: Multiple Specialist Agents");
     System.out.println("-------------------------------------");
 
+    // region create-specialists
     // Create specialized agents
     Agent<UnknownContext, TextOutput> billingAgent =
         Agent.<UnknownContext, TextOutput>builder()
@@ -150,6 +157,7 @@ public class AgentHandoffExample {
                     + "ALWAYS transfer. DO NOT answer questions yourself.")
             .handoffs(java.util.List.of(billingAgent, technicalAgent, accountAgent))
             .build();
+    // endregion create-specialists
 
     // Test multiple scenarios
     String[] testQuestions = {

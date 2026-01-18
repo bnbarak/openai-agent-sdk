@@ -29,16 +29,20 @@ public class BasicTextOutput {
 
     System.out.println("=== Basic Text Output Example ===\n");
 
+    // region create-agent
     // Create a simple agent
     Agent<UnknownContext, TextOutput> agent =
         Agent.<UnknownContext, TextOutput>builder()
             .name("Assistant")
             .instructions("You are a helpful assistant. Keep responses concise and clear.")
             .build();
+    // endregion create-agent
 
+    // region run-agent
     // Run the agent with a simple question
     RunResult<UnknownContext, ?> result =
         Runner.run(agent, "Explain what an AI agent is in one sentence.");
+    // endregion run-agent
 
     // Display the response
     System.out.println("Question:");
@@ -48,10 +52,12 @@ public class BasicTextOutput {
     System.out.println(result.getFinalOutput());
     System.out.println();
 
+    // region check-usage
     // Display usage statistics
     System.out.println("Usage statistics:");
     System.out.println("  Total tokens: " + result.getUsage().getTotalTokens());
     System.out.println("  Input tokens: " + result.getUsage().getInputTokens());
     System.out.println("  Output tokens: " + result.getUsage().getOutputTokens());
+    // endregion check-usage
   }
 }
