@@ -23,7 +23,7 @@ import org.junitpioneer.jupiter.SetEnvironmentVariable;
  *
  * <p>Usage: OPENAI_API_KEY=sk-... mvn test -Dtest=TracingRealAPITest
  */
-@SetEnvironmentVariable(key = "OPENAI_MODEL", value = "gpt-4o-mini")
+@SetEnvironmentVariable(key = "OPENAI_MODEL", value = "gpt-4.1-mini")
 class TracingRealAPITest {
 
   @BeforeAll
@@ -171,7 +171,7 @@ class TracingRealAPITest {
           Agent.<UnknownContext, TextOutput>builder()
               .name("TestAgent")
               .instructions("You are a test agent. Respond with 'Test successful'")
-              .model("gpt-4o-mini")
+              .model("gpt-4.1-mini")
               .build();
 
       // Create agent span

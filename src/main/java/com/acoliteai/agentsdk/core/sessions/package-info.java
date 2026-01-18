@@ -6,8 +6,8 @@
  *
  * <ul>
  *   <li>{@link com.acoliteai.agentsdk.core.sessions.Session} - Interface for session storage
- *   <li>{@link com.acoliteai.agentsdk.core.sessions.MemorySession} - In-memory session storage
- *       (for development)
+ *   <li>{@link com.acoliteai.agentsdk.core.sessions.MemorySession} - In-memory session storage (for
+ *       development)
  *   <li>{@link com.acoliteai.agentsdk.core.sessions.SQLiteSession} - Persistent SQLite session
  *       storage (for production)
  * </ul>
@@ -20,7 +20,7 @@
  *
  * // Create an agent
  * Agent<UnknownContext, TextOutput> agent = Agent.<UnknownContext, TextOutput>builder()
- *     .model("gpt-4o")
+ *     .model("gpt-4.1")
  *     .instructions("You are a helpful assistant.")
  *     .build();
  *

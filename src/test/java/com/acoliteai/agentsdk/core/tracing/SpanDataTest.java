@@ -28,14 +28,14 @@ class SpanDataTest {
   void generationSpanData_hasCorrectType() {
     GenerationSpanData data =
         GenerationSpanData.builder()
-            .model("gpt-4o")
+            .model("gpt-4.1")
             .input(List.of())
             .output("Test output")
             .modelConfig(Map.of("temperature", 0.7))
             .build();
 
     assertEquals(SpanTypes.GENERATION, data.getType());
-    assertEquals("gpt-4o", data.getModel());
+    assertEquals("gpt-4.1", data.getModel());
     assertEquals("Test output", data.getOutput());
   }
 

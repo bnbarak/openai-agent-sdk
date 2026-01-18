@@ -14,11 +14,11 @@ class RunConfigTest {
     ModelProvider mockProvider = Mockito.mock(ModelProvider.class);
 
     RunConfig config =
-        RunConfig.builder().maxTurns(10).modelProvider(mockProvider).model("gpt-4o").build();
+        RunConfig.builder().maxTurns(10).modelProvider(mockProvider).model("gpt-4.1").build();
 
     assertEquals(10, config.getMaxTurns());
     assertEquals(mockProvider, config.getModelProvider());
-    assertEquals("gpt-4o", config.getModel());
+    assertEquals("gpt-4.1", config.getModel());
   }
 
   @Test
@@ -73,8 +73,8 @@ class RunConfigTest {
 
   @Test
   void value_providesEqualsAndHashCode() {
-    RunConfig config1 = RunConfig.builder().maxTurns(10).model("gpt-4o").build();
-    RunConfig config2 = RunConfig.builder().maxTurns(10).model("gpt-4o").build();
+    RunConfig config1 = RunConfig.builder().maxTurns(10).model("gpt-4.1").build();
+    RunConfig config2 = RunConfig.builder().maxTurns(10).model("gpt-4.1").build();
 
     assertEquals(config1, config2);
     assertEquals(config1.hashCode(), config2.hashCode());
@@ -82,13 +82,13 @@ class RunConfigTest {
 
   @Test
   void value_providesToString() {
-    RunConfig config = RunConfig.builder().maxTurns(10).model("gpt-4o").build();
+    RunConfig config = RunConfig.builder().maxTurns(10).model("gpt-4.1").build();
 
     String toString = config.toString();
 
     assertNotNull(toString);
     assertTrue(toString.contains("10"));
-    assertTrue(toString.contains("gpt-4o"));
+    assertTrue(toString.contains("gpt-4.1"));
   }
 
   @Test

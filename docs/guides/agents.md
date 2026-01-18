@@ -43,21 +43,21 @@ System.out.println(result.getFinalOutput());
 
 ### Model Selection
 
-Specify which OpenAI model to use. Defaults to `"gpt-4o"` if not specified:
+Specify which OpenAI model to use. Defaults to `"gpt-4.1"` if not specified:
 
 ```java
 Agent<UnknownContext, TextOutput> agent =
     Agent.<UnknownContext, TextOutput>builder()
         .name("FastAssistant")
-        .model("gpt-4o-mini")  // Faster, more cost-effective model
+        .model("gpt-4.1-mini")  // Faster, more cost-effective model
         .instructions("You are a helpful assistant.")
         .build();
 ```
 
 Common model options:
 
-- `"gpt-4o"` - Latest GPT-4 Optimized model (default)
-- `"gpt-4o-mini"` - Faster, more cost-effective
+- `"gpt-4.1"` - Latest GPT-4.1 model (default)
+- `"gpt-4.1-mini"` - Faster, more cost-effective
 - `"gpt-4-turbo"` - Previous generation
 - `"gpt-3.5-turbo"` - Legacy model
 

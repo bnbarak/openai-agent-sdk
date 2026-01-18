@@ -9,6 +9,8 @@ import com.openai.models.responses.ResponseCreateParams;
 import com.openai.models.responses.ResponseInputItem;
 import com.openai.models.responses.StructuredResponse;
 import com.openai.models.responses.StructuredResponseCreateParams;
+import com.openai.models.responses.Tool;
+import com.openai.models.responses.WebSearchTool;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -20,8 +22,8 @@ import java.util.stream.Collectors;
  *
  * <p>Model implementation using OpenAI Responses API.
  *
- * <p>Source:
- * https://github.com/openai/openai-agents-js/blob/main/packages/agents-openai/src/openaiResponsesModel.ts
+ * <p>Source: <a
+ * href="https://github.com/openai/openai-agents-js/blob/main/packages/agents-openai/src/openaiResponsesModel.ts">...</a>
  */
 public class OpenAIResponsesModel implements Model {
   private final OpenAIClient client;
@@ -59,6 +61,14 @@ public class OpenAIResponsesModel implements Model {
 
     if (request.getTools() != null && !request.getTools().isEmpty()) {
       registerTools(paramsBuilder, request.getTools());
+      // Configure maxToolCalls from settings or use default
+      int maxToolCalls =
+          request.getSettings() != null
+                  && request.getSettings().getMaxToolCalls() != null
+                  && request.getSettings().getMaxToolCalls().isPresent()
+              ? request.getSettings().getMaxToolCalls().get()
+              : 10;
+      paramsBuilder.maxToolCalls(maxToolCalls);
     }
 
     ResponseCreateParams params = paramsBuilder.build();
@@ -67,26 +77,56 @@ public class OpenAIResponsesModel implements Model {
   }
 
   private void registerTools(ResponseCreateParams.Builder paramsBuilder, List<Object> tools) {
-    tools.stream()
-        .map(OpenAIResponsesModel::validateAndCastToFunctionTool)
-        .map(OpenAIResponsesModel::extractParameterClass)
-        .forEach(paramsBuilder::addTool);
+    for (Object tool : tools) {
+      if (tool instanceof FunctionTool<?, ?, ?> functionTool) {
+        registerFunctionTool(paramsBuilder, functionTool);
+      } else if (tool instanceof HostedTool hostedTool) {
+        registerHostedTool(paramsBuilder, hostedTool);
+      } else {
+        throw new IllegalArgumentException(
+            "OpenAI Responses API only supports FunctionTool and HostedTool. Got: "
+                + tool.getClass().getName());
+      }
+    }
   }
 
   /**
-   * Validates that a tool is a FunctionTool and casts it.
+   * Registers a FunctionTool with the OpenAI API.
    *
-   * @param tool Tool to validate
-   * @return FunctionTool instance
-   * @throws IllegalArgumentException if tool is not a FunctionTool
+   * @param paramsBuilder Builder to add tool to
+   * @param functionTool FunctionTool to register
    */
-  static FunctionTool<?, ?, ?> validateAndCastToFunctionTool(Object tool) {
-    if (tool instanceof FunctionTool<?, ?, ?> functionTool) {
-      return functionTool;
-    }
+  private void registerFunctionTool(
+      ResponseCreateParams.Builder paramsBuilder, FunctionTool<?, ?, ?> functionTool) {
+    Class<?> parameterClass = extractParameterClass(functionTool);
+    paramsBuilder.addTool(parameterClass);
+  }
 
-    throw new IllegalArgumentException(
-        "OpenAI Responses API only supports FunctionTool. Got: " + tool.getClass().getName());
+  /**
+   * Registers a HostedTool with the OpenAI API.
+   *
+   * @param paramsBuilder Builder to add tool to
+   * @param hostedTool HostedTool to register
+   */
+  private void registerHostedTool(
+      ResponseCreateParams.Builder paramsBuilder, HostedTool hostedTool) {
+    switch (hostedTool.getType()) {
+      case "web_search":
+        paramsBuilder.addTool(WebSearchTool.builder().type(WebSearchTool.Type.WEB_SEARCH).build());
+        break;
+      case "image_generation":
+        paramsBuilder.addTool(Tool.ofImageGeneration(Tool.ImageGeneration.builder().build()));
+        break;
+      case "file_search":
+      case "code_interpreter":
+      case "computer_use":
+        throw new UnsupportedOperationException(
+            hostedTool.getType()
+                + " hosted tool is not yet supported by this SDK. "
+                + "Only web_search and image_generation are currently supported.");
+      default:
+        throw new IllegalArgumentException("Unknown hosted tool type: " + hostedTool.getType());
+    }
   }
 
   /**
@@ -185,13 +225,21 @@ public class OpenAIResponsesModel implements Model {
         .build();
   }
 
-  /** Extracts output from OpenAI response (text and function calls) */
+  /** Extracts output from OpenAI response (text, function calls, and hosted tool calls) */
   private List<Object> extractOutput(Response response) {
     List<Object> output = new ArrayList<>();
 
     for (var item : response.output()) {
       if (item.isFunctionCall()) {
         output.add(item.asFunctionCall());
+      } else if (item.isWebSearchCall()) {
+        output.add(item.asWebSearchCall());
+      } else if (item.isCodeInterpreterCall()) {
+        output.add(item.asCodeInterpreterCall());
+      } else if (item.isImageGenerationCall()) {
+        output.add(item.asImageGenerationCall());
+      } else if (item.isFileSearchCall()) {
+        output.add(item.asFileSearchCall());
       } else {
         item.message().stream()
             .flatMap(message -> message.content().stream())

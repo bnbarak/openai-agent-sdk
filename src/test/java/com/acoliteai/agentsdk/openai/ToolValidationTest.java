@@ -107,54 +107,6 @@ class ToolValidationTest {
     }
   }
 
-  static class NotATool {
-    public String getName() {
-      return "not_a_tool";
-    }
-  }
-
-  @Test
-  void validateAndCastToFunctionTool_validTool() {
-    ValidTool tool = new ValidTool();
-
-    FunctionTool<?, ?, ?> result = OpenAIResponsesModel.validateAndCastToFunctionTool(tool);
-
-    assertNotNull(result);
-    assertEquals("valid_tool", result.getName());
-  }
-
-  @Test
-  void validateAndCastToFunctionTool_calculatorTool() {
-    CalculatorTool tool = new CalculatorTool();
-
-    FunctionTool<?, ?, ?> result = OpenAIResponsesModel.validateAndCastToFunctionTool(tool);
-
-    assertNotNull(result);
-    assertEquals("calculator", result.getName());
-  }
-
-  @Test
-  void validateAndCastToFunctionTool_notFunctionTool_throwsException() {
-    NotATool notATool = new NotATool();
-
-    IllegalArgumentException exception =
-        assertThrows(
-            IllegalArgumentException.class,
-            () -> OpenAIResponsesModel.validateAndCastToFunctionTool(notATool));
-
-    boolean containsClassName = exception.getMessage().contains("NotATool");
-    assertTrue(containsClassName);
-    boolean mentionsOnlyFunctionTool =
-        exception.getMessage().contains("only supports FunctionTool");
-    assertTrue(mentionsOnlyFunctionTool);
-  }
-
-  @Test
-  void validateAndCastToFunctionTool_null_throwsException() {
-    assertThrows(
-        NullPointerException.class, () -> OpenAIResponsesModel.validateAndCastToFunctionTool(null));
-  }
-
   @Test
   void extractParameterClass_validClass() {
     ValidTool tool = new ValidTool();

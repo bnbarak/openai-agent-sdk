@@ -78,7 +78,7 @@ public class AgentConfigurationExample {
         Agent.<UnknownContext, TextOutput>builder()
             .name("FastAssistant")
             .instructions("Answer quickly and concisely")
-            .model("gpt-3.5-turbo")
+            .model("gpt-4.1-mini")
             .build();
 
     RunResult<UnknownContext, ?> result = Runner.run(agent, "What's the capital of France?");
