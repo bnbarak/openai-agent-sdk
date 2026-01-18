@@ -1,0 +1,85 @@
+name: E2E Tests
+
+on:
+  workflow_dispatch:
+    inputs:
+      environment:
+        description: 'Environment to run tests against'
+        required: false
+        default: 'staging'
+        type: choice
+        options:
+          - staging
+          - production
+
+concurrency:
+  group: e2e-tests
+  cancel-in-progress: false
+
+jobs:
+  e2e:
+    name: End-to-End Tests
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up JDK 21
+        uses: actions/setup-java@v4
+        with:
+          java-version: '21'
+          distribution: 'temurin'
+          cache: 'maven'
+
+      - name: Run all tests (including real-world API tests)
+        run: mvn verify -Pe2e
+        env:
+          OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
+          TEST_ENVIRONMENT: ${{ inputs.environment }}
+
+      - name: Run all examples
+        run: |
+          echo "Running all example files..."
+
+          # Find all example files with main methods
+          EXAMPLES=$(find src/main/java/com/acoliteai/agentsdk/examples -name "*.java" -type f | grep -v "/tools/" | sort)
+
+          for example in $EXAMPLES; do
+            # Extract class name from file path
+            CLASS_NAME=$(echo $example | sed 's|src/main/java/||' | sed 's|/|.|g' | sed 's|.java||')
+            echo "Running: $CLASS_NAME"
+
+            # Run the example (with timeout to prevent hanging)
+            timeout 60s mvn exec:java -Dexec.mainClass="$CLASS_NAME" -q || {
+              EXIT_CODE=$?
+              if [ $EXIT_CODE -eq 124 ]; then
+                echo "⚠️  $CLASS_NAME timed out after 60 seconds"
+              else
+                echo "❌ $CLASS_NAME failed with exit code $EXIT_CODE"
+                exit 1
+              fi
+            }
+            echo "✅ $CLASS_NAME completed"
+            echo "---"
+          done
+        env:
+          OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
+          TEST_ENVIRONMENT: ${{ inputs.environment }}
+
+      - name: Upload E2E test results
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: e2e-test-results
+          path: |
+            **/target/surefire-reports/*.xml
+            **/target/failsafe-reports/*.xml
+
+      - name: Upload E2E logs
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: e2e-logs
+          path: '**/target/*.log'

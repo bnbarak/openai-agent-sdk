@@ -1,0 +1,72 @@
+site_name: OpenAI Agent SDK for Java
+site_url: https://bnbarak.github.io/openai-agent-sdk/
+site_description: A Java SDK for building AI agents with OpenAI's API
+repo_url: https://github.com/bnbarak/openai-agent-sdk
+repo_name: bnbarak/openai-agent-sdk
+edit_uri: edit/main/docs/
+
+theme:
+  name: shadcn
+  features:
+    - navigation.instant
+    - navigation.tracking
+    - navigation.tabs
+    - navigation.sections
+    - navigation.expand
+    - navigation.top
+    - search.suggest
+    - search.highlight
+    - content.code.copy
+    - content.code.annotate
+
+plugins:
+  - search
+  - include-markdown
+
+markdown_extensions:
+  - pymdownx.highlight:
+      anchor_linenums: true
+      line_spans: __span
+      pygments_lang_class: true
+  - pymdownx.inlinehilite
+  - pymdownx.snippets
+  - pymdownx.superfences
+  - pymdownx.tabbed:
+      alternate_style: true
+  - admonition
+  - pymdownx.details
+  - pymdownx.emoji:
+      emoji_index: !!python/name:material.extensions.emoji.twemoji
+      emoji_generator: !!python/name:material.extensions.emoji.to_svg
+  - tables
+  - attr_list
+  - md_in_html
+
+nav:
+  - Home: index.md
+  - Quickstart: quickstart.md
+  - Guides:
+    - Agents: guides/agents.md
+    - Running Agents: guides/running-agents.md
+    - Tools: guides/tools.md
+    - Handoffs: guides/handoffs.md
+    - Sessions: guides/sessions.md
+    - Models: guides/models.md
+    - Guardrails: guides/guardrails.md
+    - Streaming: guides/streaming.md
+    - Tracing: guides/tracing.md
+    - Troubleshooting: guides/troubleshooting.md
+  - Examples:
+    - Customer Service: examples/customer-service.md
+    - Math Tutor: examples/math-tutor.md
+    - Research Bot: examples/research-bot.md
+  - API Reference: api/
+
+extra:
+  social:
+    - icon: fontawesome/brands/github
+      link: https://github.com/bnbarak/openai-agent-sdk
+    - icon: fontawesome/brands/java
+      link: https://www.java.com
+  version:
+    provider: mike
