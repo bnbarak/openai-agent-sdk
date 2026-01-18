@@ -13,7 +13,6 @@
 - `mvn verify -Pe2e` runs unit + integration + e2e tests (expects real API access).
 - `mvn spotless:check` verifies formatting and import order.
 - `mvn spotless:apply` formats code using Google Java Format.
-- `mvn exec:java -Dexec.mainClass="com.acoliteai.agentsdk.examples.HelloWorld"` runs an example locally.
 - Avoid running `src/main/java/com/acoliteai/agentsdk/examples/RealWorldRunContextExample.java` and `@Tag("realworld")` tests unless you are doing an e2e run; they are slow and costly.
 
 ## Coding Style & Naming Conventions

@@ -24,7 +24,7 @@ Run examples directly using Maven:
 # BasicTextOutput - Simple text interaction
 OPENAI_API_KEY=sk-... mvn exec:java -Dexec.mainClass="examples.com.acoliteai.agentsdk.BasicTextOutput"
 
-# StructuredOutput - JSON Schema outputs
+# StructuredOutputExample - JSON Schema outputs
 OPENAI_API_KEY=sk-... mvn exec:java -Dexec.mainClass="examples.com.acoliteai.agentsdk.StructuredOutput"
 
 # MultiTurnExecution - Multi-turn with tracking

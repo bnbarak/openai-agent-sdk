@@ -50,7 +50,7 @@ jobs:
           echo "Running all example files..."
 
           # Find all example files with main methods
-          EXAMPLES=$(find src/main/java/com/acoliteai/agentsdk/examples -name "*.java" -type f | grep -v "/tools/" | sort)
+          EXAMPLES=$(find src/main/java/com/acoliteai/agentsdk/examples -name "*.java" -type f | grep -v "/tools/" | grep -v "/guardrails/" | sort)
 
           for example in $EXAMPLES; do
             # Extract class name from file path

@@ -12,13 +12,30 @@ A modern Java SDK for building AI agents with OpenAI's API, featuring multi-agen
 - **Guardrails**: Input/output validation and safety controls
 - **Streaming**: Real-time streaming of agent responses
 
-## Quick Example
+## Example
 
 ```java
---8<-- "src/main/java/com/acoliteai/agentsdk/examples/HelloWorld.java"
-```
+import com.acoliteai.agentsdk.core.Agent;
+import com.acoliteai.agentsdk.core.RunResult;
+import com.acoliteai.agentsdk.core.Runner;
+import com.acoliteai.agentsdk.core.types.TextOutput;
+import com.acoliteai.agentsdk.core.types.UnknownContext;
 
-[View complete example](https://github.com/bnbarak/openai-agent-sdk/blob/main/src/main/java/com/acoliteai/agentsdk/examples/HelloWorld.java)
+public class Example {
+  public static void main(String[] args) {
+    Agent<UnknownContext, TextOutput> agent =
+        Agent.<UnknownContext, TextOutput>builder()
+            .name("Assistant")
+            .instructions("You are a helpful assistant.")
+            .build();
+
+    RunResult<UnknownContext, ?> result =
+        Runner.run(agent, "Write a haiku about recursion in programming.");
+
+    System.out.println(result.getFinalOutput());
+  }
+}
+```
 
 ## Getting Started
 

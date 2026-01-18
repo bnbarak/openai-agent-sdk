@@ -7,16 +7,16 @@ import com.acoliteai.agentsdk.core.types.JsonSchemaOutput;
 import com.acoliteai.agentsdk.core.types.UnknownContext;
 
 /**
- * StructuredOutput
+ * StructuredOutputExample
  *
  * <p>Example demonstrating structured JSON output using JSON Schema.
  *
  * <p>This example shows: - Defining a Java class for structured output - Creating an agent with
  * JsonSchemaOutput type - Receiving type-safe structured data from the agent
  *
- * <p>Usage: OPENAI_API_KEY=sk-... java com.openai.agents.examples.StructuredOutput
+ * <p>Usage: OPENAI_API_KEY=sk-... java com.openai.agents.examples.StructuredOutputExample
  */
-public class StructuredOutput {
+public class StructuredOutputExample {
 
   // region define-schema
   /** Data class for weather information. The agent will return an instance of this class. */
@@ -34,7 +34,7 @@ public class StructuredOutput {
     if (apiKey == null || apiKey.isEmpty()) {
       System.err.println("Error: OPENAI_API_KEY environment variable not set");
       System.err.println(
-          "Usage: OPENAI_API_KEY=sk-... java com.openai.agents.examples.StructuredOutput");
+          "Usage: OPENAI_API_KEY=sk-... java com.openai.agents.examples.StructuredOutputExample");
       System.exit(1);
     }
 
