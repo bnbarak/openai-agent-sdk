@@ -21,6 +21,9 @@ jobs:
     name: End-to-End Tests
     runs-on: ubuntu-latest
     timeout-minutes: 30
+    env:
+      OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
+      TEST_ENVIRONMENT: ${{ inputs.environment }}
 
     steps:
       - name: Checkout code
@@ -35,9 +38,6 @@ jobs:
 
       - name: Run all tests (including real-world API tests)
         run: mvn verify -Pe2e
-        env:
-          OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
-          TEST_ENVIRONMENT: ${{ inputs.environment }}
 
       - name: Run all examples
         run: |
@@ -64,9 +64,6 @@ jobs:
             echo "✅ $CLASS_NAME completed"
             echo "---"
           done
-        env:
-          OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
-          TEST_ENVIRONMENT: ${{ inputs.environment }}
 
       - name: Upload E2E test results
         if: always()
