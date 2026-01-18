@@ -1,6 +1,6 @@
 # OpenAI Agent SDK for Java
 
-A modern Java SDK for building AI agents with OpenAI's API, featuring multi-agent handoffs, tool calling, memory management, and distributed tracing.
+A modern Java SDK for building AI agents with OpenAI's API, similar to the TypeScript OpenAI Agents SDK (https://openai.github.io/openai-agents-js/), following its public API and implementation patterns where possible.
 
 [![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](https://opensource.org/licenses/Apache-2.0)
 [![Java](https://img.shields.io/badge/Java-21+-orange.svg)](https://www.oracle.com/java/)
@@ -8,14 +8,22 @@ A modern Java SDK for building AI agents with OpenAI's API, featuring multi-agen
 
 ## Features
 
-- **🤖 Agent Framework**: Build conversational AI agents with OpenAI models
-- **🔧 Tool Calling**: Define and execute custom tools with automatic validation
-- **🤝 Multi-Agent Handoffs**: Seamlessly transfer conversations between specialized agents
-- **💾 Memory Management**: Built-in session management with in-memory and SQLite backends
-- **📊 Distributed Tracing**: OpenTelemetry-compatible tracing with OpenAI platform integration
-- **🔒 Guardrails**: Input/output validation and safety controls
-- **📝 Structured Output**: Type-safe responses with JSON schema validation
-- **🌊 Streaming Support**: Real-time streaming of agent responses
+- **🧠 Agent loop**: A built-in agent loop that handles tool invocation, sends results back to the LLM, and continues until the task is complete.
+- **☕ Java-first**: Orchestrate and chain agents using idiomatic Java language features, without needing to learn new abstractions.
+- **🤝 Agents as tools / Handoffs**: A powerful mechanism for coordinating and delegating work across multiple agents.
+- **🔒 Guardrails**: Run input validation and safety checks in parallel with agent execution, and fail fast when checks do not pass.
+- **🔧 Function tools**: Turn any Java function into a tool with automatic schema generation and validation.
+- **TBD: MCP server tool calling**: Built-in MCP server tool integration that works the same way as function tools.
+- **💾 Sessions**: A persistent memory layer for maintaining working context within an agent loop.
+- **🙋 Human in the loop**: Built-in mechanisms for involving humans across agent runs.
+- **📊 Tracing**: Built-in tracing for visualizing, debugging, and monitoring workflows, with support for the OpenAI suite of evaluation, fine-tuning, and distillation tools.
+- **TBD: Realtime Agents**: Build powerful voice agents with features such as automatic interruption detection, context management, guardrails, and more.
+
+## Requirements
+
+- Java 21 or higher
+- Maven 3.6+ or Gradle 7+
+- OpenAI API key ([Get one here](https://platform.openai.com/api-keys))
 
 ## Quick Start
 
@@ -31,7 +39,22 @@ Add to your `pom.xml`:
 </dependency>
 ```
 
-### Hello World Example
+### Configuration
+
+Set your OpenAI API key as an environment variable:
+
+```bash
+export OPENAI_API_KEY='your-api-key-here'
+```
+
+Or configure programmatically:
+
+```java
+OpenAI openai = new OpenAI(apiKey);
+Model model = openai.chatCompletionsModel("gpt-4o");
+```
+
+### Usage
 
 ```java
 import com.acoliteai.agentsdk.core.Agent;
@@ -58,7 +81,7 @@ public class HelloWorld {
 
 ## Core Concepts
 
-### 1. Agents
+### Agents
 
 Agents are the core building blocks. They encapsulate a model, instructions, and optional tools:
 
@@ -70,7 +93,7 @@ Agent agent = Agent.builder()
     .build();
 ```
 
-### 2. Tool Calling
+### Tool Calling
 
 Define custom tools that agents can invoke:
 
@@ -90,7 +113,7 @@ FunctionTool calculatorTool = FunctionTool.builder()
     .build();
 ```
 
-### 3. Multi-Agent Handoffs
+### Multi-Agent Handoffs
 
 Transfer conversations between specialized agents:
 
@@ -105,7 +128,7 @@ RunResult result = triage.run("I have a billing question");
 // Automatically hands off to billingAgent
 ```
 
-### 4. Memory & Sessions
+### Memory & Sessions
 
 Manage conversation history across turns:
 
@@ -126,7 +149,7 @@ agent.run("Remember: my name is Alice");
 agent.run("What's my name?"); // "Your name is Alice"
 ```
 
-### 5. Tracing
+### Tracing
 
 Monitor agent execution with distributed tracing:
 
@@ -146,38 +169,6 @@ Agent agent = Agent.builder()
     .build();
 ```
 
-## Examples
-
-See the [`examples/`](src/main/java/com/acoliteai/agentsdk/examples/) directory for complete examples:
-
-- [`HelloWorld.java`](src/main/java/com/acoliteai/agentsdk/examples/HelloWorld.java) - Basic agent usage
-- [`ToolCallingExample.java`](src/main/java/com/acoliteai/agentsdk/examples/WellTypedToolsExample.java) - Custom tools
-- [`AgentHandoffExample.java`](src/main/java/com/acoliteai/agentsdk/examples/AgentHandoffExample.java) - Multi-agent workflows
-- [`MemorySessionExample.java`](src/main/java/com/acoliteai/agentsdk/examples/MemorySessionExample.java) - Session management
-- [`StreamingExample.java`](src/main/java/com/acoliteai/agentsdk/examples/StreamingExample.java) - Streaming responses
-- [`TracingExample.java`](src/main/java/com/acoliteai/agentsdk/examples/TracingExample.java) - Distributed tracing
-
-## Requirements
-
-- Java 21 or higher
-- Maven 3.6+ or Gradle 7+
-- OpenAI API key ([Get one here](https://platform.openai.com/api-keys))
-
-## Configuration
-
-Set your OpenAI API key as an environment variable:
-
-```bash
-export OPENAI_API_KEY='your-api-key-here'
-```
-
-Or configure programmatically:
-
-```java
-OpenAI openai = new OpenAI(apiKey);
-Model model = openai.chatCompletionsModel("gpt-4o");
-```
-
 ## Development
 
 ### Building from Source
@@ -194,7 +185,7 @@ mvn clean install
 # Unit tests only (fast)
 mvn test
 
-# All tests including integration tests
+# All tests including integration tests (requires a real API key and may incur costs)
 mvn verify -Pe2e
 ```
 
@@ -215,7 +206,7 @@ mvn spotless:apply
 - [API Documentation](https://acolite.ai/docs/openai-agent-sdk)
 - [Getting Started Guide](docs/getting-started.md)
 - [API Reference](docs/api-surface.md)
-- [Examples](src/main/java/com/acoliteai/agentsdk/examples/)
+- [Examples (full directory)](src/main/java/com/acoliteai/agentsdk/examples/)
 
 ## Contributing
 
