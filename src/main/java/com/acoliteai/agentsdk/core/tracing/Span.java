@@ -103,6 +103,27 @@ public class Span<TData extends SpanData> {
         .build();
   }
 
+  /**
+   * Clone this span with updated tracing context.
+   *
+   * @param traceId Parent trace identifier
+   * @param parentId Parent span identifier
+   * @param tracingApiKey Optional API key for trace export
+   * @param processor Processor for lifecycle events
+   * @return New span instance with updated tracing context
+   */
+  public Span<TData> withTracingContext(
+      String traceId, String parentId, String tracingApiKey, TraceProcessor processor) {
+    return Span.<TData>builder()
+        .spanId(spanId)
+        .traceId(traceId)
+        .parentId(parentId)
+        .data(data)
+        .processor(processor)
+        .tracingApiKey(tracingApiKey)
+        .build();
+  }
+
   /** Convert to JSON for export. */
   public Map<String, Object> toJson() {
     Map<String, Object> json = new HashMap<>();

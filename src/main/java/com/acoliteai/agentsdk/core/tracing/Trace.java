@@ -90,6 +90,23 @@ public class Trace {
   }
 
   /**
+   * Clone this trace with a different processor.
+   *
+   * @param processor Processor for lifecycle events
+   * @return New trace instance with updated processor
+   */
+  public Trace withProcessor(TraceProcessor processor) {
+    return Trace.builder()
+        .traceId(traceId)
+        .name(name)
+        .groupId(groupId)
+        .metadata(metadata != null ? new HashMap<>(metadata) : new HashMap<>())
+        .tracingApiKey(tracingApiKey)
+        .processor(processor)
+        .build();
+  }
+
+  /**
    * Convert to JSON for export.
    *
    * @param includeTracingApiKey Whether to include API key in output

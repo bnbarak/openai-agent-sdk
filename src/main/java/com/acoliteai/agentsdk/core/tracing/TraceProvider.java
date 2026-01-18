@@ -91,20 +91,20 @@ public class TraceProvider {
   }
 
   /** Create a new trace. Returns NoopTrace if tracing is disabled. */
-  public Trace createTrace(Trace.TraceBuilder traceBuilder) {
+  public Trace createTrace(Trace trace) {
     if (disabled.get()) {
       log.debug("Tracing is disabled, returning NoopTrace");
       return NoopTrace.INSTANCE;
     }
 
-    Trace trace = traceBuilder.processor(multiProcessor).build();
+    Trace preparedTrace = trace.withProcessor(multiProcessor);
 
-    log.debug("Created trace: {} (name={})", trace.getTraceId(), trace.getName());
-    return trace;
+    log.debug("Created trace: {} (name={})", preparedTrace.getTraceId(), preparedTrace.getName());
+    return preparedTrace;
   }
 
   /** Create a new span. Returns NoopSpan if tracing is disabled or no active trace. */
-  public <TData extends SpanData> Span<TData> createSpan(Span.SpanBuilder<TData> spanBuilder) {
+  public <TData extends SpanData> Span<TData> createSpan(Span<TData> span) {
     if (disabled.get()) {
       log.debug("Tracing is disabled, returning NoopSpan");
       return NoopSpan.instance();
@@ -128,21 +128,16 @@ public class TraceProvider {
     Optional<Span<?>> currentSpan = TraceContext.getCurrentSpan();
     String parentId = currentSpan.map(Span::getSpanId).orElse(null);
 
-    // Build span with trace context
-    Span<TData> span =
-        spanBuilder
-            .traceId(trace.getTraceId())
-            .parentId(parentId)
-            .tracingApiKey(trace.getTracingApiKey())
-            .processor(multiProcessor)
-            .build();
+    Span<TData> preparedSpan =
+        span.withTracingContext(
+            trace.getTraceId(), parentId, trace.getTracingApiKey(), multiProcessor);
 
     log.debug(
         "Created span: {} (type={}, parent={})",
-        span.getSpanId(),
-        span.getData().getType(),
+        preparedSpan.getSpanId(),
+        preparedSpan.getData().getType(),
         parentId);
-    return span;
+    return preparedSpan;
   }
 
   /** Shutdown all processors. Waits up to timeout for export to complete. */

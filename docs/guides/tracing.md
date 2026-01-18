@@ -23,7 +23,8 @@ Trace trace =
     provider.createTrace(
         Trace.builder()
             .traceId(TracingUtils.generateTraceId())
-            .name("Example workflow"));
+            .name("Example workflow")
+            .build());
 
 TraceContext.withTrace(
     trace,
@@ -32,7 +33,8 @@ TraceContext.withTrace(
           provider.createSpan(
               Span.<CustomSpanData>builder()
                   .spanId(TracingUtils.generateSpanId())
-                  .data(CustomSpanData.builder().name("custom-op").build()));
+                  .data(CustomSpanData.builder().name("custom-op").build())
+                  .build());
       span.start();
       try {
         // Do work
