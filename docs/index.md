@@ -1,6 +1,8 @@
 # OpenAI Agent SDK for Java
 
-A modern Java SDK for building AI agents with OpenAI's API, similar to the TypeScript OpenAI Agents SDK (https://openai.github.io/openai-agents-js/), following its public API and implementation patterns where possible.
+A modern Java SDK for building AI agents with OpenAI's API, similar to the [TypeScript OpenAI Agents SDK](https://openai.github.io/openai-agents-js/), following its public API and implementation patterns where possible.
+
+Built on the [OpenAI Java SDK](https://github.com/openai/openai-java).
 
 ## Features
 
@@ -65,7 +67,7 @@ Add to your `pom.xml`:
 <dependency>
     <groupId>ai.acolite</groupId>
     <artifactId>openai-agent-sdk</artifactId>
-    <version>0.1.0-SNAPSHOT</version>
+    <version>0.2.0</version>
 </dependency>
 ```
 
