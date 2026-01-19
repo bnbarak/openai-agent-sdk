@@ -16,30 +16,6 @@ import java.util.function.Supplier;
 public class AsyncExecutor {
 
   /**
-   * Execute an async operation iteratively until a condition is met.
-   *
-   * <p>Uses recursive CompletableFuture composition instead of blocking loops. Each iteration
-   * completes before the next begins.
-   *
-   * @param state The current state
-   * @param shouldContinue Predicate to check if iteration should continue
-   * @param operation Function to execute on each iteration, returning updated state
-   * @param <T> The state type
-   * @return CompletableFuture that resolves when iteration completes
-   */
-  public static <T> CompletableFuture<T> iterateUntil(
-      T state, Predicate<T> shouldContinue, Function<T, CompletableFuture<T>> operation) {
-
-    if (!shouldContinue.test(state)) {
-      return CompletableFuture.completedFuture(state);
-    }
-
-    return operation
-        .apply(state)
-        .thenCompose(newState -> iterateUntil(newState, shouldContinue, operation));
-  }
-
-  /**
    * Execute an async operation iteratively with a side effect on each iteration.
    *
    * @param state The current state

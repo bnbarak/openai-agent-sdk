@@ -6,6 +6,9 @@ Learn how to define custom tools that agents can invoke.
 
 Tools allow agents to perform actions beyond text generation. Tools are Java functions that agents call autonomously to access data, perform calculations, or interact with external systems. The agent decides when to invoke tools based on the conversation context.
 
+!!! info "OpenAI Function Calling"
+    This SDK implements [OpenAI's function calling framework](https://platform.openai.com/docs/guides/function-calling), which enables agents to autonomously invoke tools during conversations. OpenAI models decide when and how to call functions based on the conversation context and available tool definitions.
+
 Each tool is defined using the `FunctionTool` interface with:
 
 - Type-safe input parameters
@@ -13,6 +16,35 @@ Each tool is defined using the `FunctionTool` interface with:
 - Automatic JSON schema generation
 - Optional approval requirements
 - Enable/disable logic
+- Automatic validation at agent build time
+
+## Required Annotations
+
+For OpenAI's function calling to work correctly, input parameter classes **must** have proper Jackson annotations:
+
+```java
+@Data
+@JsonTypeName("calculator")  // Required: Identifies the tool parameter type
+@JsonClassDescription("Input parameters for arithmetic operations")  // Required: Describes the parameters
+public static class Input {
+    @JsonPropertyDescription("The arithmetic operation to perform")  // Required: Describes each field
+    private String operation;
+
+    @JsonPropertyDescription("The first number")
+    private double a;
+
+    @JsonPropertyDescription("The second number")
+    private double b;
+}
+```
+
+!!! warning "Validation at Build Time"
+    The SDK automatically validates tools when you build an agent. If your tool is missing required annotations, you'll get a clear error message pointing to the issue. This prevents runtime failures with the OpenAI API.
+
+All tools are automatically validated for:
+- `@JsonTypeName` or `@JsonClassDescription` on the Input class
+- `@JsonPropertyDescription` on all input fields
+- Valid getName(), getDescription(), and getParameters() implementations
 
 ## Creating a Simple Tool
 
@@ -420,32 +452,72 @@ Agent<UnknownContext, TextOutput> agent =
 
 ## Error Handling in Tools
 
-Handle errors gracefully within tool implementations:
+When a tool encounters an error (missing credentials, invalid input, external API failure), return the error information in the output structure. The agent will read the error and communicate it to the user appropriately.
 
 ```java
 @Override
 public CompletableFuture<Output> invoke(RunContext<Object> context, Input input) {
-    return CompletableFuture.supplyAsync(() -> {
+    return CompletableFuture.completedFuture(() -> {
+        // Check for missing configuration
+        if (apiKey == null) {
+            return new Output(false, "API credentials not configured. Please set up credentials.");
+        }
+
         try {
-            // Validate input
-            if (input.getB() == 0 && input.getOperation().equals("divide")) {
-                throw new IllegalArgumentException("Cannot divide by zero");
-            }
-
             // Perform operation
-            double result = performCalculation(input);
-            return new Output(result, "success", null);
+            Result result = performOperation(input);
+            return new Output(true, "Operation completed successfully", result);
 
-        } catch (IllegalArgumentException e) {
-            // Return error in output
-            return new Output(0, "error", e.getMessage());
+        } catch (Exception e) {
+            // Return error in output for the agent to communicate
+            return new Output(false, "Error: " + e.getMessage(), null);
         }
     });
 }
+
+public record Output(
+    @JsonProperty boolean success,
+    @JsonProperty String message,
+    @JsonProperty Result data
+) {}
 ```
 
-!!! warning "Exception Handling"
-    Uncaught exceptions in tools will fail the entire agent execution. Always handle errors within the tool and return meaningful error messages in the output.
+!!! tip "Error Patterns"
+    See `ErrorReturningTool` in [BadToolExampleTest.java](https://github.com/bnbarak/openai-agent-sdk/blob/main/src/test/java/ai/acolite/agentsdk/realworldapi/BadToolExampleTest.java) for a complete example of proper error handling. The agent successfully reads error responses and communicates them to users.
+
+!!! warning "Throwing Exceptions"
+    If your tool throws an uncaught exception, the SDK catches it and converts it to an error message for the agent. However, it's better to handle errors gracefully and return structured error information in your Output type.
+
+## Testing Tools with ToolValidator
+
+Use `ToolValidator` in your tests to ensure tools are properly configured before deploying:
+
+```java
+@Test
+void myTool_isProperlyConfigured() {
+    ToolValidator.validate(new MyTool());
+}
+```
+
+The validator checks for:
+- Required Jackson annotations (`@JsonTypeName`, `@JsonClassDescription`, `@JsonPropertyDescription`)
+- Valid getName(), getDescription(), and getParameters() implementations
+- Proper parameter class structure
+
+If validation fails, you'll get a detailed error message:
+
+```
+Tool 'my_tool' has validation errors:
+  - Parameter class 'Input' should have @JsonTypeName or @JsonClassDescription annotation for proper OpenAI schema generation
+  - Parameter class 'Input' has fields without @JsonPropertyDescription annotations
+
+See ErrorReturningTool in BadToolExampleTest for a working example.
+```
+
+!!! tip "Validate During Development"
+    Add `ToolValidator.validate(new MyTool())` to your test suite to catch configuration issues early. This prevents runtime failures when the agent tries to use your tool.
+
+See [ToolValidatorTest.java](https://github.com/bnbarak/openai-agent-sdk/blob/main/src/test/java/ai/acolite/agentsdk/core/ToolValidatorTest.java) for comprehensive validation examples.
 
 ## Best Practices
 

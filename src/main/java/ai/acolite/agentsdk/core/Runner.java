@@ -13,7 +13,6 @@ import ai.acolite.agentsdk.exceptions.SystemError;
 import ai.acolite.agentsdk.exceptions.TimeoutError;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
 import java.util.function.Supplier;
@@ -30,10 +29,6 @@ import org.slf4j.LoggerFactory;
  */
 public class Runner extends RunHooks<Object, TextOutput> {
   private static final Logger log = LoggerFactory.getLogger(Runner.class);
-
-  private Map<String, Object> options;
-  private Model model;
-  private Boolean explictlyModelSet;
 
   /**
    * Static convenience method to run an agent with a single text input (blocking).

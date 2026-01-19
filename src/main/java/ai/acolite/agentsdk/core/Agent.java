@@ -21,7 +21,8 @@ import lombok.NonNull;
  * href="https://github.com/openai/openai-agents-js/blob/main/packages/agents-core/src/agent.ts">agent.ts</a>
  */
 @Getter
-@Builder
+// We are overring the builder to make sure we validate tools.
+@Builder(builderClassName = "AgentBuilder", buildMethodName = "internalBuild")
 public class Agent<TContext, TOutput extends AgentOutputType> extends AgentHooks<TContext, TOutput>
     implements AgentConfiguration<TContext, TOutput> {
 
@@ -126,5 +127,28 @@ public class Agent<TContext, TOutput extends AgentOutputType> extends AgentHooks
   private static String getDefaultModel() {
     String envModel = System.getenv("OPENAI_MODEL");
     return envModel != null && !envModel.isEmpty() ? envModel : "gpt-4.1";
+  }
+
+  /**
+   * Custom builder with automatic tool validation.
+   *
+   * <p>Extends Lombok's generated builder to add validation at build time.
+   */
+  public static class AgentBuilder<TContext, TOutput extends AgentOutputType> {
+    /**
+     * Builds the Agent instance with automatic tool validation.
+     *
+     * @return The constructed Agent
+     * @throws IllegalArgumentException if tools are invalid
+     */
+    public Agent<TContext, TOutput> build() {
+      // Validate tools before building
+      if (tools != null && !tools.isEmpty()) {
+        ToolValidator.validateAll(tools);
+      }
+
+      // Call Lombok's generated build method
+      return internalBuild();
+    }
   }
 }
