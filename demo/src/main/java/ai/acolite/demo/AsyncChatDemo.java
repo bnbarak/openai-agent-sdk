@@ -1,31 +1,34 @@
 package ai.acolite.demo;
 
-import ai.acolite.agent.Agent;
-import com.openai.models.ChatCompletionMessageParam;
-import com.openai.models.ChatCompletionUserMessageParam;
+import ai.acolite.agentsdk.core.Agent;
+import ai.acolite.agentsdk.core.RunConfig;
+import ai.acolite.agentsdk.core.RunResult;
+import ai.acolite.agentsdk.core.Runner;
+import ai.acolite.agentsdk.core.memory.MemorySession;
+import ai.acolite.agentsdk.core.memory.Session;
+import ai.acolite.agentsdk.core.types.TextOutput;
+import ai.acolite.agentsdk.core.types.UnknownContext;
 import org.jline.reader.LineReader;
 import org.jline.reader.LineReaderBuilder;
 import org.jline.terminal.Terminal;
 import org.jline.terminal.TerminalBuilder;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.concurrent.CompletableFuture;
-
 public class AsyncChatDemo {
     public static void main(String[] args) throws Exception {
-        Agent agent = DemoAgent.create();
+        Agent<UnknownContext, TextOutput> agent = DemoAgent.create();
         Terminal terminal = TerminalBuilder.builder().system(true).build();
         LineReader reader = LineReaderBuilder.builder().terminal(terminal).build();
         printWelcome(terminal);
 
-        List<ChatCompletionMessageParam> conversationHistory = new ArrayList<>();
-        runChatLoop(agent, terminal, reader, conversationHistory);
+        Session session = new MemorySession("async-chat-demo");
+        RunConfig config = RunConfig.builder().session(session).build();
+
+        runChatLoop(agent, terminal, reader, config);
         terminal.close();
     }
 
-    private static void runChatLoop(Agent agent, Terminal terminal, LineReader reader,
-            List<ChatCompletionMessageParam> conversationHistory) {
+    private static void runChatLoop(Agent<UnknownContext, TextOutput> agent, Terminal terminal,
+            LineReader reader, RunConfig config) {
         while (true) {
             try {
                 String userInput = reader.readLine("\n\u001B[32mYou > \u001B[0m");
@@ -39,17 +42,11 @@ public class AsyncChatDemo {
                     continue;
                 }
 
-                ChatCompletionUserMessageParam userMessage =
-                    ChatCompletionUserMessageParam.builder()
-                        .content(ChatCompletionUserMessageParam.Content.ofTextContent(userInput))
-                        .build();
-                conversationHistory.add(userMessage);
-
                 terminal.writer().print("\n\u001B[36mAssistant > \u001B[0m");
                 terminal.writer().flush();
 
-                CompletableFuture<String> responseFuture = agent.runAsync(conversationHistory);
-                String response = responseFuture.join();
+                RunResult<UnknownContext, ?> result = Runner.run(agent, userInput, config);
+                String response = result.getFinalOutput().toString();
 
                 terminal.writer().println(response);
                 terminal.writer().flush();

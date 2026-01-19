@@ -1,32 +1,36 @@
 package ai.acolite.demo;
 
-import ai.acolite.agent.Agent;
-import ai.acolite.types.AgentStreamEvent;
-import com.openai.models.ChatCompletionMessageParam;
-import com.openai.models.ChatCompletionUserMessageParam;
+import ai.acolite.agentsdk.core.Agent;
+import ai.acolite.agentsdk.core.RunConfig;
+import ai.acolite.agentsdk.core.Runner;
+import ai.acolite.agentsdk.core.StreamedRunResult;
+import ai.acolite.agentsdk.core.memory.MemorySession;
+import ai.acolite.agentsdk.core.memory.Session;
+import ai.acolite.agentsdk.core.shims.ReadableStream;
+import ai.acolite.agentsdk.core.shims.ReadableStreamAsyncIterator;
+import ai.acolite.agentsdk.core.types.TextOutput;
+import ai.acolite.agentsdk.core.types.UnknownContext;
 import org.jline.reader.LineReader;
 import org.jline.reader.LineReaderBuilder;
 import org.jline.terminal.Terminal;
 import org.jline.terminal.TerminalBuilder;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.stream.Stream;
-
 public class StreamingChatDemo {
     public static void main(String[] args) throws Exception {
-        Agent agent = DemoAgent.create();
+        Agent<UnknownContext, TextOutput> agent = DemoAgent.create();
         Terminal terminal = TerminalBuilder.builder().system(true).build();
         LineReader reader = LineReaderBuilder.builder().terminal(terminal).build();
         printWelcome(terminal);
 
-        List<ChatCompletionMessageParam> conversationHistory = new ArrayList<>();
-        runStreamingChatLoop(agent, terminal, reader, conversationHistory);
+        Session session = new MemorySession("streaming-chat-demo");
+        RunConfig config = RunConfig.builder().session(session).build();
+
+        runStreamingChatLoop(agent, terminal, reader, config);
         terminal.close();
     }
 
-    private static void runStreamingChatLoop(Agent agent, Terminal terminal, LineReader reader,
-            List<ChatCompletionMessageParam> conversationHistory) {
+    private static void runStreamingChatLoop(Agent<UnknownContext, TextOutput> agent,
+            Terminal terminal, LineReader reader, RunConfig config) {
         while (true) {
             try {
                 String userInput = reader.readLine("\n\u001B[32mYou > \u001B[0m");
@@ -40,55 +44,29 @@ public class StreamingChatDemo {
                     continue;
                 }
 
-                ChatCompletionUserMessageParam userMessage =
-                    ChatCompletionUserMessageParam.builder()
-                        .content(ChatCompletionUserMessageParam.Content.ofTextContent(userInput))
-                        .build();
-                conversationHistory.add(userMessage);
-
                 terminal.writer().print("\n\u001B[36mAssistant > \u001B[0m");
                 terminal.writer().flush();
 
-                Stream<AgentStreamEvent> eventStream = agent.runStreaming(conversationHistory);
-                processStreamEvents(eventStream, terminal);
+                StreamedRunResult<UnknownContext, Agent<UnknownContext, TextOutput>> result =
+                    Runner.runStreamed(agent, userInput, config);
+
+                ReadableStream<String> textStream = result.toTextStream();
+                ReadableStreamAsyncIterator<String> iterator = textStream.values();
+
+                while (iterator.hasNext()) {
+                    String text = iterator.next();
+                    terminal.writer().print(text);
+                    terminal.writer().flush();
+                }
+
+                terminal.writer().println();
+                terminal.writer().flush();
 
             } catch (Exception e) {
                 terminal.writer().println("\n\u001B[31mError: " + e.getMessage() + "\u001B[0m");
                 terminal.writer().flush();
             }
         }
-    }
-
-    private static void processStreamEvents(Stream<AgentStreamEvent> eventStream, Terminal terminal) {
-        eventStream.forEach(event -> {
-            switch (event.type()) {
-                case TEXT_DELTA:
-                    String delta = event.textDelta();
-                    if (delta != null && !delta.isEmpty()) {
-                        terminal.writer().print(delta);
-                        terminal.writer().flush();
-                    }
-                    break;
-                case TOOL_CALL_START:
-                    terminal.writer().print("\n\u001B[90m[Calling tool: " + event.toolCall().name() + "]\u001B[0m\n");
-                    terminal.writer().flush();
-                    break;
-                case TOOL_CALL_RESULT:
-                    terminal.writer().print("\u001B[90m[Tool completed]\u001B[0m\n");
-                    terminal.writer().flush();
-                    break;
-                case AGENT_END:
-                    terminal.writer().println();
-                    terminal.writer().flush();
-                    break;
-                case ERROR:
-                    terminal.writer().println("\n\u001B[31mError: " + event.error() + "\u001B[0m");
-                    terminal.writer().flush();
-                    break;
-                default:
-                    break;
-            }
-        });
     }
 
     private static boolean isExitCommand(String input) {

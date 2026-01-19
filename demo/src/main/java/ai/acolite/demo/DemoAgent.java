@@ -1,10 +1,8 @@
 package ai.acolite.demo;
 
-import ai.acolite.agent.Agent;
-import ai.acolite.agent.AgentConfig;
-import ai.acolite.openai.OpenAIClientWrapper;
-import com.openai.client.OpenAIClient;
-import com.openai.client.okhttp.OpenAIOkHttpClient;
+import ai.acolite.agentsdk.core.Agent;
+import ai.acolite.agentsdk.core.types.TextOutput;
+import ai.acolite.agentsdk.core.types.UnknownContext;
 
 public final class DemoAgent {
     private static final String SYSTEM_PROMPT = """
@@ -14,7 +12,7 @@ public final class DemoAgent {
 
     private DemoAgent() {}
 
-    public static Agent create() {
+    public static Agent<UnknownContext, TextOutput> create() {
         String apiKey = System.getenv("OPENAI_API_KEY");
         if (apiKey == null || apiKey.isBlank()) {
             System.err.println("Error: OPENAI_API_KEY environment variable not set");
@@ -22,17 +20,10 @@ public final class DemoAgent {
             System.exit(1);
         }
 
-        OpenAIClient openAIClient = OpenAIOkHttpClient.builder()
-                .apiKey(apiKey)
-                .build();
-        OpenAIClientWrapper clientWrapper = new OpenAIClientWrapper(openAIClient);
-
-        AgentConfig config = AgentConfig.builder()
+        return Agent.<UnknownContext, TextOutput>builder()
                 .name("ChatAssistant")
                 .model("gpt-4o-mini")
                 .instructions(SYSTEM_PROMPT)
                 .build();
-
-        return new Agent(clientWrapper, config);
     }
 }

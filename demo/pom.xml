@@ -19,21 +19,18 @@
     </properties>
 
     <dependencies>
-        <!-- OpenAI Agent SDK - use the published version -->
         <dependency>
             <groupId>ai.acolite</groupId>
             <artifactId>openai-agent-sdk</artifactId>
             <version>0.1.0</version>
         </dependency>
 
-        <!-- JLine3 for better CLI experience -->
         <dependency>
             <groupId>org.jline</groupId>
             <artifactId>jline</artifactId>
             <version>3.25.1</version>
         </dependency>
 
-        <!-- Logback for logging -->
         <dependency>
             <groupId>ch.qos.logback</groupId>
             <artifactId>logback-classic</artifactId>
