@@ -4,6 +4,7 @@ import ai.acolite.agentsdk.core.*;
 import ai.acolite.agentsdk.core.types.JsonSchemaOutput;
 import com.openai.client.OpenAIClient;
 import com.openai.core.http.StreamResponse;
+import com.openai.helpers.ResponseAccumulator;
 import com.openai.models.responses.Response;
 import com.openai.models.responses.ResponseCreateParams;
 import com.openai.models.responses.ResponseInputItem;
@@ -338,24 +339,29 @@ public class OpenAIResponsesModel implements Model {
     }
 
     ResponseCreateParams params = paramsBuilder.build();
+    ResponseAccumulator accumulator = ResponseAccumulator.create();
 
-    // Use streaming API
     try (StreamResponse<ResponseStreamEvent> streamResponse =
         client.responses().createStreaming(params)) {
       streamResponse.stream()
           .forEach(
               event -> {
-                // Process different event types
+                accumulator.accumulate(event);
                 event
                     .outputTextDelta()
                     .ifPresent(
                         textDelta -> {
-                          // Emit text delta as a stream event
                           TextDeltaStreamEvent streamEvent =
                               TextDeltaStreamEvent.builder().delta(textDelta.delta()).build();
                           queue.offer(streamEvent);
                         });
               });
+
+      Response accumulatedResponse = accumulator.response();
+      ModelResponse modelResponse = convertToModelResponse(accumulatedResponse);
+      CompleteResponseStreamEvent completeEvent =
+          CompleteResponseStreamEvent.builder().response(modelResponse).build();
+      queue.offer(completeEvent);
     } catch (Exception e) {
       throw new RuntimeException("Streaming failed", e);
     }

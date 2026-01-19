@@ -397,7 +397,6 @@ public class Runner extends RunHooks<Object, TextOutput> {
                 state.addGeneratedItem(item);
               }
 
-              // Separate tool calls into handoffs and regular tools
               List<RunToolCallItem> toolCalls =
                   items.stream()
                       .filter(item -> item instanceof RunToolCallItem)
@@ -415,8 +414,6 @@ public class Runner extends RunHooks<Object, TextOutput> {
                     RunHandoffCallItem.builder().toolCall(handoffCall).sourceAgent(agent).build();
                 state.addGeneratedItem(handoffItem);
                 RunHandoffOutputItem handoffOutput = executeHandoff(state, handoffItem, agent);
-
-                // Add tool output so LLM knows the handoff tool was executed
                 String toolResult =
                     handoffOutput.getError().isPresent()
                         ? "{\"error\": \"" + handoffOutput.getError().get() + "\"}"
@@ -457,24 +454,20 @@ public class Runner extends RunHooks<Object, TextOutput> {
       String modelName,
       RunConfig config,
       ReadableStreamImpl<RunStreamEvent> eventEmitter) {
-
     @SuppressWarnings("unchecked")
     Agent<TContext, ?> agent = (Agent<TContext, ?>) state.getCurrentAgent();
-
-    // Execute input guardrails on first turn only
-    if (state.getCurrentTurn() == 0
-        && agent.getInputGuardrails() != null
-        && !agent.getInputGuardrails().isEmpty()) {
-
+    boolean firstTurnRunGuardrails =
+        state.getCurrentTurn() == 0
+            && agent.getInputGuardrails() != null
+            && !agent.getInputGuardrails().isEmpty();
+    if (firstTurnRunGuardrails) {
       InputGuardrailFunctionArgs<TContext> guardrailArgs =
           InputGuardrailFunctionArgs.<TContext>builder()
               .input(state.getOriginalInput())
               .context(state.getContext())
               .build();
-
       CompletableFuture<List<InputGuardrailResult>> guardrailsFuture =
           GuardrailExecutor.executeInputGuardrails(agent.getInputGuardrails(), guardrailArgs);
-
       return guardrailsFuture.thenCompose(
           results -> continueExecuteTurnStreamed(state, model, modelName, config, eventEmitter));
     }
@@ -492,12 +485,11 @@ public class Runner extends RunHooks<Object, TextOutput> {
 
     Agent<?, ?> agent = (Agent<?, ?>) state.getCurrentAgent();
 
-    // Build list of tools including agent handoffs
     List<Object> allTools = new ArrayList<>();
     if (agent.getTools() != null) {
       allTools.addAll(agent.getTools());
     }
-    // Add handoff agents as tools
+
     if (agent.getHandoffs() != null && !agent.getHandoffs().isEmpty()) {
       allTools.addAll(convertHandoffsToTools(agent.getHandoffs()));
     }
@@ -511,7 +503,6 @@ public class Runner extends RunHooks<Object, TextOutput> {
             .outputType(agent.getOutputType())
             .tools(allTools.isEmpty() ? null : allTools)
             .build();
-
     return CompletableFuture.supplyAsync(
             () -> {
               try {
@@ -523,7 +514,6 @@ public class Runner extends RunHooks<Object, TextOutput> {
         .thenCompose(
             response -> {
               state.addModelResponse(response);
-
               List<RunItem> items;
               try {
                 items = ResponseParser.parseResponseItems(response);
@@ -531,63 +521,48 @@ public class Runner extends RunHooks<Object, TextOutput> {
                 throw new ModelBehaviorError("Failed to parse model response", e);
               }
 
-              // Note: We already emitted events during streaming, so we don't emit again here
+              for (RunItem item : items) {
+                state.addGeneratedItem(item);
+                if (!(item instanceof RunMessageOutputItem)) {
+                  eventEmitter.emit(
+                      RunItemStreamEvent.builder()
+                          .item(item)
+                          .turnIndex(state.getCurrentTurn())
+                          .build());
+                }
+              }
 
-              // Separate tool calls into handoffs and regular tools
               List<RunToolCallItem> toolCalls =
                   items.stream()
                       .filter(item -> item instanceof RunToolCallItem)
                       .map(item -> (RunToolCallItem) item)
                       .toList();
-
-              log.debug("Detected {} tool calls from model response", toolCalls.size());
-              if (!toolCalls.isEmpty()) {
-                toolCalls.forEach(call -> log.debug("  Tool call: {}", call.getName()));
-              }
-
               List<RunToolCallItem> handoffCalls =
                   toolCalls.stream().filter(this::isHandoffToolCall).toList();
-
               List<RunToolCallItem> regularToolCalls =
                   toolCalls.stream().filter(call -> !isHandoffToolCall(call)).toList();
-
-              log.debug(
-                  "Classified: {} handoff calls, {} regular tool calls",
-                  handoffCalls.size(),
-                  regularToolCalls.size());
-
-              // Process handoffs
               if (!handoffCalls.isEmpty()) {
-                // Only process the first handoff (as per TypeScript SDK pattern)
                 RunToolCallItem handoffCall = handoffCalls.get(0);
-
                 RunHandoffCallItem handoffItem =
                     RunHandoffCallItem.builder().toolCall(handoffCall).sourceAgent(agent).build();
                 state.addGeneratedItem(handoffItem);
-
-                // EMIT EVENT for handoff call
                 eventEmitter.emit(
                     RunItemStreamEvent.builder()
                         .item(handoffItem)
                         .turnIndex(state.getCurrentTurn())
                         .build());
 
-                // Execute the handoff (find target agent and switch)
                 RunHandoffOutputItem outputItem = executeHandoff(state, handoffItem, agent);
-
-                // EMIT EVENT for handoff output
                 eventEmitter.emit(
                     RunItemStreamEvent.builder()
                         .item(outputItem)
                         .turnIndex(state.getCurrentTurn())
                         .build());
 
-                // Add tool output so LLM knows the handoff tool was executed
                 String toolResult =
                     outputItem.getError().isPresent()
                         ? "{\"error\": \"" + outputItem.getError().get() + "\"}"
                         : "{\"assistant\": \"" + outputItem.getToAgent() + "\"}";
-
                 RunToolCallOutputItem toolOutput =
                     RunToolCallOutputItem.builder()
                         .toolCallId(handoffCall.getId())
@@ -595,19 +570,14 @@ public class Runner extends RunHooks<Object, TextOutput> {
                         .error(outputItem.getError())
                         .build();
                 state.addGeneratedItem(toolOutput);
-
-                // EMIT EVENT for tool output
                 eventEmitter.emit(
                     RunItemStreamEvent.builder()
                         .item(toolOutput)
                         .turnIndex(state.getCurrentTurn())
                         .build());
-
-                // Handoff detected - don't execute regular tools, return for agent switch
                 return CompletableFuture.completedFuture(state);
               }
 
-              // Execute regular tools
               if (!regularToolCalls.isEmpty()) {
                 return executeToolsStreamed(state, regularToolCalls, agent, eventEmitter)
                     .thenApply(s -> state);
@@ -631,12 +601,11 @@ public class Runner extends RunHooks<Object, TextOutput> {
       Model model,
       ModelRequest request,
       ReadableStreamImpl<RunStreamEvent> eventEmitter) {
-    StringBuilder accumulatedText = new StringBuilder();
+    ModelResponse finalResponse = null;
     AsyncIterable<StreamEvent> streamEvents = model.getStreamedResponse(request);
     for (StreamEvent event : streamEvents) {
       if (event instanceof TextDeltaStreamEvent textDelta) {
         String delta = textDelta.getDelta();
-        accumulatedText.append(delta);
         RunMessageOutputItem messageItem =
             RunMessageOutputItem.builder().content(delta).role("assistant").build();
         eventEmitter.emit(
@@ -644,20 +613,21 @@ public class Runner extends RunHooks<Object, TextOutput> {
                 .item(messageItem)
                 .turnIndex(state.getCurrentTurn())
                 .build());
+      } else if (event instanceof CompleteResponseStreamEvent completeEvent) {
+        finalResponse = completeEvent.getResponse();
       }
     }
 
-    List<Object> output = new ArrayList<>();
-    if (!accumulatedText.isEmpty()) {
-      output.add(accumulatedText.toString());
+    if (finalResponse == null) {
+      return ModelResponse.builder()
+          .output(List.of())
+          .usage(Usage.empty())
+          .responseId(Optional.empty())
+          .providerData(Optional.empty())
+          .build();
     }
 
-    return ModelResponse.builder()
-        .output(output)
-        .usage(Usage.empty())
-        .responseId(Optional.empty())
-        .providerData(Optional.empty())
-        .build();
+    return finalResponse;
   }
 
   /**
@@ -670,9 +640,7 @@ public class Runner extends RunHooks<Object, TextOutput> {
    */
   private <TContext, TAgent> CompletableFuture<Void> executeTools(
       RunState<TContext, TAgent> state, List<RunToolCallItem> toolCalls, Agent<?, ?> agent) {
-
     List<CompletableFuture<Void>> futures = new ArrayList<>();
-
     for (RunToolCallItem toolCall : toolCalls) {
       CompletableFuture<Void> future = executeSingleTool(state, toolCall, agent);
       futures.add(future);
@@ -684,9 +652,7 @@ public class Runner extends RunHooks<Object, TextOutput> {
   /** Execute a single tool call. */
   private <TContext, TAgent> CompletableFuture<Void> executeSingleTool(
       RunState<TContext, TAgent> state, RunToolCallItem toolCall, Agent<?, ?> agent) {
-
     FunctionTool<?, ?, ?> tool = ToolExecutionUtils.findToolByName(agent, toolCall.getName());
-
     if (tool == null) {
       RunToolCallOutputItem errorOutput =
           RunToolCallOutputItem.builder()
@@ -700,8 +666,6 @@ public class Runner extends RunHooks<Object, TextOutput> {
 
     @SuppressWarnings("unchecked")
     Agent<TContext, ?> typedAgent = (Agent<TContext, ?>) agent;
-
-    // Execute tool input guardrails
     if (typedAgent.getToolInputGuardrails() != null
         && !typedAgent.getToolInputGuardrails().isEmpty()) {
       ToolInputGuardrailFunctionArgs<TContext> guardrailArgs =
@@ -710,13 +674,11 @@ public class Runner extends RunHooks<Object, TextOutput> {
               .toolInput(toolCall.getParameters())
               .context(state.getContext())
               .build();
-
       return GuardrailExecutor.executeToolInputGuardrails(
               typedAgent.getToolInputGuardrails(), guardrailArgs)
           .thenCompose(
               guardrailResult -> {
                 if (!guardrailResult.isAllowed()) {
-                  // Guardrail rejected - use replacement content
                   RunToolCallOutputItem output =
                       RunToolCallOutputItem.builder()
                           .toolCallId(toolCall.getId())
@@ -727,12 +689,10 @@ public class Runner extends RunHooks<Object, TextOutput> {
                   return CompletableFuture.completedFuture(null);
                 }
 
-                // Guardrail allowed - proceed with tool execution
                 return executeToolWithOutputGuardrails(state, toolCall, tool, typedAgent);
               });
     }
 
-    // No input guardrails - proceed directly
     return executeToolWithOutputGuardrails(state, toolCall, tool, typedAgent);
   }
 
@@ -745,7 +705,6 @@ public class Runner extends RunHooks<Object, TextOutput> {
     return invokeTool(tool, toolCall.getParameters())
         .thenCompose(
             result -> {
-              // Execute tool output guardrails
               if (typedAgent.getToolOutputGuardrails() != null
                   && !typedAgent.getToolOutputGuardrails().isEmpty()) {
                 ToolOutputGuardrailFunctionArgs<TContext> guardrailArgs =
@@ -755,7 +714,6 @@ public class Runner extends RunHooks<Object, TextOutput> {
                         .toolOutput(result)
                         .context(state.getContext())
                         .build();
-
                 return GuardrailExecutor.executeToolOutputGuardrails(
                         typedAgent.getToolOutputGuardrails(), guardrailArgs)
                     .thenApply(
@@ -764,7 +722,6 @@ public class Runner extends RunHooks<Object, TextOutput> {
                               guardrailResult.isAllowed()
                                   ? result
                                   : guardrailResult.getReplacementContent();
-
                           RunToolCallOutputItem output =
                               RunToolCallOutputItem.builder()
                                   .toolCallId(toolCall.getId())
@@ -776,7 +733,6 @@ public class Runner extends RunHooks<Object, TextOutput> {
                         });
               }
 
-              // No output guardrails - add result directly
               RunToolCallOutputItem output =
                   RunToolCallOutputItem.builder()
                       .toolCallId(toolCall.getId())
@@ -789,7 +745,6 @@ public class Runner extends RunHooks<Object, TextOutput> {
         .thenApply(v -> (Void) v)
         .exceptionally(
             error -> {
-              // Use tool's errorFunction to generate user-visible error message
               @SuppressWarnings("unchecked")
               FunctionTool<Object, Object, Object> uncheckedTool =
                   (FunctionTool<Object, Object, Object>) tool;
