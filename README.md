@@ -41,7 +41,7 @@ Add to your `pom.xml`:
 <dependency>
     <groupId>ai.acolite</groupId>
     <artifactId>openai-agent-sdk</artifactId>
-    <version>0.3.0-SNAPSHOT</version>
+    <version>0.4.0</version>
 </dependency>
 ```
 
