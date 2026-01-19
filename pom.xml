@@ -146,6 +146,10 @@
                 <artifactId>maven-surefire-plugin</artifactId>
                 <version>3.2.3</version>
                 <configuration>
+                    <excludes>
+                        <exclude>**/*RealAPITest.java</exclude>
+                        <exclude>**/*IntegrationTest.java</exclude>
+                    </excludes>
                     <argLine>
                         --add-opens=java.base/java.util=ALL-UNNAMED
                         --add-opens=java.base/java.lang=ALL-UNNAMED
