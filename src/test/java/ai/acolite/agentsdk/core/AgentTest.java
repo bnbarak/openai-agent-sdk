@@ -40,7 +40,7 @@ class AgentTest {
   void builder_withoutName_throwsException() {
     Exception exception =
         assertThrows(
-            IllegalArgumentException.class,
+            NullPointerException.class,
             () ->
                 Agent.<UnknownContext, TextOutput>builder()
                     .instructions("Test instructions")

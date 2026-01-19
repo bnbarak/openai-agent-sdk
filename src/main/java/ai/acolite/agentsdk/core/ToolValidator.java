@@ -46,17 +46,14 @@ public class ToolValidator {
    * @throws IllegalArgumentException if validation fails with details about what's wrong
    */
   public static void validate(Object tool) {
-    if (!(tool instanceof FunctionTool)) {
+    if (!(tool instanceof FunctionTool<?, ?, ?> functionTool)) {
       throw new IllegalArgumentException(
           "Tool must implement FunctionTool interface, got: " + tool.getClass().getName());
     }
 
-    FunctionTool<?, ?, ?> functionTool = (FunctionTool<?, ?, ?>) tool;
     List<String> issues = new ArrayList<>();
-
     validateBasicProperties(functionTool, issues);
     validateParameters(functionTool, issues);
-
     if (!issues.isEmpty()) {
       throw new IllegalArgumentException(
           String.format(
@@ -88,18 +85,15 @@ public class ToolValidator {
       return;
     }
 
-    if (!(parameters instanceof Class<?>)) {
+    if (!(parameters instanceof Class<?> paramClass)) {
       issues.add(
           String.format(
               "getParameters() must return a Class, got: %s", parameters.getClass().getName()));
       return;
     }
 
-    Class<?> paramClass = (Class<?>) parameters;
-
     boolean hasJsonTypeName = paramClass.isAnnotationPresent(JsonTypeName.class);
     boolean hasJsonClassDescription = paramClass.isAnnotationPresent(JsonClassDescription.class);
-
     if (!hasJsonTypeName && !hasJsonClassDescription) {
       issues.add(
           String.format(
@@ -114,7 +108,6 @@ public class ToolValidator {
   private static void validateFieldDescriptions(Class<?> paramClass, List<String> issues) {
     List<Field> allFields = new ArrayList<>();
     Class<?> current = paramClass;
-
     while (current != null && current != Object.class) {
       allFields.addAll(Arrays.asList(current.getDeclaredFields()));
       current = current.getSuperclass();
