@@ -91,7 +91,7 @@ public class CalculatorTool
 }
 ```
 
-[View complete example →](https://github.com/bnbarak/openai-agent-sdk/blob/main/src/main/java/com/acoliteai/agentsdk/examples/tools/CalculatorTool.java)
+[View complete example →](https://github.com/bnbarak/openai-agent-sdk/blob/main/src/main/java/ai/acolite/agentsdk/examples/tools/CalculatorTool.java)
 
 ## Adding Tools to an Agent
 
@@ -116,7 +116,7 @@ System.out.println(result.getFinalOutput());
 
 The agent automatically calls the tool when needed and incorporates the result into its response.
 
-[View complete example →](https://github.com/bnbarak/openai-agent-sdk/blob/main/src/main/java/com/acoliteai/agentsdk/examples/WellTypedToolsExample.java)
+[View complete example →](https://github.com/bnbarak/openai-agent-sdk/blob/main/src/main/java/ai/acolite/agentsdk/examples/WellTypedToolsExample.java)
 
 ## Type-Safe Input Parameters
 
@@ -145,7 +145,7 @@ Benefits:
 - **Schema Generation**: Jackson automatically generates JSON schema
 - **Validation**: Type system prevents invalid inputs
 
-[View complex example with nested types →](https://github.com/bnbarak/openai-agent-sdk/blob/main/src/main/java/com/acoliteai/agentsdk/examples/tools/WeatherTool.java)
+[View complex example with nested types →](https://github.com/bnbarak/openai-agent-sdk/blob/main/src/main/java/ai/acolite/agentsdk/examples/tools/WeatherTool.java)
 
 ## Type-Safe Output Values
 
@@ -416,7 +416,7 @@ Agent<UnknownContext, TextOutput> agent =
         .build();
 ```
 
-[View complete example →](https://github.com/bnbarak/openai-agent-sdk/blob/main/src/main/java/com/acoliteai/agentsdk/examples/HostedToolsExample.java)
+[View complete example →](https://github.com/bnbarak/openai-agent-sdk/blob/main/src/main/java/ai/acolite/agentsdk/examples/HostedToolsExample.java)
 
 ## Error Handling in Tools
 
@@ -540,7 +540,7 @@ public class FileReadTool implements FunctionTool<MyContext, Input, Output> {
 
 ## Additional Resources
 
-- [WellTypedToolsExample.java](https://github.com/bnbarak/openai-agent-sdk/blob/main/src/main/java/com/acoliteai/agentsdk/examples/WellTypedToolsExample.java) - Multiple tool examples
-- [CalculatorTool.java](https://github.com/bnbarak/openai-agent-sdk/blob/main/src/main/java/com/acoliteai/agentsdk/examples/tools/CalculatorTool.java) - Simple tool
-- [WeatherTool.java](https://github.com/bnbarak/openai-agent-sdk/blob/main/src/main/java/com/acoliteai/agentsdk/examples/tools/WeatherTool.java) - Complex nested types
+- [WellTypedToolsExample.java](https://github.com/bnbarak/openai-agent-sdk/blob/main/src/main/java/ai/acolite/agentsdk/examples/WellTypedToolsExample.java) - Multiple tool examples
+- [CalculatorTool.java](https://github.com/bnbarak/openai-agent-sdk/blob/main/src/main/java/ai/acolite/agentsdk/examples/tools/CalculatorTool.java) - Simple tool
+- [WeatherTool.java](https://github.com/bnbarak/openai-agent-sdk/blob/main/src/main/java/ai/acolite/agentsdk/examples/tools/WeatherTool.java) - Complex nested types
 - [API Reference](../javadoc/index.html) - Complete Javadoc documentation

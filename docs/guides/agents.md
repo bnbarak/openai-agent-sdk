@@ -34,7 +34,7 @@ System.out.println(result.getFinalOutput());
 // Output: "An AI agent is a software system that uses AI to perceive its environment..."
 ```
 
-[View complete example →](https://github.com/bnbarak/openai-agent-sdk/blob/main/src/main/java/com/acoliteai/agentsdk/examples/BasicTextOutput.java)
+[View complete example →](https://github.com/bnbarak/openai-agent-sdk/blob/main/src/main/java/ai/acolite/agentsdk/examples/BasicTextOutput.java)
 
 !!! note "API Key Configuration"
     The SDK automatically reads the `OPENAI_API_KEY` environment variable. System properties take precedence over environment variables if both are set.
@@ -132,7 +132,7 @@ if (result.getFinalOutput() instanceof WeatherReport weather) {
 }
 ```
 
-[View complete example →](https://github.com/bnbarak/openai-agent-sdk/blob/main/src/main/java/com/acoliteai/agentsdk/examples/StructuredOutput.java)
+[View complete example →](https://github.com/bnbarak/openai-agent-sdk/blob/main/src/main/java/ai/acolite/agentsdk/examples/StructuredOutput.java)
 
 !!! tip "When to Use Structured Output"
     Use structured output when you need:
@@ -221,6 +221,6 @@ RunResult<UnknownContext, ?> result2 = Runner.run(agent, "Question 2");
 
 ## Additional Resources
 
-- [BasicTextOutput.java](https://github.com/bnbarak/openai-agent-sdk/blob/main/src/main/java/com/acoliteai/agentsdk/examples/BasicTextOutput.java) - Simple text agent
-- [StructuredOutput.java](https://github.com/bnbarak/openai-agent-sdk/blob/main/src/main/java/com/acoliteai/agentsdk/examples/StructuredOutput.java) - Structured output example
+- [BasicTextOutput.java](https://github.com/bnbarak/openai-agent-sdk/blob/main/src/main/java/ai/acolite/agentsdk/examples/BasicTextOutput.java) - Simple text agent
+- [StructuredOutput.java](https://github.com/bnbarak/openai-agent-sdk/blob/main/src/main/java/ai/acolite/agentsdk/examples/StructuredOutput.java) - Structured output example
 - [API Reference](../javadoc/index.html) - Complete Javadoc documentation

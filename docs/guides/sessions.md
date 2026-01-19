@@ -129,7 +129,7 @@ System.out.println("Agent: " + result4.getFinalOutput());
 System.out.println("Total items in history: " + session.getItems(null).join().size());
 ```
 
-[View complete example →](https://github.com/bnbarak/openai-agent-sdk/blob/main/src/main/java/com/acoliteai/agentsdk/examples/MemorySessionExample.java)
+[View complete example →](https://github.com/bnbarak/openai-agent-sdk/blob/main/src/main/java/ai/acolite/agentsdk/examples/MemorySessionExample.java)
 
 !!! warning "Data Loss"
     MemorySession data is lost when the JVM exits. Use SQLiteSession for persistence.
@@ -238,7 +238,7 @@ try (SQLiteSession session = SQLiteSession.fromFile(sessionId, dbPath)) {
 
 Run this example multiple times - the agent remembers details across program executions.
 
-[View complete example →](https://github.com/bnbarak/openai-agent-sdk/blob/main/src/main/java/com/acoliteai/agentsdk/examples/SQLiteSessionExample.java)
+[View complete example →](https://github.com/bnbarak/openai-agent-sdk/blob/main/src/main/java/ai/acolite/agentsdk/examples/SQLiteSessionExample.java)
 
 ## Session Operations
 
@@ -472,6 +472,6 @@ SQLiteSession uses connection pooling and WAL mode for concurrent access.
 
 ## Additional Resources
 
-- [MemorySessionExample.java](https://github.com/bnbarak/openai-agent-sdk/blob/main/src/main/java/com/acoliteai/agentsdk/examples/MemorySessionExample.java) - In-memory session usage
-- [SQLiteSessionExample.java](https://github.com/bnbarak/openai-agent-sdk/blob/main/src/main/java/com/acoliteai/agentsdk/examples/SQLiteSessionExample.java) - Persistent storage
+- [MemorySessionExample.java](https://github.com/bnbarak/openai-agent-sdk/blob/main/src/main/java/ai/acolite/agentsdk/examples/MemorySessionExample.java) - In-memory session usage
+- [SQLiteSessionExample.java](https://github.com/bnbarak/openai-agent-sdk/blob/main/src/main/java/ai/acolite/agentsdk/examples/SQLiteSessionExample.java) - Persistent storage
 - [API Reference](../javadoc/index.html) - Complete Javadoc documentation

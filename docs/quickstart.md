@@ -16,7 +16,7 @@ Add the dependency to your `pom.xml`:
 
 ```xml
 <dependency>
-    <groupId>com.acoliteai</groupId>
+    <groupId>ai.acolite</groupId>
     <artifactId>openai-agent-sdk</artifactId>
     <version>0.1.0-SNAPSHOT</version>
 </dependency>
@@ -25,7 +25,7 @@ Add the dependency to your `pom.xml`:
 Or for Gradle (`build.gradle`):
 
 ```groovy
-implementation 'com.acoliteai:openai-agent-sdk:0.1.0-SNAPSHOT'
+implementation 'ai.acolite:openai-agent-sdk:0.1.0-SNAPSHOT'
 ```
 
 ## 2. Set Your API Key
@@ -41,11 +41,11 @@ export OPENAI_API_KEY='your-api-key-here'
 Create a simple agent that answers a question:
 
 ```java
-import com.acoliteai.agentsdk.core.Agent;
-import com.acoliteai.agentsdk.core.RunResult;
-import com.acoliteai.agentsdk.core.Runner;
-import com.acoliteai.agentsdk.core.types.TextOutput;
-import com.acoliteai.agentsdk.core.types.UnknownContext;
+import ai.acolite.agentsdk.core.Agent;
+import ai.acolite.agentsdk.core.RunResult;
+import ai.acolite.agentsdk.core.Runner;
+import ai.acolite.agentsdk.core.types.TextOutput;
+import ai.acolite.agentsdk.core.types.UnknownContext;
 
 public class Example {
   public static void main(String[] args) {
@@ -68,7 +68,7 @@ public class Example {
 Compile and run:
 
 ```bash
-mvn exec:java -Dexec.mainClass="com.acoliteai.agentsdk.examples.HelloWorld"
+mvn exec:java -Dexec.mainClass="ai.acolite.agentsdk.examples.HelloWorld"
 ```
 
 You should see the agent's response printed to the console.

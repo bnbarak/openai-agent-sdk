@@ -51,7 +51,7 @@ System.out.println(result.getFinalOutput());
 // Output from Technical Support specialist: "Let's troubleshoot this crash..."
 ```
 
-[View complete example →](https://github.com/bnbarak/openai-agent-sdk/blob/main/src/main/java/com/acoliteai/agentsdk/examples/AgentHandoffExample.java)
+[View complete example →](https://github.com/bnbarak/openai-agent-sdk/blob/main/src/main/java/ai/acolite/agentsdk/examples/AgentHandoffExample.java)
 
 ## How Handoffs Work
 
@@ -353,5 +353,5 @@ Specialists access full conversation history, including interactions before the 
 
 ## Additional Resources
 
-- [AgentHandoffExample.java](https://github.com/bnbarak/openai-agent-sdk/blob/main/src/main/java/com/acoliteai/agentsdk/examples/AgentHandoffExample.java) - Complete handoff examples
+- [AgentHandoffExample.java](https://github.com/bnbarak/openai-agent-sdk/blob/main/src/main/java/ai/acolite/agentsdk/examples/AgentHandoffExample.java) - Complete handoff examples
 - [API Reference](../javadoc/index.html) - Complete Javadoc documentation

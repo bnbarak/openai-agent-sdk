@@ -22,7 +22,7 @@ This guide explains how to write and update documentation in the `docs/` directo
 
 **Never copy-paste code into documentation.** Instead:
 
-1. Write real, runnable Java examples in `src/main/java/com/acoliteai/agentsdk/examples/`
+1. Write real, runnable Java examples in `src/main/java/ai/acolite/agentsdk/examples/`
 2. Test them in CI (they run in E2E workflow)
 3. Reference them in docs via links or includes
 
@@ -97,10 +97,10 @@ Brief 1-2 sentence overview of what this guide covers.
 ## Quick Example
 
 ```java
---8<-- "src/main/java/com/acoliteai/agentsdk/examples/BasicTextOutputExample.java:create-agent"
+--8<-- "src/main/java/ai/acolite/agentsdk/examples/BasicTextOutputExample.java:create-agent"
 ```
 
-[Link to complete example](https://github.com/bnbarak/openai-agent-sdk/blob/main/src/main/java/com/acoliteai/agentsdk/examples/BasicTextOutputExample.java)
+[Link to complete example](https://github.com/bnbarak/openai-agent-sdk/blob/main/src/main/java/ai/acolite/agentsdk/examples/BasicTextOutputExample.java)
 
 ## Concepts
 
@@ -162,10 +162,10 @@ public class BasicTextOutputExample {
 Here's how to create a basic agent:
 
 ```java
---8<-- "src/main/java/com/acoliteai/agentsdk/examples/BasicTextOutputExample.java:create-agent"
+--8<-- "src/main/java/ai/acolite/agentsdk/examples/BasicTextOutputExample.java:create-agent"
 ```
 
-[View complete example](https://github.com/bnbarak/openai-agent-sdk/blob/main/src/main/java/com/acoliteai/agentsdk/examples/BasicTextOutputExample.java)
+[View complete example](https://github.com/bnbarak/openai-agent-sdk/blob/main/src/main/java/ai/acolite/agentsdk/examples/BasicTextOutputExample.java)
 ```
 
 **Why this is best:**
@@ -182,7 +182,7 @@ For very small examples (< 30 lines), include the entire file:
 ## Example: Creating an Agent
 
 ```java
---8<-- "src/main/java/com/acoliteai/agentsdk/examples/BasicTextOutputExample.java"
+--8<-- "src/main/java/ai/acolite/agentsdk/examples/BasicTextOutputExample.java"
 ```
 ```
 
@@ -195,7 +195,7 @@ Only link without showing code if the example is extremely long or complex:
 ```markdown
 ## Example: Creating an Agent
 
-See [HelloWorld.java](https://github.com/bnbarak/openai-agent-sdk/blob/main/src/main/java/com/acoliteai/agentsdk/examples/HelloWorld.java) for a complete working example.
+See [HelloWorld.java](https://github.com/bnbarak/openai-agent-sdk/blob/main/src/main/java/ai/acolite/agentsdk/examples/HelloWorld.java) for a complete working example.
 ```
 
 **When to use**: Advanced examples, complete applications, or reference implementations.
@@ -227,7 +227,7 @@ See [complete example](https://github.com/.../HelloWorld.java)
 Point users to Javadoc for detailed API reference:
 
 ```markdown
-For details on all available options, see the [`Agent.Builder`](/api/com/acoliteai/agentsdk/core/Agent.Builder.html) Javadoc.
+For details on all available options, see the [`Agent.Builder`](/api/ai/acolite/agentsdk/core/Agent.Builder.html) Javadoc.
 ```
 
 ### Link Between Docs
@@ -285,7 +285,7 @@ mvn clean install
 ```xml
 <!-- XML/Maven -->
 <dependency>
-  <groupId>com.acoliteai</groupId>
+  <groupId>ai.acolite</groupId>
   <artifactId>openai-agent-sdk</artifactId>
 </dependency>
 ```
@@ -408,17 +408,17 @@ This guide shows you how to create a basic agent and run your first conversation
 ## Quick Start
 
 ```java
---8<-- "src/main/java/com/acoliteai/agentsdk/examples/BasicTextOutputExample.java:create-agent"
+--8<-- "src/main/java/ai/acolite/agentsdk/examples/BasicTextOutputExample.java:create-agent"
 ```
 
-[View complete example](https://github.com/bnbarak/openai-agent-sdk/blob/main/src/main/java/com/acoliteai/agentsdk/examples/BasicTextOutputExample.java)
+[View complete example](https://github.com/bnbarak/openai-agent-sdk/blob/main/src/main/java/ai/acolite/agentsdk/examples/BasicTextOutputExample.java)
 
 ## Running the Agent
 
 Once you have an agent, run it with a message:
 
 ```java
---8<-- "src/main/java/com/acoliteai/agentsdk/examples/BasicTextOutputExample.java:run-agent"
+--8<-- "src/main/java/ai/acolite/agentsdk/examples/BasicTextOutputExample.java:run-agent"
 ```
 
 ## How It Works

@@ -1,0 +1,29 @@
+package ai.acolite.agentsdk.core.errors;
+
+import ai.acolite.agentsdk.core.AgentsError;
+import lombok.Getter;
+
+/**
+ * ToolInputGuardrailTripwireTriggered
+ *
+ * <p>Thrown when a tool input guardrail throws an exception, halting agent execution.
+ *
+ * <p>Ported from TypeScript OpenAI Agents SDK Source: <a
+ * href="https://github.com/openai/openai-agents-js/blob/main/packages/agents-core/src/errors.ts">errors.ts</a>
+ */
+@Getter
+public class ToolInputGuardrailTripwireTriggered extends AgentsError {
+
+  private final String guardrailName;
+  private final Object metadata;
+
+  public ToolInputGuardrailTripwireTriggered(String guardrailName, Object metadata) {
+    super(
+        "Tool input guardrail '"
+            + guardrailName
+            + "' triggered exception"
+            + (metadata != null ? ": " + metadata : ""));
+    this.guardrailName = guardrailName;
+    this.metadata = metadata;
+  }
+}
