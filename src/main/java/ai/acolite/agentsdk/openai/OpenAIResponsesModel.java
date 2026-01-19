@@ -2,10 +2,8 @@ package ai.acolite.agentsdk.openai;
 
 import ai.acolite.agentsdk.core.*;
 import ai.acolite.agentsdk.core.types.JsonSchemaOutput;
-import ai.acolite.agentsdk.exceptions.NotImplementedException;
 import com.openai.client.OpenAIClient;
 import com.openai.core.http.StreamResponse;
-import com.openai.helpers.ResponseAccumulator;
 import com.openai.models.responses.Response;
 import com.openai.models.responses.ResponseCreateParams;
 import com.openai.models.responses.ResponseInputItem;
@@ -344,8 +342,7 @@ public class OpenAIResponsesModel implements Model {
     // Use streaming API
     try (StreamResponse<ResponseStreamEvent> streamResponse =
         client.responses().createStreaming(params)) {
-      streamResponse
-          .stream()
+      streamResponse.stream()
           .forEach(
               event -> {
                 // Process different event types

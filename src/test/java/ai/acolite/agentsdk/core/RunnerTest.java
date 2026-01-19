@@ -478,7 +478,9 @@ class RunnerTest {
     when(mockProvider.getModel(anyString()))
         .thenReturn(CompletableFuture.completedFuture(mockModel));
     AsyncIterable<StreamEvent> mockStreamEvents =
-        () -> List.<StreamEvent>of(TextDeltaStreamEvent.builder().delta("Response").build()).iterator();
+        () ->
+            List.<StreamEvent>of(TextDeltaStreamEvent.builder().delta("Response").build())
+                .iterator();
     when(mockModel.getStreamedResponse(any(ModelRequest.class))).thenReturn(mockStreamEvents);
     RunConfig config = RunConfig.builder().maxTurns(5).modelProvider(mockProvider).build();
 

@@ -513,13 +513,13 @@ public class Runner extends RunHooks<Object, TextOutput> {
             .build();
 
     return CompletableFuture.supplyAsync(
-        () -> {
-          try {
-            return processStreamedModelResponse(state, model, request, eventEmitter);
-          } catch (Exception e) {
-            throw new SystemError("Failed to process streamed response", e);
-          }
-        })
+            () -> {
+              try {
+                return processStreamedModelResponse(state, model, request, eventEmitter);
+              } catch (Exception e) {
+                throw new SystemError("Failed to process streamed response", e);
+              }
+            })
         .thenCompose(
             response -> {
               state.addModelResponse(response);
@@ -635,18 +635,12 @@ public class Runner extends RunHooks<Object, TextOutput> {
     StringBuilder accumulatedText = new StringBuilder();
     AsyncIterable<StreamEvent> streamEvents = model.getStreamedResponse(request);
 
-    // Process streaming events
-    java.util.Iterator<StreamEvent> iterator = streamEvents.iterator();
-    while (iterator.hasNext()) {
-      StreamEvent event = iterator.next();
+    for (StreamEvent event : streamEvents) {
       if (event instanceof TextDeltaStreamEvent textDelta) {
         String delta = textDelta.getDelta();
         accumulatedText.append(delta);
-
-        // Create and emit a RunItem for each text delta
         RunMessageOutputItem messageItem =
             RunMessageOutputItem.builder().content(delta).role("assistant").build();
-
         eventEmitter.emit(
             RunItemStreamEvent.builder()
                 .item(messageItem)
@@ -655,9 +649,8 @@ public class Runner extends RunHooks<Object, TextOutput> {
       }
     }
 
-    // Build a ModelResponse from the accumulated text
     List<Object> output = new ArrayList<>();
-    if (accumulatedText.length() > 0) {
+    if (!accumulatedText.isEmpty()) {
       output.add(accumulatedText.toString());
     }
 
