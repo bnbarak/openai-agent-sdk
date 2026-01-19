@@ -6,7 +6,7 @@
 
     <groupId>ai.acolite</groupId>
     <artifactId>openai-agent-sdk</artifactId>
-    <version>0.3.0-SNAPSHOT</version>
+    <version>0.3.0</version>
     <packaging>jar</packaging>
 
     <name>OpenAI Agent SDK for Java</name>
