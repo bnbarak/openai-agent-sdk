@@ -344,6 +344,10 @@
                         <artifactId>maven-failsafe-plugin</artifactId>
                         <version>3.2.3</version>
                         <configuration>
+                            <includes>
+                                <include>**/*RealAPITest.java</include>
+                                <include>**/*IntegrationTest.java</include>
+                            </includes>
                             <argLine>
                                 --add-opens=java.base/java.util=ALL-UNNAMED
                                 --add-opens=java.base/java.lang=ALL-UNNAMED
