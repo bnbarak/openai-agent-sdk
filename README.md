@@ -81,6 +81,29 @@ public class HelloWorld {
 }
 ```
 
+## Interactive Demo
+
+Try the SDK with our interactive command-line demos:
+
+```bash
+cd demo
+mvn clean package
+
+# Run async chat demo (responses appear all at once)
+java -jar target/async-chat-demo.jar
+
+# Or run streaming chat demo (real-time character-by-character)
+java -jar target/streaming-chat-demo.jar
+```
+
+The demos include:
+- 💬 **Interactive chat interface** with conversation memory
+- 🏠 **Address validation tool** using the Smarty US Street API
+- 🔄 **Up to 20 turns** for complex multi-step workflows
+- 📝 **Both async and streaming modes** to compare execution patterns
+
+[View demo source code →](demo/) | [Demo README →](demo/README.md)
+
 ## Core Concepts
 
 ### Agents
