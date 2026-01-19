@@ -21,7 +21,10 @@ public class AsyncChatDemo {
         printWelcome(terminal);
 
         Session session = new MemorySession("async-chat-demo");
-        RunConfig config = RunConfig.builder().session(session).build();
+        RunConfig config = RunConfig.builder()
+                .session(session)
+                .maxTurns(20)
+                .build();
 
         runChatLoop(agent, terminal, reader, config);
         terminal.close();

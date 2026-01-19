@@ -23,7 +23,10 @@ public class StreamingChatDemo {
         printWelcome(terminal);
 
         Session session = new MemorySession("streaming-chat-demo");
-        RunConfig config = RunConfig.builder().session(session).build();
+        RunConfig config = RunConfig.builder()
+                .session(session)
+                .maxTurns(20)
+                .build();
 
         runStreamingChatLoop(agent, terminal, reader, config);
         terminal.close();

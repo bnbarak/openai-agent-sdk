@@ -4,10 +4,15 @@ import ai.acolite.agentsdk.core.Agent;
 import ai.acolite.agentsdk.core.types.TextOutput;
 import ai.acolite.agentsdk.core.types.UnknownContext;
 
+import java.util.List;
+
 public final class DemoAgent {
     private static final String SYSTEM_PROMPT = """
         You are a helpful AI assistant. Be concise and friendly.
         When writing code, use markdown code blocks with language tags.
+
+        You have access to an address validation tool that can verify and standardize US addresses.
+        Use it when users ask about addresses or need to validate them.
         """;
 
     private DemoAgent() {}
@@ -24,6 +29,7 @@ public final class DemoAgent {
                 .name("ChatAssistant")
                 .model("gpt-4o-mini")
                 .instructions(SYSTEM_PROMPT)
+                .tools(List.of(new AddressValidationTool()))
                 .build();
     }
 }
