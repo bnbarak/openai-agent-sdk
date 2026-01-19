@@ -1,10 +1,13 @@
 # OpenAI Agent SDK for Java
 
-A modern Java SDK for building AI agents with OpenAI's API, similar to the TypeScript OpenAI Agents SDK (https://openai.github.io/openai-agents-js/), following its public API and implementation patterns where possible.
+A modern Java SDK for building AI agents with OpenAI's API, inspired by the [OpenAI Agents TypeScript SDK](https://openai.github.io/openai-agents-js/).
 
 [![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](https://opensource.org/licenses/Apache-2.0)
 [![Java](https://img.shields.io/badge/Java-21+-orange.svg)](https://www.oracle.com/java/)
 [![Maven Central](https://img.shields.io/badge/maven--central-0.1.0--SNAPSHOT-blue.svg)](https://search.maven.org/)
+[![Documentation](https://img.shields.io/badge/docs-latest-blue.svg)](https://bnbarak.github.io/openai-agent-sdk/)
+
+**📖 [Full Documentation](https://bnbarak.github.io/openai-agent-sdk/)** | **🚀 [Quickstart Guide](https://bnbarak.github.io/openai-agent-sdk/quickstart/)** | **📚 [API Reference](https://bnbarak.github.io/openai-agent-sdk/javadoc/)**
 
 ## Features
 
@@ -91,6 +94,8 @@ Agent<UnknownContext, TextOutput> agent =
         .build();
 ```
 
+[Learn more about Agents →](https://bnbarak.github.io/openai-agent-sdk/guides/agents/)
+
 ### Tool Calling
 
 Define custom tools that agents can invoke. Tools use type-safe input/output with automatic JSON schema generation:
@@ -153,6 +158,8 @@ public class CalculatorTool
 
 [View complete tool example →](src/main/java/ai/acolite/agentsdk/examples/tools/CalculatorTool.java)
 
+[Learn more about Tools →](https://bnbarak.github.io/openai-agent-sdk/guides/tools/)
+
 ### Hosted Tools
 
 Use OpenAI's hosted tools for web search and image generation:
@@ -178,6 +185,8 @@ Agent<UnknownContext, TextOutput> artistAgent =
 ```
 
 [View hosted tools example →](src/main/java/ai/acolite/agentsdk/examples/HostedToolsExample.java)
+
+[Learn more about Tools →](https://bnbarak.github.io/openai-agent-sdk/guides/tools/)
 
 ### Multi-Agent Handoffs
 
@@ -213,6 +222,8 @@ RunResult<UnknownContext, ?> result =
 ```
 
 [View complete handoff example →](src/main/java/ai/acolite/agentsdk/examples/AgentHandoffExample.java)
+
+[Learn more about Handoffs →](https://bnbarak.github.io/openai-agent-sdk/guides/handoffs/)
 
 ### Memory & Sessions
 
@@ -258,6 +269,8 @@ Session session = new SQLiteSession("conversations.db", "user-123");
 
 [View memory example →](src/main/java/ai/acolite/agentsdk/examples/MemorySessionExample.java) | [View SQLite example →](src/main/java/ai/acolite/agentsdk/examples/SQLiteSessionExample.java)
 
+[Learn more about Sessions →](https://bnbarak.github.io/openai-agent-sdk/guides/sessions/)
+
 ### Tracing
 
 Monitor agent execution with distributed tracing:
@@ -281,6 +294,8 @@ Runner.run(agent, "Hello!");
 ```
 
 [View complete tracing example →](src/main/java/ai/acolite/agentsdk/examples/AgentWithTracingExample.java)
+
+[Learn more about Tracing →](https://bnbarak.github.io/openai-agent-sdk/guides/tracing/)
 
 ## Development
 
@@ -316,10 +331,19 @@ mvn spotless:apply
 
 ## Documentation
 
-- [Full Documentation](https://bnbarak.github.io/openai-agent-sdk/)
-- [Quickstart Guide](https://bnbarak.github.io/openai-agent-sdk/quickstart/)
-- [API Reference](https://bnbarak.github.io/openai-agent-sdk/api/)
-- [Examples (full directory)](src/main/java/ai/acolite/agentsdk/examples/)
+**📖 [Full Documentation](https://bnbarak.github.io/openai-agent-sdk/)** - Complete guides and tutorials
+
+**Guides:**
+- [Agents](https://bnbarak.github.io/openai-agent-sdk/guides/agents/) - Creating and configuring agents
+- [Tools](https://bnbarak.github.io/openai-agent-sdk/guides/tools/) - Building custom function tools
+- [Handoffs](https://bnbarak.github.io/openai-agent-sdk/guides/handoffs/) - Multi-agent coordination
+- [Sessions](https://bnbarak.github.io/openai-agent-sdk/guides/sessions/) - Memory and conversation history
+- [Tracing](https://bnbarak.github.io/openai-agent-sdk/guides/tracing/) - Monitoring and debugging
+- [Running Agents](https://bnbarak.github.io/openai-agent-sdk/guides/running-agents/) - Execution patterns
+
+**Reference:**
+- [Javadoc API Reference](https://bnbarak.github.io/openai-agent-sdk/javadoc/)
+- [Examples (source code)](src/main/java/ai/acolite/agentsdk/examples/)
 
 ## Contributing
 
@@ -351,7 +375,7 @@ This project is licensed under the Apache License 2.0 - see the [LICENSE](LICENS
 
 - 📧 Email: support@acolite.ai
 - 💬 GitHub Issues: [Report a bug](https://github.com/bnbarak/openai-agent-sdk/issues)
-- 📖 Documentation: [docs.acolite.ai](https://docs.acolite.ai)
+- 📖 Documentation: [bnbarak.github.io/openai-agent-sdk](https://bnbarak.github.io/openai-agent-sdk/)
 
 ---
 
