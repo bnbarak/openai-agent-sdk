@@ -631,10 +631,8 @@ public class Runner extends RunHooks<Object, TextOutput> {
       Model model,
       ModelRequest request,
       ReadableStreamImpl<RunStreamEvent> eventEmitter) {
-
     StringBuilder accumulatedText = new StringBuilder();
     AsyncIterable<StreamEvent> streamEvents = model.getStreamedResponse(request);
-
     for (StreamEvent event : streamEvents) {
       if (event instanceof TextDeltaStreamEvent textDelta) {
         String delta = textDelta.getDelta();
