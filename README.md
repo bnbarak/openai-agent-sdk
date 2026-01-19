@@ -359,10 +359,6 @@ Contributions are welcome! Please read our [Contributing Guide](CONTRIBUTING.md)
 6. Push to the branch (`git push origin feature/amazing-feature`)
 7. Open a Pull Request
 
-## Security
-
-See [SECURITY.md](SECURITY.md) for details on reporting security vulnerabilities.
-
 ## License
 
 This project is licensed under the Apache License 2.0 - see the [LICENSE](LICENSE) file for details.

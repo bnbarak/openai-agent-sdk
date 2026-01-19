@@ -6,11 +6,11 @@ This guide explains how to publish the OpenAI Agent SDK to Maven Central.
 
 Before you can publish, you need to set up the following:
 
-### 1. Sonatype OSSRH Account
+### 1. Maven Central Account
 
-1. Create an account at [Sonatype JIRA](https://issues.sonatype.org/)
-2. Create a ticket to claim the `ai.acolite` groupId (if not already done)
-3. Wait for approval from Sonatype staff
+1. Create an account at [Maven Central Portal](https://central.sonatype.com/)
+2. Verify your namespace `ai.acolite` (already verified for this project)
+3. Generate publishing credentials (User Token) from your account page
 
 ### 2. GPG Key for Signing
 
@@ -33,10 +33,17 @@ Add the following secrets to your GitHub repository (Settings → Secrets and va
 
 | Secret Name | Description |
 |-------------|-------------|
-| `OSSRH_USERNAME` | Your Sonatype JIRA username |
-| `OSSRH_PASSWORD` | Your Sonatype JIRA password or token |
+| `OSSRH_USERNAME` | Your Maven Central user token username (from central.sonatype.com account page) |
+| `OSSRH_PASSWORD` | Your Maven Central user token password (from central.sonatype.com account page) |
 | `GPG_PRIVATE_KEY` | Your GPG private key (entire output from export command) |
 | `GPG_PASSPHRASE` | The passphrase for your GPG key |
+
+**To get Maven Central credentials:**
+1. Go to https://central.sonatype.com/ and log in
+2. Click your profile → Account
+3. Click "Generate User Token"
+4. Copy the username and password
+5. Add them as `OSSRH_USERNAME` and `OSSRH_PASSWORD` in GitHub Secrets
 
 ## Publishing Process
 
