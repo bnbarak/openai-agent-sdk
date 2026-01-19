@@ -64,4 +64,4 @@ extra:
       link: https://www.java.com
   version:
     provider: mike
-  sdk_version: "0.3.0-SNAPSHOT"  # This will be replaced by CI during build
+  sdk_version: "0.4.0"  # This will be replaced by CI during build

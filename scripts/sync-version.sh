@@ -3,9 +3,9 @@
 
 set -e
 
-# Query Maven Central for latest non-SNAPSHOT version
+# Query Maven Central metadata for latest release version
 echo "Querying Maven Central for latest release..."
-LATEST_RELEASE=$(curl -s "https://search.maven.org/solrsearch/select?q=g:ai.acolite+AND+a:openai-agent-sdk&rows=1&wt=json" | jq -r '.response.docs[0].latestVersion // empty')
+LATEST_RELEASE=$(curl -s "https://repo1.maven.org/maven2/ai/acolite/openai-agent-sdk/maven-metadata.xml" | sed -n 's/.*<release>\(.*\)<\/release>.*/\1/p')
 
 if [ -z "$LATEST_RELEASE" ] || [[ "$LATEST_RELEASE" == *"SNAPSHOT"* ]]; then
     # Fallback to pom.xml version if no release found or if it's a SNAPSHOT
@@ -29,12 +29,14 @@ sed -i.bak "s/<version>[0-9A-Z._-]*<\/version>/<version>${VERSION}<\/version>/" 
 # Update mkdocs.yml
 sed -i.bak "s/sdk_version: \"[^\"]*\"/sdk_version: \"${VERSION}\"/" mkdocs.yml
 
+# Update markdown files (replace template variables with actual version)
+find docs -name "*.md" -type f -exec sed -i.bak "s/{{ config\\.extra\\.sdk_version }}/${VERSION}/g" {} +
+
 # Clean up backup files
 rm -f README.md.bak mkdocs.yml.bak
+find docs -name "*.md.bak" -type f -delete
 
 echo "✅ Version synced to $VERSION in:"
 echo "   - README.md (Maven Central badge and dependency)"
-echo "   - mkdocs.yml (will be used in docs site)"
-echo ""
-echo "Note: Docs markdown files use {{ config.extra.sdk_version }} variable"
-echo "      which will be automatically replaced during docs build"
+echo "   - mkdocs.yml (sdk_version variable)"
+echo "   - docs/**/*.md (replaced template variables)"

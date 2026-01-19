@@ -36,8 +36,8 @@ jobs:
       - name: Get latest release version from Maven Central
         id: get_version
         run: |
-          # Query Maven Central for latest non-SNAPSHOT version
-          LATEST_RELEASE=$(curl -s "https://search.maven.org/solrsearch/select?q=g:ai.acolite+AND+a:openai-agent-sdk&rows=1&wt=json" | jq -r '.response.docs[0].latestVersion // empty')
+          # Query Maven Central metadata for latest release version
+          LATEST_RELEASE=$(curl -s "https://repo1.maven.org/maven2/ai/acolite/openai-agent-sdk/maven-metadata.xml" | sed -n 's/.*<release>\(.*\)<\/release>.*/\1/p')
 
           if [ -z "$LATEST_RELEASE" ] || [[ "$LATEST_RELEASE" == *"SNAPSHOT"* ]]; then
             # Fallback to pom.xml version if no release found or if it's a SNAPSHOT
