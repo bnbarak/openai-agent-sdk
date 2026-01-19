@@ -1,0 +1,83 @@
+name: Publish to Maven Central
+
+on:
+  workflow_dispatch:
+    inputs:
+      dryRun:
+        description: 'Dry run (skip actual publishing)'
+        required: false
+        type: boolean
+        default: false
+
+permissions:
+  contents: read
+
+jobs:
+  publish:
+    name: Publish to Maven Central
+    runs-on: ubuntu-latest
+    env:
+      OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up JDK 21
+        uses: actions/setup-java@v4
+        with:
+          java-version: '21'
+          distribution: 'temurin'
+          cache: 'maven'
+          server-id: ossrh
+          server-username: MAVEN_USERNAME
+          server-password: MAVEN_PASSWORD
+          gpg-private-key: ${{ secrets.GPG_PRIVATE_KEY }}
+          gpg-passphrase: MAVEN_GPG_PASSPHRASE
+
+      - name: Extract version from pom.xml
+        id: version
+        run: |
+          VERSION=$(mvn help:evaluate -Dexpression=project.version -q -DforceStdout)
+          echo "version=$VERSION" >> $GITHUB_OUTPUT
+          echo "Publishing version: $VERSION"
+          echo "Dry run: ${{ github.event.inputs.dryRun }}"
+
+          # Fail if trying to publish a SNAPSHOT
+          if [[ "$VERSION" == *"-SNAPSHOT" ]]; then
+            echo "❌ Cannot publish SNAPSHOT version to Maven Central"
+            echo "Please update pom.xml to a release version (e.g., 0.1.0)"
+            exit 1
+          fi
+
+      - name: Run Spotless check
+        run: mvn spotless:check
+
+      - name: Run unit tests
+        run: mvn test
+
+      - name: Build artifacts
+        run: mvn clean package -DskipTests
+
+      - name: Publish to Maven Central (Dry Run)
+        if: ${{ github.event.inputs.dryRun == 'true' }}
+        run: |
+          echo "DRY RUN: Would publish version ${{ steps.version.outputs.version }} to Maven Central"
+          echo "Artifacts built successfully"
+          ls -lh target/*.jar
+
+      - name: Publish to Maven Central
+        if: ${{ github.event.inputs.dryRun == 'false' }}
+        env:
+          MAVEN_USERNAME: ${{ secrets.OSSRH_USERNAME }}
+          MAVEN_PASSWORD: ${{ secrets.OSSRH_PASSWORD }}
+          MAVEN_GPG_PASSPHRASE: ${{ secrets.GPG_PASSPHRASE }}
+        run: mvn deploy -DskipTests -P release
+
+      - name: Create Git tag
+        if: ${{ github.event.inputs.dryRun == 'false' }}
+        run: |
+          git config user.name "GitHub Actions"
+          git config user.email "actions@github.com"
+          git tag -a v${{ steps.version.outputs.version }} -m "Release version ${{ steps.version.outputs.version }}"
+          git push origin v${{ steps.version.outputs.version }}
