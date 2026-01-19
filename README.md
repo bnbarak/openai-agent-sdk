@@ -1,6 +1,6 @@
 # OpenAI Agent SDK for Java
 
-A modern Java SDK for building AI agents with OpenAI's API, inspired by the [OpenAI Agents TypeScript SDK](https://openai.github.io/openai-agents-js/).
+A modern Java SDK for building AI agents with OpenAI's API, inspired by the [OpenAI Agents TypeScript SDK](https://openai.github.io/openai-agents-js/). Built on the [OpenAI Java SDK](https://github.com/openai/openai-java).
 
 [![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](https://opensource.org/licenses/Apache-2.0)
 [![Java](https://img.shields.io/badge/Java-21+-orange.svg)](https://www.oracle.com/java/)
@@ -11,17 +11,19 @@ A modern Java SDK for building AI agents with OpenAI's API, inspired by the [Ope
 
 ## Features
 
-- **🧠 Agent loop**: A built-in agent loop that handles tool invocation, sends results back to the LLM, and continues until the task is complete.
-- **☕ Java-first**: Orchestrate and chain agents using idiomatic Java language features, without needing to learn new abstractions.
-- **🤝 Agents as tools / Handoffs**: A powerful mechanism for coordinating and delegating work across multiple agents.
-- **🔒 Guardrails**: Run input validation and safety checks in parallel with agent execution, and fail fast when checks do not pass.
-- **🔧 Function tools**: Turn any Java function into a tool with automatic schema generation and validation.
-- **🌐 Hosted tools**: Built-in support for OpenAI hosted tools like web search and image generation.
-- **TBD: MCP server tool calling**: Built-in MCP server tool integration that works the same way as function tools.
-- **💾 Sessions**: A persistent memory layer for maintaining working context within an agent loop.
-- **🙋 Human in the loop**: Built-in mechanisms for involving humans across agent runs.
-- **📊 Tracing**: Built-in tracing for visualizing, debugging, and monitoring workflows, with support for the OpenAI suite of evaluation, fine-tuning, and distillation tools.
-- **TBD: Realtime Agents**: Build powerful voice agents with features such as automatic interruption detection, context management, guardrails, and more.
+| Feature | Description | Docs | Examples |
+|---------|-------------|------|----------|
+| **Agent Loop** | Built-in agent loop that handles tool invocation, sends results back to the LLM, and continues until the task is complete | [Guide](https://bnbarak.github.io/openai-agent-sdk/guides/running-agents/) | [Code](src/main/java/ai/acolite/agentsdk/examples/BasicTextOutput.java) |
+| **Java-First** | Orchestrate and chain agents using idiomatic Java language features, without needing to learn new abstractions | [Guide](https://bnbarak.github.io/openai-agent-sdk/guides/agents/) | [Code](src/main/java/ai/acolite/agentsdk/examples/AgentConfiguration.java) |
+| **Handoffs** | Powerful mechanism for coordinating and delegating work across multiple agents | [Guide](https://bnbarak.github.io/openai-agent-sdk/guides/handoffs/) | [Code](src/main/java/ai/acolite/agentsdk/examples/AgentHandoffExample.java) |
+| **Guardrails** | Run input validation and safety checks in parallel with agent execution, and fail fast when checks do not pass | [Guide](https://bnbarak.github.io/openai-agent-sdk/guides/guardrails/) | [Code](src/main/java/ai/acolite/agentsdk/examples/GuardrailsExample.java) |
+| **Function Tools** | Turn any Java function into a tool with automatic schema generation and validation | [Guide](https://bnbarak.github.io/openai-agent-sdk/guides/tools/) | [Code](src/main/java/ai/acolite/agentsdk/examples/WellTypedToolsExample.java) |
+| **Hosted Tools** | Built-in support for OpenAI hosted tools like web search and image generation | [Guide](https://bnbarak.github.io/openai-agent-sdk/guides/tools/) | [Code](src/main/java/ai/acolite/agentsdk/examples/HostedToolsExample.java) |
+| **Sessions** | Persistent memory layer for maintaining working context within an agent loop | [Guide](https://bnbarak.github.io/openai-agent-sdk/guides/sessions/) | [Code](src/main/java/ai/acolite/agentsdk/examples/MemorySessionExample.java) |
+| **Human in the Loop** | Built-in mechanisms for involving humans across agent runs | [Guide](https://bnbarak.github.io/openai-agent-sdk/guides/run-context/) | [Code](src/main/java/ai/acolite/agentsdk/examples/RunContextExample.java) |
+| **Tracing** | Built-in tracing for visualizing, debugging, and monitoring workflows | [Guide](https://bnbarak.github.io/openai-agent-sdk/guides/tracing/) | [Code](src/main/java/ai/acolite/agentsdk/examples/AgentWithTracingExample.java) |
+| **MCP Server Tools** | Built-in MCP server tool integration that works the same way as function tools | TBD | TBD |
+| **Realtime API** | Build powerful voice agents with features such as automatic interruption detection, context management, and guardrails | TBD | TBD |
 
 ## Requirements
 
