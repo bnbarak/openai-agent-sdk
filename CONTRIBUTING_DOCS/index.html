@@ -1,0 +1,1585 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <script>
+        // for search plugin notably
+        const base_url = "https://bnbarak.github.io/openai-agent-sdk/";
+    </script>
+    <script>
+    const darkTheme = window.matchMedia("(prefers-color-scheme: dark)");
+    darkTheme.onchange = (e) => {
+        if (e.matches) {
+            document.documentElement.classList.add("dark")
+            localStorage.theme = 'dark';
+        } else {
+            document.documentElement.classList.remove("dark")
+            localStorage.removeItem("theme")
+        }
+    };
+
+    // On page load. Priotiry to lcaolStorage
+    if (localStorage.theme === "dark") {
+        document.documentElement.classList.add("dark")
+    } else if (localStorage.theme === "light") {
+        document.documentElement.classList.remove("dark")
+    } else if (darkTheme.matches) {
+        document.documentElement.classList.add("dark")
+    } else {
+        document.documentElement.classList.remove("dark")
+    }
+
+    // set the layout based on localStorage
+    document.documentElement.classList.add(localStorage.getItem("html-layout") || "layout-fixed");
+</script>
+
+
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>CONTRIBUTING DOCS - OpenAI Agent SDK for Java</title>
+    
+
+
+<title>CONTRIBUTING DOCS</title>
+
+
+
+
+
+
+
+
+
+<link rel="canonical" href="https://bnbarak.github.io/openai-agent-sdk/CONTRIBUTING_DOCS/">
+
+
+<!-- Open Graph (Facebook, LinkedIn) -->
+
+<meta property="og:title" content="CONTRIBUTING DOCS">
+
+
+
+
+
+<meta property="og:url" content="https://bnbarak.github.io/openai-agent-sdk/CONTRIBUTING_DOCS/">
+
+
+
+
+
+
+<!-- Twitter Card -->
+
+<meta name="twitter:title" content="CONTRIBUTING DOCS">
+
+
+
+
+
+
+<!-- JSON-LD Structured Data -->
+
+
+
+    <link rel="icon" href="../img/favicon.ico">
+
+    <link href="../css/base.css" rel="stylesheet">
+    <link href="../css/geist.css" rel="stylesheet">
+
+    
+    
+
+<link id="pygments-light" rel="stylesheet"
+    href="../css/pygments/shadcn-light.css">
+<link id="pygments-dark" rel="stylesheet"
+    href="../css/pygments/github-dark.css"
+    media="(prefers-color-scheme: dark)">
+
+
+    
+
+    
+
+    <script src="../js/callbacks.js"></script>
+
+    
+
+    
+
+    
+
+</head>
+
+<body
+    class="text-foreground group/body overscroll-none font-sans antialiased [--footer-height:calc(var(--spacing)*14)] [--header-height:calc(var(--spacing)*14)] xl:[--footer-height:calc(var(--spacing)*24)] theme-default">
+    <div id="inner-body" class="bg-background relative z-10 flex min-h-svh flex-col">
+        <header class="bg-background sticky top-0 z-50 w-full" view-transition-name="header">
+    <div class="container-wrapper 3xl:fixed:px-0 px-6">
+        <div class="3xl:fixed:container flex h-(--header-height) items-center gap-2 **:data-[slot=separator]:!h-4">
+            <button id="menu-button" data-slot="popover-trigger" onclick="onMobileMenuButtonClick(event)"
+                class="group whitespace-nowrap rounded-md text-sm font-medium transition-all disabled:pointer-events-none disabled:opacity-50 [&amp;_svg]:pointer-events-none [&amp;_svg:not([class*='size-'])]:size-4 shrink-0 [&amp;_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive hover:text-accent-foreground px-4 py-2 has-[&gt;svg]:px-3 extend-touch-target h-8 touch-manipulation items-center justify-start gap-2.5 !p-0 hover:bg-transparent focus-visible:bg-transparent focus-visible:ring-0 active:bg-transparent dark:hover:bg-transparent flex lg:hidden"
+                type="button" aria-haspopup="dialog" aria-expanded="false" aria-controls="radix-«Rmplb»"
+                data-state="closed">
+                <div class="relative flex h-8 w-4 items-center justify-center">
+                    <div class="relative size-4">
+                        <!-- 16px x 16px -->
+                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16" fill="none" stroke="currentColor"
+                            stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <line x1="0" x2="16" y1="5" y2="5"
+                                class="group-data-[state=open]:translate-y-[2.25px] group-data-[state=open]:-translate-x-[2.25px] group-data-[state=open]:rotate-45 transition-all duration-300 origin-center" />
+                            <line x1="0" x2="16" y1="11" y2="11"
+                                class="group-data-[state=open]:-translate-y-[2.25px] group-data-[state=open]:-translate-x-[2.25px] group-data-[state=open]:-rotate-45 transition-all duration-300 origin-center" />
+                        </svg>
+                    </div>
+
+                    <span class="sr-only">Toggle Menu</span>
+                </div>
+                <span class="flex h-8 items-center text-lg leading-none font-medium">Menu</span>
+            </button>
+            <a data-slot="button"
+                class="items-center justify-center gap-2 whitespace-nowrap rounded-md text-sm font-medium transition-all disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-5 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive hover:bg-accent hover:text-accent-foreground dark:hover:bg-accent/50 hidden h-8 lg:flex"
+                href="https://bnbarak.github.io/openai-agent-sdk/">
+                <span class="size-8 flex flex-row justify-center items-center">
+                    
+
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 256 256"
+    class="size-5">
+    <rect width="256" height="256" fill="none"></rect>
+    <line x1="208" y1="128" x2="128" y2="208" fill="none" stroke="currentColor" stroke-linecap="round"
+        stroke-linejoin="round" stroke-width="32"></line>
+    <line x1="192" y1="40" x2="40" y2="192" fill="none" stroke="currentColor" stroke-linecap="round"
+        stroke-linejoin="round" stroke-width="32"></line>
+</svg>
+
+
+                </span>
+
+                
+                <h1 class="pr-2">OpenAI Agent SDK for Java</h1>
+                
+            </a>
+            
+            <div class="ml-auto flex items-center gap-2 md:flex-1 md:justify-end">
+                <div class="hidden w-full flex-1 md:flex md:w-auto md:flex-none">
+                    <button data-slot="dialog-trigger" onclick="onSearchBarClick(event)"
+    class="inline-flex items-center gap-2 whitespace-nowrap rounded-md text-sm transition-all disabled:pointer-events-none disabled:opacity-50 [&amp;_svg]:pointer-events-none [&amp;_svg:not([class*='size-'])]:size-4 shrink-0 [&amp;_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive hover:bg-secondary/80 px-4 py-2 has-[&gt;svg]:px-3 bg-surface text-surface-foreground/60 dark:bg-card relative h-8 w-full justify-start pl-2.5 font-normal shadow-none sm:pr-12 md:w-40 lg:w-56 xl:w-64"
+    type="button" aria-haspopup="dialog" aria-expanded="false" aria-controls="radix-«R66plb»" data-state="closed">
+    <span class="text-muted-foreground hidden lg:inline-flex">Search documentation...</span>
+    <span class="text-muted-foreground inline-flex lg:hidden">Search...</span>
+    <div class="absolute top-1.5 right-1.5 hidden gap-1 sm:flex">
+        <kbd
+            class="bg-background text-muted-foreground pointer-events-none flex h-5 items-center justify-center gap-1 rounded border px-1 font-sans text-[0.7rem] font-medium select-none [&amp;_svg:not([class*='size-'])]:size-3">Ctrl</kbd><kbd
+            class="bg-background text-muted-foreground pointer-events-none flex h-5 items-center justify-center gap-1 rounded border px-1 font-sans text-[0.7rem] font-medium select-none [&amp;_svg:not([class*='size-'])]:size-3 aspect-square">K</kbd>
+    </div>
+</button>
+<dialog id="search-dialog" onclick="onSearchDialogClick(event)"
+    class="fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 bg-background rounded-lg shadow-lg border overflow-hidden p-0">
+    <div class="w-lg gap-4">
+        <div class="flex h-full w-full flex-col overflow-hidden rounded-md bg-popover text-popover-foreground">
+            <div data-slot="command-input-wrapper" class="flex h-9 items-center gap-2 border-b px-3"><svg
+                    xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
+                    stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+                    class="lucide lucide-search size-4 shrink-0 opacity-50">
+                    <circle cx="11" cy="11" r="8"></circle>
+                    <path d="m21 21-4.3-4.3"></path>
+                </svg>
+                <input data-slot="command-input"
+                    class="placeholder:text-muted-foreground flex h-10 w-full rounded-md bg-transparent py-3 text-sm outline-hidden disabled:cursor-not-allowed disabled:opacity-50"
+                    placeholder="Search documentation..." cmdk-input="" autocomplete="off" autocorrect="off"
+                    spellcheck="false" aria-autocomplete="list" role="combobox" aria-expanded="true"
+                    aria-controls="radix-«r1t6»" aria-labelledby="radix-«r1t7»" id="radix-«r1t8»" type="text" value=""
+                    aria-activedescendant="radix-«r1th»" oninput="onInputHandler(event)">
+            </div>
+        </div>
+        <div id="mkdocs-search-results">
+            <!-- search results go there -->
+        </div>
+    </div>
+</dialog>
+<script>
+    document.removeEventListener("keydown", searchShortcutHandler);
+    document.addEventListener("keydown", searchShortcutHandler);
+</script>
+                </div>
+                <div data-orientation="vertical" role="none" data-slot="separator"
+                    class="bg-border shrink-0 data-[orientation=horizontal]:h-px data-[orientation=horizontal]:w-full data-[orientation=vertical]:h-full data-[orientation=vertical]:w-px ml-2 hidden lg:block">
+                </div>
+                <a target="_blank" rel="noreferrer" data-slot="button"
+                    class="inline-flex items-center justify-center whitespace-nowrap text-sm font-medium transition-all disabled:pointer-events-none disabled:opacity-50 [&amp;_svg]:pointer-events-none [&amp;_svg:not([class*='size-'])]:size-4 shrink-0 [&amp;_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive hover:bg-accent hover:text-accent-foreground dark:hover:bg-accent/50 rounded-md gap-1.5 px-3 has-[&gt;svg]:px-2.5 h-8 shadow-none"
+                    href="https://github.com/bnbarak/openai-agent-sdk">
+                    <svg viewBox="0 0 438.549 438.549">
+                        <path fill="currentColor"
+                            d="M409.132 114.573c-19.608-33.596-46.205-60.194-79.798-79.8-33.598-19.607-70.277-29.408-110.063-29.408-39.781 0-76.472 9.804-110.063 29.408-33.596 19.605-60.192 46.204-79.8 79.8C9.803 148.168 0 184.854 0 224.63c0 47.78 13.94 90.745 41.827 128.906 27.884 38.164 63.906 64.572 108.063 79.227 5.14.954 8.945.283 11.419-1.996 2.475-2.282 3.711-5.14 3.711-8.562 0-.571-.049-5.708-.144-15.417a2549.81 2549.81 0 01-.144-25.406l-6.567 1.136c-4.187.767-9.469 1.092-15.846 1-6.374-.089-12.991-.757-19.842-1.999-6.854-1.231-13.229-4.086-19.13-8.559-5.898-4.473-10.085-10.328-12.56-17.556l-2.855-6.57c-1.903-4.374-4.899-9.233-8.992-14.559-4.093-5.331-8.232-8.945-12.419-10.848l-1.999-1.431c-1.332-.951-2.568-2.098-3.711-3.429-1.142-1.331-1.997-2.663-2.568-3.997-.572-1.335-.098-2.43 1.427-3.289 1.525-.859 4.281-1.276 8.28-1.276l5.708.853c3.807.763 8.516 3.042 14.133 6.851 5.614 3.806 10.229 8.754 13.846 14.842 4.38 7.806 9.657 13.754 15.846 17.847 6.184 4.093 12.419 6.136 18.699 6.136 6.28 0 11.704-.476 16.274-1.423 4.565-.952 8.848-2.383 12.847-4.285 1.713-12.758 6.377-22.559 13.988-29.41-10.848-1.14-20.601-2.857-29.264-5.14-8.658-2.286-17.605-5.996-26.835-11.14-9.235-5.137-16.896-11.516-22.985-19.126-6.09-7.614-11.088-17.61-14.987-29.979-3.901-12.374-5.852-26.648-5.852-42.826 0-23.035 7.52-42.637 22.557-58.817-7.044-17.318-6.379-36.732 1.997-58.24 5.52-1.715 13.706-.428 24.554 3.853 10.85 4.283 18.794 7.952 23.84 10.994 5.046 3.041 9.089 5.618 12.135 7.708 17.705-4.947 35.976-7.421 54.818-7.421s37.117 2.474 54.823 7.421l10.849-6.849c7.419-4.57 16.18-8.758 26.262-12.565 10.088-3.805 17.802-4.853 23.134-3.138 8.562 21.509 9.325 40.922 2.279 58.24 15.036 16.18 22.559 35.787 22.559 58.817 0 16.178-1.958 30.497-5.853 42.966-3.9 12.471-8.941 22.457-15.125 29.979-6.191 7.521-13.901 13.85-23.131 18.986-9.232 5.14-18.182 8.85-26.84 11.136-8.662 2.286-18.415 4.004-29.263 5.146 9.894 8.562 14.842 22.077 14.842 40.539v60.237c0 3.422 1.19 6.279 3.572 8.562 2.379 2.279 6.136 2.95 11.276 1.995 44.163-14.653 80.185-41.062 108.068-79.226 27.88-38.161 41.825-81.126 41.825-128.906-.01-39.771-9.818-76.454-29.414-110.049z">
+                        </path>
+                    </svg>
+                    
+                    <span id="stargazers" class="text-muted-foreground w-8 text-xs tabular-nums" onload="test()">
+                    </span>
+                    
+                </a>
+                <div data-orientation="vertical" role="none" data-slot="separator"
+                    class="bg-border shrink-0 data-[orientation=horizontal]:h-px data-[orientation=horizontal]:w-full data-[orientation=vertical]:h-full data-[orientation=vertical]:w-px 3xl:flex hidden">
+                </div>
+                <button data-slot="button"
+                    class="items-center justify-center gap-2 whitespace-nowrap rounded-md text-sm font-medium transition-all disabled:pointer-events-none disabled:opacity-50 [&amp;_svg]:pointer-events-none [&amp;_svg:not([class*='size-'])]:size-4 shrink-0 [&amp;_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive hover:bg-accent hover:text-accent-foreground dark:hover:bg-accent/50 size-8 3xl:flex hidden"
+                    title="Toggle layout" onclick="toggleLayout(event)">
+                    <span class="sr-only">Toggle layout</span>
+                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
+                        stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+                        class="lucide lucide-gallery-horizontal">
+                        <path d="M2 3v18"></path>
+                        <rect width="12" height="18" x="6" y="3" rx="2"></rect>
+                        <path d="M22 3v18"></path>
+                    </svg>
+                </button>
+                <div data-orientation="vertical" role="none" data-slot="separator"
+                    class="bg-border shrink-0 data-[orientation=horizontal]:h-px data-[orientation=horizontal]:w-full data-[orientation=vertical]:h-full data-[orientation=vertical]:w-px">
+                </div>
+                <button data-slot="button"
+                    class="inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-md text-sm font-medium transition-all disabled:pointer-events-none disabled:opacity-50 [&amp;_svg]:pointer-events-none [&amp;_svg:not([class*='size-'])]:size-4 shrink-0 [&amp;_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive hover:bg-accent hover:text-accent-foreground dark:hover:bg-accent/50 group/toggle extend-touch-target size-8"
+                    title="Toggle theme" onclick="onThemeSwitch(event)">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
+                        stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+                        class="size-4.5">
+                        <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
+                        <path d="M12 12m-9 0a9 9 0 1 0 18 0a9 9 0 1 0 -18 0"></path>
+                        <path d="M12 3l0 18"></path>
+                        <path d="M12 9l4.65 -4.65"></path>
+                        <path d="M12 14.3l7.37 -7.37"></path>
+                        <path d="M12 19.6l8.85 -8.85"></path>
+                    </svg>
+                    <span class="sr-only">Toggle theme</span>
+                </button>
+            </div>
+        </div>
+    </div>
+</header>
+        <main class="flex flex-1 flex-col">
+            <div class="container-wrapper flex flex-1 flex-col px-2">
+                <div data-slot="sidebar-wrapper" style="--sidebar-width: 16rem; --sidebar-width-icon: 3rem;"
+                    class="group/sidebar-wrapper has-data-[variant=inset]:bg-sidebar flex w-full 3xl:fixed:container 3xl:fixed:px-3 min-h-min flex-1 items-start px-0 [--sidebar-width:220px] [--top-spacing:0] lg:grid lg:grid-cols-[var(--sidebar-width)_minmax(0,1fr)] lg:[--sidebar-width:240px] lg:[--top-spacing:calc(var(--spacing)*4)]">
+                    <div data-slot="sidebar"
+                        class="text-sidebar-foreground w-(--sidebar-width) flex-col sticky top-[calc(var(--header-height)+1px)] z-30 hidden h-[calc(100svh-var(--header-height)-var(--footer-height))] bg-transparent lg:flex">
+                        <div data-slot="sidebar-content" data-sidebar="content"
+                            class="flex min-h-0 flex-1 flex-col gap-2 overflow-auto group-data-[collapsible=icon]:overflow-hidden no-scrollbar px-2 pb-12">
+                            <div class="h-(--top-spacing) shrink-0"></div>
+                            <div view-transition-name="sidebar" data-slot="sidebar-group" data-sidebar="group"
+    class="relative flex w-full min-w-0 flex-col p-2 no-scrollbar">
+    
+
+    
+    
+    
+
+    
+
+    
+    
+
+    
+    <div data-slot="sidebar-group" data-sidebar="group" class="relative flex w-full min-w-0 flex-col p-2">
+        <div data-slot="sidebar-group-content" data-sidebar="group-content" class="w-full text-sm">
+            <ul data-slot="sidebar-menu" data-sidebar="menu" class="flex w-full min-w-0 flex-col gap-0.5">
+                
+                
+                <li data-slot="sidebar-menu-item" data-sidebar="menu-item" class="group/menu-item relative">
+    <a data-slot="sidebar-menu-button" data-active="false" data-sidebar="menu-button"
+        data-size="default" href="/openai-agent-sdk/"
+        class="hover:bg-sidebar-accent hover:text-sidebar-accent-foreground peer/menu-button flex items-center gap-2 rounded-md p-2 text-left outline-hidden ring-sidebar-ring transition-[width,height,padding] focus-visible:ring-2 active:bg-sidebar-accent active:text-sidebar-accent-foreground disabled:pointer-events-none disabled:opacity-50 group-has-data-[sidebar=menu-action]/menu-item:pr-8 aria-disabled:pointer-events-none aria-disabled:opacity-50 data-[active=true]:font-medium data-[active=true]:text-sidebar-accent-foreground data-[state=open]:hover:bg-sidebar-accent data-[state=open]:hover:text-sidebar-accent-foreground group-data-[collapsible=icon]:size-8! group-data-[collapsible=icon]:p-2! [&>span:last-child]:truncate [&>svg]:size-4 [&>svg]:shrink-0 data-[active=true]:bg-accent data-[active=true]:border-accent 3xl:fixed:w-full 3xl:fixed:max-w-48 relative h-[30px] w-fit overflow-visible border border-transparent text-[0.8rem] font-medium after:absolute after:inset-x-0 after:-inset-y-1 after:z-0 after:rounded-md">
+
+        
+        Home
+        
+
+        
+
+        
+
+        
+    </a>
+</li>
+                
+                
+                
+                <li data-slot="sidebar-menu-item" data-sidebar="menu-item" class="group/menu-item relative">
+    <a data-slot="sidebar-menu-button" data-active="false" data-sidebar="menu-button"
+        data-size="default" href="/openai-agent-sdk/quickstart/"
+        class="hover:bg-sidebar-accent hover:text-sidebar-accent-foreground peer/menu-button flex items-center gap-2 rounded-md p-2 text-left outline-hidden ring-sidebar-ring transition-[width,height,padding] focus-visible:ring-2 active:bg-sidebar-accent active:text-sidebar-accent-foreground disabled:pointer-events-none disabled:opacity-50 group-has-data-[sidebar=menu-action]/menu-item:pr-8 aria-disabled:pointer-events-none aria-disabled:opacity-50 data-[active=true]:font-medium data-[active=true]:text-sidebar-accent-foreground data-[state=open]:hover:bg-sidebar-accent data-[state=open]:hover:text-sidebar-accent-foreground group-data-[collapsible=icon]:size-8! group-data-[collapsible=icon]:p-2! [&>span:last-child]:truncate [&>svg]:size-4 [&>svg]:shrink-0 data-[active=true]:bg-accent data-[active=true]:border-accent 3xl:fixed:w-full 3xl:fixed:max-w-48 relative h-[30px] w-fit overflow-visible border border-transparent text-[0.8rem] font-medium after:absolute after:inset-x-0 after:-inset-y-1 after:z-0 after:rounded-md">
+
+        
+        Quickstart
+        
+
+        
+
+        
+
+        
+    </a>
+</li>
+                
+                
+                
+                <li data-slot="sidebar-menu-item" data-sidebar="menu-item" class="group/menu-item relative">
+    <a data-slot="sidebar-menu-button" data-active="false" data-sidebar="menu-button"
+        data-size="default" href="/openai-agent-sdk/api/"
+        class="hover:bg-sidebar-accent hover:text-sidebar-accent-foreground peer/menu-button flex items-center gap-2 rounded-md p-2 text-left outline-hidden ring-sidebar-ring transition-[width,height,padding] focus-visible:ring-2 active:bg-sidebar-accent active:text-sidebar-accent-foreground disabled:pointer-events-none disabled:opacity-50 group-has-data-[sidebar=menu-action]/menu-item:pr-8 aria-disabled:pointer-events-none aria-disabled:opacity-50 data-[active=true]:font-medium data-[active=true]:text-sidebar-accent-foreground data-[state=open]:hover:bg-sidebar-accent data-[state=open]:hover:text-sidebar-accent-foreground group-data-[collapsible=icon]:size-8! group-data-[collapsible=icon]:p-2! [&>span:last-child]:truncate [&>svg]:size-4 [&>svg]:shrink-0 data-[active=true]:bg-accent data-[active=true]:border-accent 3xl:fixed:w-full 3xl:fixed:max-w-48 relative h-[30px] w-fit overflow-visible border border-transparent text-[0.8rem] font-medium after:absolute after:inset-x-0 after:-inset-y-1 after:z-0 after:rounded-md">
+
+        
+        API Reference
+        
+
+        
+
+        
+
+        
+    </a>
+</li>
+                
+                
+            </ul>
+        </div>
+    </div>
+    
+
+    
+    
+    <div data-slot="sidebar-group" data-sidebar="group" class="relative flex w-full min-w-0 flex-col p-2">
+        <div data-slot="sidebar-group-label" data-sidebar="group-label"
+            class="ring-sidebar-ring flex h-8 shrink-0 items-center rounded-md px-2 text-xs outline-hidden transition-[margin,opacity] duration-200 ease-linear focus-visible:ring-2 [&amp;&gt;svg]:size-4 [&amp;&gt;svg]:shrink-0 group-data-[collapsible=icon]:-mt-8 group-data-[collapsible=icon]:opacity-0 text-muted-foreground font-medium">
+            Guides</div>
+        <div data-slot="sidebar-group-content" data-sidebar="group-content" class="w-full text-sm">
+            <ul data-slot="sidebar-menu" data-sidebar="menu" class="flex w-full min-w-0 flex-col gap-0.5">
+                
+                <li data-slot="sidebar-menu-item" data-sidebar="menu-item" class="group/menu-item relative">
+    <a data-slot="sidebar-menu-button" data-active="false" data-sidebar="menu-button"
+        data-size="default" href="/openai-agent-sdk/guides/agents/"
+        class="hover:bg-sidebar-accent hover:text-sidebar-accent-foreground peer/menu-button flex items-center gap-2 rounded-md p-2 text-left outline-hidden ring-sidebar-ring transition-[width,height,padding] focus-visible:ring-2 active:bg-sidebar-accent active:text-sidebar-accent-foreground disabled:pointer-events-none disabled:opacity-50 group-has-data-[sidebar=menu-action]/menu-item:pr-8 aria-disabled:pointer-events-none aria-disabled:opacity-50 data-[active=true]:font-medium data-[active=true]:text-sidebar-accent-foreground data-[state=open]:hover:bg-sidebar-accent data-[state=open]:hover:text-sidebar-accent-foreground group-data-[collapsible=icon]:size-8! group-data-[collapsible=icon]:p-2! [&>span:last-child]:truncate [&>svg]:size-4 [&>svg]:shrink-0 data-[active=true]:bg-accent data-[active=true]:border-accent 3xl:fixed:w-full 3xl:fixed:max-w-48 relative h-[30px] w-fit overflow-visible border border-transparent text-[0.8rem] font-medium after:absolute after:inset-x-0 after:-inset-y-1 after:z-0 after:rounded-md">
+
+        
+        Agents
+        
+
+        
+
+        
+
+        
+    </a>
+</li>
+                
+                <li data-slot="sidebar-menu-item" data-sidebar="menu-item" class="group/menu-item relative">
+    <a data-slot="sidebar-menu-button" data-active="false" data-sidebar="menu-button"
+        data-size="default" href="/openai-agent-sdk/guides/running-agents/"
+        class="hover:bg-sidebar-accent hover:text-sidebar-accent-foreground peer/menu-button flex items-center gap-2 rounded-md p-2 text-left outline-hidden ring-sidebar-ring transition-[width,height,padding] focus-visible:ring-2 active:bg-sidebar-accent active:text-sidebar-accent-foreground disabled:pointer-events-none disabled:opacity-50 group-has-data-[sidebar=menu-action]/menu-item:pr-8 aria-disabled:pointer-events-none aria-disabled:opacity-50 data-[active=true]:font-medium data-[active=true]:text-sidebar-accent-foreground data-[state=open]:hover:bg-sidebar-accent data-[state=open]:hover:text-sidebar-accent-foreground group-data-[collapsible=icon]:size-8! group-data-[collapsible=icon]:p-2! [&>span:last-child]:truncate [&>svg]:size-4 [&>svg]:shrink-0 data-[active=true]:bg-accent data-[active=true]:border-accent 3xl:fixed:w-full 3xl:fixed:max-w-48 relative h-[30px] w-fit overflow-visible border border-transparent text-[0.8rem] font-medium after:absolute after:inset-x-0 after:-inset-y-1 after:z-0 after:rounded-md">
+
+        
+        Running Agents
+        
+
+        
+
+        
+
+        
+    </a>
+</li>
+                
+                <li data-slot="sidebar-menu-item" data-sidebar="menu-item" class="group/menu-item relative">
+    <a data-slot="sidebar-menu-button" data-active="false" data-sidebar="menu-button"
+        data-size="default" href="/openai-agent-sdk/guides/run-context/"
+        class="hover:bg-sidebar-accent hover:text-sidebar-accent-foreground peer/menu-button flex items-center gap-2 rounded-md p-2 text-left outline-hidden ring-sidebar-ring transition-[width,height,padding] focus-visible:ring-2 active:bg-sidebar-accent active:text-sidebar-accent-foreground disabled:pointer-events-none disabled:opacity-50 group-has-data-[sidebar=menu-action]/menu-item:pr-8 aria-disabled:pointer-events-none aria-disabled:opacity-50 data-[active=true]:font-medium data-[active=true]:text-sidebar-accent-foreground data-[state=open]:hover:bg-sidebar-accent data-[state=open]:hover:text-sidebar-accent-foreground group-data-[collapsible=icon]:size-8! group-data-[collapsible=icon]:p-2! [&>span:last-child]:truncate [&>svg]:size-4 [&>svg]:shrink-0 data-[active=true]:bg-accent data-[active=true]:border-accent 3xl:fixed:w-full 3xl:fixed:max-w-48 relative h-[30px] w-fit overflow-visible border border-transparent text-[0.8rem] font-medium after:absolute after:inset-x-0 after:-inset-y-1 after:z-0 after:rounded-md">
+
+        
+        Run Context
+        
+
+        
+
+        
+
+        
+    </a>
+</li>
+                
+                <li data-slot="sidebar-menu-item" data-sidebar="menu-item" class="group/menu-item relative">
+    <a data-slot="sidebar-menu-button" data-active="false" data-sidebar="menu-button"
+        data-size="default" href="/openai-agent-sdk/guides/tools/"
+        class="hover:bg-sidebar-accent hover:text-sidebar-accent-foreground peer/menu-button flex items-center gap-2 rounded-md p-2 text-left outline-hidden ring-sidebar-ring transition-[width,height,padding] focus-visible:ring-2 active:bg-sidebar-accent active:text-sidebar-accent-foreground disabled:pointer-events-none disabled:opacity-50 group-has-data-[sidebar=menu-action]/menu-item:pr-8 aria-disabled:pointer-events-none aria-disabled:opacity-50 data-[active=true]:font-medium data-[active=true]:text-sidebar-accent-foreground data-[state=open]:hover:bg-sidebar-accent data-[state=open]:hover:text-sidebar-accent-foreground group-data-[collapsible=icon]:size-8! group-data-[collapsible=icon]:p-2! [&>span:last-child]:truncate [&>svg]:size-4 [&>svg]:shrink-0 data-[active=true]:bg-accent data-[active=true]:border-accent 3xl:fixed:w-full 3xl:fixed:max-w-48 relative h-[30px] w-fit overflow-visible border border-transparent text-[0.8rem] font-medium after:absolute after:inset-x-0 after:-inset-y-1 after:z-0 after:rounded-md">
+
+        
+        Tools
+        
+
+        
+
+        
+
+        
+    </a>
+</li>
+                
+                <li data-slot="sidebar-menu-item" data-sidebar="menu-item" class="group/menu-item relative">
+    <a data-slot="sidebar-menu-button" data-active="false" data-sidebar="menu-button"
+        data-size="default" href="/openai-agent-sdk/guides/handoffs/"
+        class="hover:bg-sidebar-accent hover:text-sidebar-accent-foreground peer/menu-button flex items-center gap-2 rounded-md p-2 text-left outline-hidden ring-sidebar-ring transition-[width,height,padding] focus-visible:ring-2 active:bg-sidebar-accent active:text-sidebar-accent-foreground disabled:pointer-events-none disabled:opacity-50 group-has-data-[sidebar=menu-action]/menu-item:pr-8 aria-disabled:pointer-events-none aria-disabled:opacity-50 data-[active=true]:font-medium data-[active=true]:text-sidebar-accent-foreground data-[state=open]:hover:bg-sidebar-accent data-[state=open]:hover:text-sidebar-accent-foreground group-data-[collapsible=icon]:size-8! group-data-[collapsible=icon]:p-2! [&>span:last-child]:truncate [&>svg]:size-4 [&>svg]:shrink-0 data-[active=true]:bg-accent data-[active=true]:border-accent 3xl:fixed:w-full 3xl:fixed:max-w-48 relative h-[30px] w-fit overflow-visible border border-transparent text-[0.8rem] font-medium after:absolute after:inset-x-0 after:-inset-y-1 after:z-0 after:rounded-md">
+
+        
+        Handoffs
+        
+
+        
+
+        
+
+        
+    </a>
+</li>
+                
+                <li data-slot="sidebar-menu-item" data-sidebar="menu-item" class="group/menu-item relative">
+    <a data-slot="sidebar-menu-button" data-active="false" data-sidebar="menu-button"
+        data-size="default" href="/openai-agent-sdk/guides/sessions/"
+        class="hover:bg-sidebar-accent hover:text-sidebar-accent-foreground peer/menu-button flex items-center gap-2 rounded-md p-2 text-left outline-hidden ring-sidebar-ring transition-[width,height,padding] focus-visible:ring-2 active:bg-sidebar-accent active:text-sidebar-accent-foreground disabled:pointer-events-none disabled:opacity-50 group-has-data-[sidebar=menu-action]/menu-item:pr-8 aria-disabled:pointer-events-none aria-disabled:opacity-50 data-[active=true]:font-medium data-[active=true]:text-sidebar-accent-foreground data-[state=open]:hover:bg-sidebar-accent data-[state=open]:hover:text-sidebar-accent-foreground group-data-[collapsible=icon]:size-8! group-data-[collapsible=icon]:p-2! [&>span:last-child]:truncate [&>svg]:size-4 [&>svg]:shrink-0 data-[active=true]:bg-accent data-[active=true]:border-accent 3xl:fixed:w-full 3xl:fixed:max-w-48 relative h-[30px] w-fit overflow-visible border border-transparent text-[0.8rem] font-medium after:absolute after:inset-x-0 after:-inset-y-1 after:z-0 after:rounded-md">
+
+        
+        Sessions
+        
+
+        
+
+        
+
+        
+    </a>
+</li>
+                
+                <li data-slot="sidebar-menu-item" data-sidebar="menu-item" class="group/menu-item relative">
+    <a data-slot="sidebar-menu-button" data-active="false" data-sidebar="menu-button"
+        data-size="default" href="/openai-agent-sdk/guides/models/"
+        class="hover:bg-sidebar-accent hover:text-sidebar-accent-foreground peer/menu-button flex items-center gap-2 rounded-md p-2 text-left outline-hidden ring-sidebar-ring transition-[width,height,padding] focus-visible:ring-2 active:bg-sidebar-accent active:text-sidebar-accent-foreground disabled:pointer-events-none disabled:opacity-50 group-has-data-[sidebar=menu-action]/menu-item:pr-8 aria-disabled:pointer-events-none aria-disabled:opacity-50 data-[active=true]:font-medium data-[active=true]:text-sidebar-accent-foreground data-[state=open]:hover:bg-sidebar-accent data-[state=open]:hover:text-sidebar-accent-foreground group-data-[collapsible=icon]:size-8! group-data-[collapsible=icon]:p-2! [&>span:last-child]:truncate [&>svg]:size-4 [&>svg]:shrink-0 data-[active=true]:bg-accent data-[active=true]:border-accent 3xl:fixed:w-full 3xl:fixed:max-w-48 relative h-[30px] w-fit overflow-visible border border-transparent text-[0.8rem] font-medium after:absolute after:inset-x-0 after:-inset-y-1 after:z-0 after:rounded-md">
+
+        
+        Models
+        
+
+        
+
+        
+
+        
+    </a>
+</li>
+                
+                <li data-slot="sidebar-menu-item" data-sidebar="menu-item" class="group/menu-item relative">
+    <a data-slot="sidebar-menu-button" data-active="false" data-sidebar="menu-button"
+        data-size="default" href="/openai-agent-sdk/guides/realtime/"
+        class="hover:bg-sidebar-accent hover:text-sidebar-accent-foreground peer/menu-button flex items-center gap-2 rounded-md p-2 text-left outline-hidden ring-sidebar-ring transition-[width,height,padding] focus-visible:ring-2 active:bg-sidebar-accent active:text-sidebar-accent-foreground disabled:pointer-events-none disabled:opacity-50 group-has-data-[sidebar=menu-action]/menu-item:pr-8 aria-disabled:pointer-events-none aria-disabled:opacity-50 data-[active=true]:font-medium data-[active=true]:text-sidebar-accent-foreground data-[state=open]:hover:bg-sidebar-accent data-[state=open]:hover:text-sidebar-accent-foreground group-data-[collapsible=icon]:size-8! group-data-[collapsible=icon]:p-2! [&>span:last-child]:truncate [&>svg]:size-4 [&>svg]:shrink-0 data-[active=true]:bg-accent data-[active=true]:border-accent 3xl:fixed:w-full 3xl:fixed:max-w-48 relative h-[30px] w-fit overflow-visible border border-transparent text-[0.8rem] font-medium after:absolute after:inset-x-0 after:-inset-y-1 after:z-0 after:rounded-md">
+
+        
+        Realtime API
+        
+
+        
+
+        
+
+        
+    </a>
+</li>
+                
+                <li data-slot="sidebar-menu-item" data-sidebar="menu-item" class="group/menu-item relative">
+    <a data-slot="sidebar-menu-button" data-active="false" data-sidebar="menu-button"
+        data-size="default" href="/openai-agent-sdk/guides/guardrails/"
+        class="hover:bg-sidebar-accent hover:text-sidebar-accent-foreground peer/menu-button flex items-center gap-2 rounded-md p-2 text-left outline-hidden ring-sidebar-ring transition-[width,height,padding] focus-visible:ring-2 active:bg-sidebar-accent active:text-sidebar-accent-foreground disabled:pointer-events-none disabled:opacity-50 group-has-data-[sidebar=menu-action]/menu-item:pr-8 aria-disabled:pointer-events-none aria-disabled:opacity-50 data-[active=true]:font-medium data-[active=true]:text-sidebar-accent-foreground data-[state=open]:hover:bg-sidebar-accent data-[state=open]:hover:text-sidebar-accent-foreground group-data-[collapsible=icon]:size-8! group-data-[collapsible=icon]:p-2! [&>span:last-child]:truncate [&>svg]:size-4 [&>svg]:shrink-0 data-[active=true]:bg-accent data-[active=true]:border-accent 3xl:fixed:w-full 3xl:fixed:max-w-48 relative h-[30px] w-fit overflow-visible border border-transparent text-[0.8rem] font-medium after:absolute after:inset-x-0 after:-inset-y-1 after:z-0 after:rounded-md">
+
+        
+        Guardrails
+        
+
+        
+
+        
+
+        
+    </a>
+</li>
+                
+                <li data-slot="sidebar-menu-item" data-sidebar="menu-item" class="group/menu-item relative">
+    <a data-slot="sidebar-menu-button" data-active="false" data-sidebar="menu-button"
+        data-size="default" href="/openai-agent-sdk/guides/streaming/"
+        class="hover:bg-sidebar-accent hover:text-sidebar-accent-foreground peer/menu-button flex items-center gap-2 rounded-md p-2 text-left outline-hidden ring-sidebar-ring transition-[width,height,padding] focus-visible:ring-2 active:bg-sidebar-accent active:text-sidebar-accent-foreground disabled:pointer-events-none disabled:opacity-50 group-has-data-[sidebar=menu-action]/menu-item:pr-8 aria-disabled:pointer-events-none aria-disabled:opacity-50 data-[active=true]:font-medium data-[active=true]:text-sidebar-accent-foreground data-[state=open]:hover:bg-sidebar-accent data-[state=open]:hover:text-sidebar-accent-foreground group-data-[collapsible=icon]:size-8! group-data-[collapsible=icon]:p-2! [&>span:last-child]:truncate [&>svg]:size-4 [&>svg]:shrink-0 data-[active=true]:bg-accent data-[active=true]:border-accent 3xl:fixed:w-full 3xl:fixed:max-w-48 relative h-[30px] w-fit overflow-visible border border-transparent text-[0.8rem] font-medium after:absolute after:inset-x-0 after:-inset-y-1 after:z-0 after:rounded-md">
+
+        
+        Streaming
+        
+
+        
+
+        
+
+        
+    </a>
+</li>
+                
+                <li data-slot="sidebar-menu-item" data-sidebar="menu-item" class="group/menu-item relative">
+    <a data-slot="sidebar-menu-button" data-active="false" data-sidebar="menu-button"
+        data-size="default" href="/openai-agent-sdk/guides/tracing/"
+        class="hover:bg-sidebar-accent hover:text-sidebar-accent-foreground peer/menu-button flex items-center gap-2 rounded-md p-2 text-left outline-hidden ring-sidebar-ring transition-[width,height,padding] focus-visible:ring-2 active:bg-sidebar-accent active:text-sidebar-accent-foreground disabled:pointer-events-none disabled:opacity-50 group-has-data-[sidebar=menu-action]/menu-item:pr-8 aria-disabled:pointer-events-none aria-disabled:opacity-50 data-[active=true]:font-medium data-[active=true]:text-sidebar-accent-foreground data-[state=open]:hover:bg-sidebar-accent data-[state=open]:hover:text-sidebar-accent-foreground group-data-[collapsible=icon]:size-8! group-data-[collapsible=icon]:p-2! [&>span:last-child]:truncate [&>svg]:size-4 [&>svg]:shrink-0 data-[active=true]:bg-accent data-[active=true]:border-accent 3xl:fixed:w-full 3xl:fixed:max-w-48 relative h-[30px] w-fit overflow-visible border border-transparent text-[0.8rem] font-medium after:absolute after:inset-x-0 after:-inset-y-1 after:z-0 after:rounded-md">
+
+        
+        Tracing
+        
+
+        
+
+        
+
+        
+    </a>
+</li>
+                
+                <li data-slot="sidebar-menu-item" data-sidebar="menu-item" class="group/menu-item relative">
+    <a data-slot="sidebar-menu-button" data-active="false" data-sidebar="menu-button"
+        data-size="default" href="/openai-agent-sdk/guides/troubleshooting/"
+        class="hover:bg-sidebar-accent hover:text-sidebar-accent-foreground peer/menu-button flex items-center gap-2 rounded-md p-2 text-left outline-hidden ring-sidebar-ring transition-[width,height,padding] focus-visible:ring-2 active:bg-sidebar-accent active:text-sidebar-accent-foreground disabled:pointer-events-none disabled:opacity-50 group-has-data-[sidebar=menu-action]/menu-item:pr-8 aria-disabled:pointer-events-none aria-disabled:opacity-50 data-[active=true]:font-medium data-[active=true]:text-sidebar-accent-foreground data-[state=open]:hover:bg-sidebar-accent data-[state=open]:hover:text-sidebar-accent-foreground group-data-[collapsible=icon]:size-8! group-data-[collapsible=icon]:p-2! [&>span:last-child]:truncate [&>svg]:size-4 [&>svg]:shrink-0 data-[active=true]:bg-accent data-[active=true]:border-accent 3xl:fixed:w-full 3xl:fixed:max-w-48 relative h-[30px] w-fit overflow-visible border border-transparent text-[0.8rem] font-medium after:absolute after:inset-x-0 after:-inset-y-1 after:z-0 after:rounded-md">
+
+        
+        Troubleshooting
+        
+
+        
+
+        
+
+        
+    </a>
+</li>
+                
+            </ul>
+        </div>
+    </div>
+    
+    
+
+
+    
+</div>
+                        </div>
+                    </div>
+                    <div class="h-full w-full">
+                        <div data-slot="docs" class="flex items-stretch text-[1.05rem] sm:text-[15px] xl:w-full">
+                            <div class="flex min-w-0 flex-1 flex-col">
+                                <div class="h-(--top-spacing) shrink-0"></div>
+                                <article class="w-full" view-transition-name="page">
+  <div class="flex flex-col gap-2">
+    <div class="flex flex-col gap-2">
+      <div id="page-header" class="flex items-start justify-between">
+        <h1
+          class="scroll-m-20 text-4xl font-semibold tracking-tight sm:text-3xl xl:text-4xl"
+        >
+          CONTRIBUTING DOCS
+        </h1>
+
+        <div class="flex items-center gap-2 pt-1.5">
+          
+<button onclick="fetch(`https://bnbarak.github.io/openai-agent-sdk/CONTRIBUTING_DOCS.md`).then((r) => r.blob()).then((blob) => navigator.clipboard.write([new ClipboardItem({ 'text/plain': blob })]))" 
+        data-slot="button" 
+        class="cursor-pointer inline-flex items-center justify-center whitespace-nowrap text-sm font-medium transition-all disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive bg-secondary text-secondary-foreground hover:bg-secondary/80 rounded-md gap-1.5 px-3 has-[&>svg]:px-2.5 h-8 shadow-none md:h-7 md:text-[0.8rem]">
+<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="tabler-icon tabler-icon-copy ">
+    <path d="M7 7m0 2.667a2.667 2.667 0 0 1 2.667 -2.667h8.666a2.667 2.667 0 0 1 2.667 2.667v8.666a2.667 2.667 0 0 1 -2.667 2.667h-8.666a2.667 2.667 0 0 1 -2.667 -2.667z"></path><path d="M4.012 16.737a2.005 2.005 0 0 1 -1.012 -1.737v-10c0 -1.1 .9 -2 2 -2h10c.75 0 1.158 .385 1.5 1"></path>
+</svg>
+<span class="max-md:hidden">Copy Page</span>
+</button> 
+           
+          
+        </div>
+      </div>
+      
+    </div>
+    <div class="flex justify-end items-center">
+       
+    </div>
+  </div>
+  <div class="typography w-full flex-1 *:data-[slot=alert]:first:mt-0">
+    <p>This guide explains how to write and update documentation in the <code>docs/</code> directory.</p>
+<h2 id="table-of-contents">Table of Contents</h2>
+<ul>
+<li><a href="#philosophy">Philosophy</a></li>
+<li><a href="#documentation-structure">Documentation Structure</a></li>
+<li><a href="#writing-style">Writing Style</a></li>
+<li><a href="#including-code-examples">Including Code Examples</a></li>
+<li><a href="#linking-to-api-documentation">Linking to API Documentation</a></li>
+<li><a href="#file-naming-conventions">File Naming Conventions</a></li>
+<li><a href="#mkdocs-syntax">MkDocs Syntax</a></li>
+<li><a href="#testing-documentation">Testing Documentation</a></li>
+<li><a href="#ai-generated-documentation">AI-Generated Documentation</a></li>
+</ul>
+<hr />
+<h2 id="philosophy">Philosophy</h2>
+<h3 id="one-source-of-truth">One Source of Truth</h3>
+<p><strong>Never copy-paste code into documentation.</strong> Instead:</p>
+<ol>
+<li>Write real, runnable Java examples in <code>src/main/java/ai/acolite/agentsdk/examples/</code></li>
+<li>Test them in CI (they run in E2E workflow)</li>
+<li>Reference them in docs via links or includes</li>
+</ol>
+<p><strong>Why?</strong> Code examples can go stale. If they're real files that compile and run, they can't lie.</p>
+<h3 id="docs-people-actually-read">Docs People Actually Read</h3>
+<p>Write documentation like you're explaining to a colleague, not writing a textbook:</p>
+<ul>
+<li><strong>Start with the outcome</strong>: "By the end of this guide, you'll have a working agent."</li>
+<li><strong>Show, don't tell</strong>: Code example first, explanation second</li>
+<li><strong>Keep it scannable</strong>: Use headings, bullets, code blocks</li>
+<li><strong>No fluff</strong>: Get to the point</li>
+</ul>
+<hr />
+<h2 id="documentation-structure">Documentation Structure</h2>
+<p>Our documentation structure is inspired by the <a href="https://openai.github.io/openai-agents-js/">OpenAI Agents TypeScript SDK</a> but adapted for Java:</p>
+<div class="codehilite"><pre><span></span><code><span class="n">docs</span><span class="o">/</span>
+<span class="err">├──</span><span class="w"> </span><span class="n">CONTRIBUTING_DOCS</span><span class="o">.</span><span class="n">md</span><span class="w">     </span><span class="c1"># This file (guideline for contributors)</span>
+<span class="err">├──</span><span class="w"> </span><span class="n">quickstart</span><span class="o">.</span><span class="n">md</span><span class="w">           </span><span class="c1"># First stop for new users - get started in 5 minutes</span>
+<span class="err">├──</span><span class="w"> </span><span class="n">guides</span><span class="o">/</span><span class="w">                 </span><span class="c1"># Core guides (task-oriented, with inline examples)</span>
+<span class="err">│</span><span class="w">   </span><span class="err">├──</span><span class="w"> </span><span class="n">agents</span><span class="o">.</span><span class="n">md</span><span class="w">          </span><span class="c1"># Creating and configuring agents</span>
+<span class="err">│</span><span class="w">   </span><span class="err">├──</span><span class="w"> </span><span class="n">running</span><span class="o">-</span><span class="n">agents</span><span class="o">.</span><span class="n">md</span><span class="w">  </span><span class="c1"># How to run agents and handle results</span>
+<span class="err">│</span><span class="w">   </span><span class="err">├──</span><span class="w"> </span><span class="n">tools</span><span class="o">.</span><span class="n">md</span><span class="w">           </span><span class="c1"># Defining custom tools with FunctionTool</span>
+<span class="err">│</span><span class="w">   </span><span class="err">├──</span><span class="w"> </span><span class="n">handoffs</span><span class="o">.</span><span class="n">md</span><span class="w">        </span><span class="c1"># Agent-to-agent handoffs</span>
+<span class="err">│</span><span class="w">   </span><span class="err">├──</span><span class="w"> </span><span class="n">sessions</span><span class="o">.</span><span class="n">md</span><span class="w">        </span><span class="c1"># Session management (MemorySession, SQLiteSession)</span>
+<span class="err">│</span><span class="w">   </span><span class="err">├──</span><span class="w"> </span><span class="n">models</span><span class="o">.</span><span class="n">md</span><span class="w">          </span><span class="c1"># Working with different OpenAI models</span>
+<span class="err">│</span><span class="w">   </span><span class="err">├──</span><span class="w"> </span><span class="n">guardrails</span><span class="o">.</span><span class="n">md</span><span class="w">      </span><span class="c1"># Input/output validation and safety</span>
+<span class="err">│</span><span class="w">   </span><span class="err">├──</span><span class="w"> </span><span class="n">streaming</span><span class="o">.</span><span class="n">md</span><span class="w">       </span><span class="c1"># Streaming responses</span>
+<span class="err">│</span><span class="w">   </span><span class="err">├──</span><span class="w"> </span><span class="n">tracing</span><span class="o">.</span><span class="n">md</span><span class="w">         </span><span class="c1"># Distributed tracing and observability</span>
+<span class="err">│</span><span class="w">   </span><span class="err">└──</span><span class="w"> </span><span class="n">troubleshooting</span><span class="o">.</span><span class="n">md</span><span class="w"> </span><span class="c1"># Common issues and solutions</span>
+<span class="err">├──</span><span class="w"> </span><span class="n">examples</span><span class="o">/</span><span class="w">              </span><span class="c1"># Real-world examples (outcome-oriented)</span>
+<span class="err">└──</span><span class="w"> </span><span class="n">api</span><span class="o">-</span><span class="n">reference</span><span class="o">/</span><span class="w">         </span><span class="c1"># Javadoc-generated API docs</span>
+<span class="w">    </span><span class="err">└──</span><span class="w"> </span><span class="p">(</span><span class="n">auto</span><span class="o">-</span><span class="n">generated</span><span class="p">)</span>
+</code></pre></div>
+
+<h3 id="when-to-create-a-new-doc">When to Create a New Doc</h3>
+<ul>
+<li><strong>Guide</strong>: Task-oriented, "How do I X?" - Always include inline code examples</li>
+<li><strong>Example</strong>: Outcome-oriented, "Build a customer service bot" - Show complete working code</li>
+<li><strong>Reference</strong>: Information-oriented, "What are all the config options?" - Link to Javadoc</li>
+</ul>
+<hr />
+<h2 id="writing-style">Writing Style</h2>
+<h3 id="tone">Tone</h3>
+<ul>
+<li><strong>Conversational but professional</strong>: "Let's build an agent" not "The instantiation of an agent object shall..."</li>
+<li><strong>Active voice</strong>: "Create an agent" not "An agent is created"</li>
+<li><strong>Present tense</strong>: "The agent calls tools" not "The agent will call tools"</li>
+<li><strong>Direct</strong>: Use "you" and "we"</li>
+</ul>
+<h3 id="structure">Structure</h3>
+<p>Every guide should have:</p>
+<div class="codehilite"><pre><span></span><code><span class="gh"># Guide Title</span>
+
+Brief 1-2 sentence overview of what this guide covers.
+
+<span class="gu">## Prerequisites</span>
+
+<span class="k">-</span><span class="w"> </span>List required knowledge
+<span class="k">-</span><span class="w"> </span>Link to other docs if needed
+
+<span class="gu">## Quick Example</span>
+
+```java
+</code></pre></div>
+
+<p><a href="https://github.com/bnbarak/openai-agent-sdk/blob/main/src/main/java/ai/acolite/agentsdk/examples/BasicTextOutputExample.java">Link to complete example</a></p>
+<h2 id="concepts">Concepts</h2>
+<p>Now explain what's happening...</p>
+<h2 id="common-patterns">Common Patterns</h2>
+<p>Show 2-3 common use cases...</p>
+<h2 id="troubleshooting">Troubleshooting</h2>
+<p>Common errors and how to fix them...</p>
+<h2 id="next-steps">Next Steps</h2>
+<ul>
+<li>Link to related guides</li>
+<li>Link to examples</li>
+</ul>
+<div class="codehilite"><pre><span></span><code><span class="c1">### Formatting</span>
+
+<span class="o">-</span><span class="w"> </span><span class="o">**</span><span class="k">Code</span><span class="o">**:</span><span class="w"> </span><span class="k">Always</span><span class="w"> </span><span class="k">use</span><span class="w"> </span><span class="n">syntax</span><span class="o">-</span><span class="n">highlighted</span><span class="w"> </span><span class="k">code</span><span class="w"> </span><span class="n">blocks</span><span class="w"> </span><span class="k">with</span><span class="w"> </span><span class="k">language</span>
+<span class="o">-</span><span class="w"> </span><span class="o">**</span><span class="n">Commands</span><span class="o">**:</span><span class="w"> </span><span class="k">Use</span><span class="w"> </span><span class="n n-Quoted">`bash`</span><span class="w"> </span><span class="k">code</span><span class="w"> </span><span class="n">blocks</span><span class="w"> </span><span class="k">for</span><span class="w"> </span><span class="n">shell</span><span class="w"> </span><span class="n">commands</span>
+<span class="o">-</span><span class="w"> </span><span class="o">**</span><span class="k">File</span><span class="w"> </span><span class="n">paths</span><span class="o">**:</span><span class="w"> </span><span class="k">Use</span><span class="w"> </span><span class="n n-Quoted">`code`</span><span class="w"> </span><span class="n">formatting</span><span class="o">:</span><span class="w"> </span><span class="n n-Quoted">`src/main/java/Agent.java`</span>
+<span class="o">-</span><span class="w"> </span><span class="o">**</span><span class="n">Emphasis</span><span class="o">**:</span><span class="w"> </span><span class="k">Use</span><span class="w"> </span><span class="o">**</span><span class="n">bold</span><span class="o">**</span><span class="w"> </span><span class="k">for</span><span class="w"> </span><span class="n">important</span><span class="w"> </span><span class="n">terms</span><span class="p">,</span><span class="w"> </span><span class="n">_italic_</span><span class="w"> </span><span class="n">sparingly</span>
+
+<span class="o">---</span>
+
+<span class="c1">## Including Code Examples</span>
+
+<span class="o">**</span><span class="n">We</span><span class="w"> </span><span class="n">love</span><span class="w"> </span><span class="n">inline</span><span class="w"> </span><span class="n">examples</span><span class="o">!**</span><span class="w"> </span><span class="k">Every</span><span class="w"> </span><span class="n">guide</span><span class="w"> </span><span class="n">should</span><span class="w"> </span><span class="k">show</span><span class="w"> </span><span class="k">code</span><span class="w"> </span><span class="n">directly</span><span class="w"> </span><span class="k">in</span><span class="w"> </span><span class="n">the</span><span class="w"> </span><span class="k">page</span><span class="p">,</span><span class="w"> </span><span class="k">not</span><span class="w"> </span><span class="n">just</span><span class="w"> </span><span class="n">link</span><span class="w"> </span><span class="k">to</span><span class="w"> </span><span class="n">files</span><span class="p">.</span>
+
+<span class="c1">### Preferred: Snippet Regions (Inline + One Source of Truth)</span>
+
+<span class="n">This</span><span class="w"> </span><span class="k">is</span><span class="w"> </span><span class="n">the</span><span class="w"> </span><span class="o">**</span><span class="n">best</span><span class="w"> </span><span class="n">approach</span><span class="o">**</span><span class="w"> </span><span class="o">-</span><span class="w"> </span><span class="n">it</span><span class="w"> </span><span class="n">shows</span><span class="w"> </span><span class="k">code</span><span class="w"> </span><span class="n">inline</span><span class="w"> </span><span class="k">while</span><span class="w"> </span><span class="n">keeping</span><span class="w"> </span><span class="n">examples</span><span class="w"> </span><span class="n">testable</span><span class="w"> </span><span class="k">and</span><span class="w"> </span><span class="k">current</span><span class="p">.</span>
+
+<span class="n">Mark</span><span class="w"> </span><span class="n">regions</span><span class="w"> </span><span class="k">in</span><span class="w"> </span><span class="n">your</span><span class="w"> </span><span class="n">example</span><span class="w"> </span><span class="n">files</span><span class="o">:</span>
+
+<span class="o">**</span><span class="k">In</span><span class="w"> </span><span class="n n-Quoted">`BasicTextOutputExample.java`</span><span class="o">:**</span>
+<span class="n n-Quoted">`</span><span class="n n-Quoted n-Quoted-Escape">``</span><span class="n n-Quoted">java</span>
+<span class="n n-Quoted">public class BasicTextOutputExample {</span>
+<span class="n n-Quoted">  public static void main(String[] args) {</span>
+<span class="n n-Quoted">    // region create-agent</span>
+<span class="n n-Quoted">    // Create a simple agent</span>
+<span class="n n-Quoted">    Agent&lt;UnknownContext, TextOutput&gt; agent =</span>
+<span class="n n-Quoted">        Agent.&lt;UnknownContext, TextOutput&gt;builder()</span>
+<span class="n n-Quoted">            .name(&quot;Assistant&quot;)</span>
+<span class="n n-Quoted">            .instructions(&quot;You are a helpful assistant. Keep responses concise and clear.&quot;)</span>
+<span class="n n-Quoted">            .build();</span>
+<span class="n n-Quoted">    // endregion create-agent</span>
+<span class="n n-Quoted">  }</span>
+<span class="n n-Quoted">}</span>
+</code></pre></div>
+
+<p><strong>In docs:</strong></p>
+<div class="codehilite"><pre><span></span><code><span class="gu">## Creating an Agent</span>
+
+Here&#39;s how to create a basic agent:
+
+```java
+</code></pre></div>
+
+<p><a href="https://github.com/bnbarak/openai-agent-sdk/blob/main/src/main/java/ai/acolite/agentsdk/examples/BasicTextOutputExample.java">View complete example</a></p>
+<div class="codehilite"><pre><span></span><code><span class="o">**</span><span class="n">Why</span> <span class="n">this</span> <span class="ow">is</span> <span class="n">best</span><span class="p">:</span><span class="o">**</span>
+<span class="o">-</span> <span class="n">Code</span> <span class="n">appears</span> <span class="n">inline</span> <span class="ow">in</span> <span class="n">the</span> <span class="n">guide</span> <span class="p">(</span><span class="n">readers</span> <span class="n">don</span><span class="s1">&#39;t have to click away)</span>
+<span class="o">-</span> <span class="n">Code</span> <span class="ow">is</span> <span class="n">real</span><span class="p">,</span> <span class="n">tested</span><span class="p">,</span> <span class="ow">and</span> <span class="n">runs</span> <span class="ow">in</span> <span class="n">CI</span>
+<span class="o">-</span> <span class="n">Updates</span> <span class="n">to</span> <span class="n">examples</span> <span class="n">automatically</span> <span class="n">appear</span> <span class="ow">in</span> <span class="n">docs</span>
+<span class="o">-</span> <span class="n">Readers</span> <span class="n">can</span> <span class="n">still</span> <span class="n">click</span> <span class="n">to</span> <span class="n">see</span> <span class="n">the</span> <span class="n">complete</span> <span class="n">file</span>
+
+<span class="c1">### Alternative: Include Entire File (Use for Small Examples Only)</span>
+
+<span class="n">For</span> <span class="n">very</span> <span class="n">small</span> <span class="n">examples</span> <span class="p">(</span><span class="o">&lt;</span> <span class="mi">30</span> <span class="n">lines</span><span class="p">),</span> <span class="n">include</span> <span class="n">the</span> <span class="n">entire</span> <span class="n">file</span><span class="p">:</span>
+
+<span class="err">```</span><span class="n">markdown</span>
+<span class="c1">## Example: Creating an Agent</span>
+
+<span class="err">```</span><span class="n">java</span>
+<span class="n">package</span> <span class="n">ai</span><span class="o">.</span><span class="n">acolite</span><span class="o">.</span><span class="n">agentsdk</span><span class="o">.</span><span class="n">examples</span><span class="p">;</span>
+
+<span class="kn">import</span><span class="w"> </span><span class="nn">ai.acolite.agentsdk.core.Agent</span><span class="p">;</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">ai.acolite.agentsdk.core.RunResult</span><span class="p">;</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">ai.acolite.agentsdk.core.Runner</span><span class="p">;</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">ai.acolite.agentsdk.core.types.TextOutput</span><span class="p">;</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">ai.acolite.agentsdk.core.types.UnknownContext</span><span class="p">;</span>
+
+<span class="o">/**</span>
+ <span class="o">*</span> <span class="n">BasicTextOutputExample</span>
+ <span class="o">*</span>
+ <span class="o">*</span> <span class="o">&lt;</span><span class="n">p</span><span class="o">&gt;</span><span class="n">Simplest</span> <span class="n">example</span> <span class="n">demonstrating</span> <span class="n">text</span><span class="o">-</span><span class="n">based</span> <span class="n">agent</span> <span class="n">interactions</span><span class="o">.</span>
+ <span class="o">*</span>
+ <span class="o">*</span> <span class="o">&lt;</span><span class="n">p</span><span class="o">&gt;</span><span class="n">This</span> <span class="n">example</span> <span class="n">shows</span><span class="p">:</span> <span class="o">-</span> <span class="n">Creating</span> <span class="n">a</span> <span class="n">basic</span> <span class="n">agent</span> <span class="k">with</span> <span class="n">instructions</span> <span class="o">-</span> <span class="n">Running</span> <span class="n">the</span> <span class="n">agent</span> <span class="k">with</span> <span class="n">a</span> <span class="n">text</span>
+ <span class="o">*</span> <span class="n">prompt</span> <span class="o">-</span> <span class="n">Accessing</span> <span class="n">the</span> <span class="n">text</span> <span class="n">response</span> <span class="ow">and</span> <span class="n">usage</span> <span class="n">statistics</span>
+ <span class="o">*</span>
+ <span class="o">*</span> <span class="o">&lt;</span><span class="n">p</span><span class="o">&gt;</span><span class="n">Usage</span><span class="p">:</span> <span class="n">OPENAI_API_KEY</span><span class="o">=</span><span class="n">sk</span><span class="o">-...</span> <span class="n">java</span> <span class="n">ai</span><span class="o">.</span><span class="n">acolite</span><span class="o">.</span><span class="n">agentsdk</span><span class="o">.</span><span class="n">examples</span><span class="o">.</span><span class="n">BasicTextOutputExample</span>
+ <span class="o">*/</span>
+<span class="n">public</span> <span class="k">class</span><span class="w"> </span><span class="nc">BasicTextOutputExample</span> <span class="p">{</span>
+
+  <span class="n">public</span> <span class="n">static</span> <span class="n">void</span> <span class="n">main</span><span class="p">(</span><span class="n">String</span><span class="p">[]</span> <span class="n">args</span><span class="p">)</span> <span class="p">{</span>
+    <span class="n">String</span> <span class="n">apiKey</span> <span class="o">=</span> <span class="n">System</span><span class="o">.</span><span class="n">getenv</span><span class="p">(</span><span class="s2">&quot;OPENAI_API_KEY&quot;</span><span class="p">);</span>
+    <span class="k">if</span> <span class="p">(</span><span class="n">apiKey</span> <span class="o">==</span> <span class="n">null</span> <span class="o">||</span> <span class="n">apiKey</span><span class="o">.</span><span class="n">isEmpty</span><span class="p">())</span> <span class="p">{</span>
+      <span class="n">System</span><span class="o">.</span><span class="n">err</span><span class="o">.</span><span class="n">println</span><span class="p">(</span><span class="s2">&quot;Error: OPENAI_API_KEY environment variable not set&quot;</span><span class="p">);</span>
+      <span class="n">System</span><span class="o">.</span><span class="n">err</span><span class="o">.</span><span class="n">println</span><span class="p">(</span>
+          <span class="s2">&quot;Usage: OPENAI_API_KEY=sk-... java ai.acolite.agentsdk.examples.BasicTextOutputExample&quot;</span><span class="p">);</span>
+      <span class="n">System</span><span class="o">.</span><span class="n">exit</span><span class="p">(</span><span class="mi">1</span><span class="p">);</span>
+    <span class="p">}</span>
+
+    <span class="n">System</span><span class="o">.</span><span class="n">out</span><span class="o">.</span><span class="n">println</span><span class="p">(</span><span class="s2">&quot;=== Basic Text Output Example ===</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">);</span>
+
+    <span class="o">//</span> <span class="n">region</span> <span class="n">create</span><span class="o">-</span><span class="n">agent</span>
+    <span class="o">//</span> <span class="n">Create</span> <span class="n">a</span> <span class="n">simple</span> <span class="n">agent</span>
+    <span class="n">Agent</span><span class="o">&lt;</span><span class="n">UnknownContext</span><span class="p">,</span> <span class="n">TextOutput</span><span class="o">&gt;</span> <span class="n">agent</span> <span class="o">=</span>
+        <span class="n">Agent</span><span class="o">.&lt;</span><span class="n">UnknownContext</span><span class="p">,</span> <span class="n">TextOutput</span><span class="o">&gt;</span><span class="n">builder</span><span class="p">()</span>
+            <span class="o">.</span><span class="n">name</span><span class="p">(</span><span class="s2">&quot;Assistant&quot;</span><span class="p">)</span>
+            <span class="o">.</span><span class="n">instructions</span><span class="p">(</span><span class="s2">&quot;You are a helpful assistant. Keep responses concise and clear.&quot;</span><span class="p">)</span>
+            <span class="o">.</span><span class="n">build</span><span class="p">();</span>
+    <span class="o">//</span> <span class="n">endregion</span> <span class="n">create</span><span class="o">-</span><span class="n">agent</span>
+
+    <span class="o">//</span> <span class="n">region</span> <span class="n">run</span><span class="o">-</span><span class="n">agent</span>
+    <span class="o">//</span> <span class="n">Run</span> <span class="n">the</span> <span class="n">agent</span> <span class="k">with</span> <span class="n">a</span> <span class="n">simple</span> <span class="n">question</span>
+    <span class="n">RunResult</span><span class="o">&lt;</span><span class="n">UnknownContext</span><span class="p">,</span> <span class="err">?</span><span class="o">&gt;</span> <span class="n">result</span> <span class="o">=</span>
+        <span class="n">Runner</span><span class="o">.</span><span class="n">run</span><span class="p">(</span><span class="n">agent</span><span class="p">,</span> <span class="s2">&quot;Explain what an AI agent is in one sentence.&quot;</span><span class="p">);</span>
+    <span class="o">//</span> <span class="n">endregion</span> <span class="n">run</span><span class="o">-</span><span class="n">agent</span>
+
+    <span class="o">//</span> <span class="n">Display</span> <span class="n">the</span> <span class="n">response</span>
+    <span class="n">System</span><span class="o">.</span><span class="n">out</span><span class="o">.</span><span class="n">println</span><span class="p">(</span><span class="s2">&quot;Question:&quot;</span><span class="p">);</span>
+    <span class="n">System</span><span class="o">.</span><span class="n">out</span><span class="o">.</span><span class="n">println</span><span class="p">(</span><span class="s2">&quot;Explain what an AI agent is in one sentence.&quot;</span><span class="p">);</span>
+    <span class="n">System</span><span class="o">.</span><span class="n">out</span><span class="o">.</span><span class="n">println</span><span class="p">();</span>
+    <span class="n">System</span><span class="o">.</span><span class="n">out</span><span class="o">.</span><span class="n">println</span><span class="p">(</span><span class="s2">&quot;Agent response:&quot;</span><span class="p">);</span>
+    <span class="n">System</span><span class="o">.</span><span class="n">out</span><span class="o">.</span><span class="n">println</span><span class="p">(</span><span class="n">result</span><span class="o">.</span><span class="n">getFinalOutput</span><span class="p">());</span>
+    <span class="n">System</span><span class="o">.</span><span class="n">out</span><span class="o">.</span><span class="n">println</span><span class="p">();</span>
+
+    <span class="o">//</span> <span class="n">region</span> <span class="n">check</span><span class="o">-</span><span class="n">usage</span>
+    <span class="o">//</span> <span class="n">Display</span> <span class="n">usage</span> <span class="n">statistics</span>
+    <span class="n">System</span><span class="o">.</span><span class="n">out</span><span class="o">.</span><span class="n">println</span><span class="p">(</span><span class="s2">&quot;Usage statistics:&quot;</span><span class="p">);</span>
+    <span class="n">System</span><span class="o">.</span><span class="n">out</span><span class="o">.</span><span class="n">println</span><span class="p">(</span><span class="s2">&quot;  Total tokens: &quot;</span> <span class="o">+</span> <span class="n">result</span><span class="o">.</span><span class="n">getUsage</span><span class="p">()</span><span class="o">.</span><span class="n">getTotalTokens</span><span class="p">());</span>
+    <span class="n">System</span><span class="o">.</span><span class="n">out</span><span class="o">.</span><span class="n">println</span><span class="p">(</span><span class="s2">&quot;  Input tokens: &quot;</span> <span class="o">+</span> <span class="n">result</span><span class="o">.</span><span class="n">getUsage</span><span class="p">()</span><span class="o">.</span><span class="n">getInputTokens</span><span class="p">());</span>
+    <span class="n">System</span><span class="o">.</span><span class="n">out</span><span class="o">.</span><span class="n">println</span><span class="p">(</span><span class="s2">&quot;  Output tokens: &quot;</span> <span class="o">+</span> <span class="n">result</span><span class="o">.</span><span class="n">getUsage</span><span class="p">()</span><span class="o">.</span><span class="n">getOutputTokens</span><span class="p">());</span>
+    <span class="o">//</span> <span class="n">endregion</span> <span class="n">check</span><span class="o">-</span><span class="n">usage</span>
+  <span class="p">}</span>
+<span class="p">}</span>
+</code></pre></div>
+
+<div class="codehilite"><pre><span></span><code>**Warning**: Only use for small files. Large files make docs hard to scan.
+
+<span class="gu">##</span># Last Resort: Link Only (Use Rarely)
+
+Only link without showing code if the example is extremely long or complex:
+
+```markdown
+<span class="gu">##</span> Example: Creating an Agent
+
+See [HelloWorld.java](https://github.com/bnbarak/openai-agent-sdk/blob/main/src/main/java/ai/acolite/agentsdk/examples/HelloWorld.java) for a complete working example.
+</code></pre></div>
+
+<p><strong>When to use</strong>: Advanced examples, complete applications, or reference implementations.</p>
+<h3 id="what-not-to-do">What NOT to Do</h3>
+<p>❌ <strong>Don't write example code directly in markdown:</strong></p>
+<div class="codehilite"><pre><span></span><code>&lt;!-- BAD: This code will go stale --&gt;
+```java
+Agent agent = new Agent(...); // This might not even compile!
+</code></pre></div>
+
+<div class="codehilite"><pre><span></span><code><span class="err">✅</span><span class="w"> </span><span class="o">**</span><span class="n">Do</span><span class="w"> </span><span class="n">link</span><span class="w"> </span><span class="n">to</span><span class="w"> </span><span class="n">real</span><span class="p">,</span><span class="w"> </span><span class="n">tested</span><span class="w"> </span><span class="n">code</span><span class="o">:**</span>
+
+<span class="err">```</span><span class="n">markdown</span>
+<span class="o">&lt;!--</span><span class="w"> </span><span class="n">GOOD</span><span class="o">:</span><span class="w"> </span><span class="n">Links</span><span class="w"> </span><span class="n">to</span><span class="w"> </span><span class="n">code</span><span class="w"> </span><span class="n">that</span><span class="w"> </span><span class="n">compiles</span><span class="w"> </span><span class="n">and</span><span class="w"> </span><span class="n">runs</span><span class="w"> </span><span class="o">--&gt;</span>
+<span class="n">See</span><span class="w"> </span><span class="p">[</span><span class="n">complete</span><span class="w"> </span><span class="n">example</span><span class="p">](</span><span class="n">https</span><span class="o">:</span><span class="c1">//github.com/.../HelloWorld.java)</span>
+</code></pre></div>
+
+<hr />
+<h2 id="linking-to-api-documentation">Linking to API Documentation</h2>
+<h3 id="link-to-javadoc">Link to Javadoc</h3>
+<p>Point users to Javadoc for detailed API reference:</p>
+<div class="codehilite"><pre><span></span><code>For details on all available options, see the [<span class="sb">`Agent.Builder`</span>](/api/ai/acolite/agentsdk/core/Agent.Builder.html) Javadoc.
+</code></pre></div>
+
+<h3 id="link-between-docs">Link Between Docs</h3>
+<p>Use relative links:</p>
+<div class="codehilite"><pre><span></span><code>See the [<span class="nt">Tools Guide</span>](<span class="na">guides/tools.md</span>) for more information on custom tools.
+</code></pre></div>
+
+<h3 id="external-links">External Links</h3>
+<p>Always use full URLs:</p>
+<div class="codehilite"><pre><span></span><code>Learn more about [<span class="nt">OpenAI&#39;s Responses API</span>](<span class="na">https://platform.openai.com/docs/api-reference/responses</span>).
+</code></pre></div>
+
+<hr />
+<h2 id="file-naming-conventions">File Naming Conventions</h2>
+<ul>
+<li><strong>Use kebab-case</strong>: <code>multi-agent-handoffs.md</code> not <code>MultiAgentHandoffs.md</code></li>
+<li><strong>Be descriptive</strong>: <code>memory-session-management.md</code> not <code>memory.md</code></li>
+<li><strong>Avoid redundancy</strong>: <code>tools.md</code> not <code>tools-guide.md</code> (it's already in <code>guides/</code>)</li>
+</ul>
+<hr />
+<h2 id="mkdocs-syntax">MkDocs Syntax</h2>
+<h3 id="headers">Headers</h3>
+<div class="codehilite"><pre><span></span><code><span class="gh"># Top Level (Page Title) - Only one per page</span>
+<span class="gu">## Section</span>
+<span class="gu">### Subsection</span>
+<span class="gu">#### Rarely needed</span>
+</code></pre></div>
+
+<h3 id="code-blocks">Code Blocks</h3>
+<p>Always specify language for syntax highlighting:</p>
+<div class="codehilite"><pre><span></span><code><span class="sb">```java</span>
+<span class="c1">// Java code</span>
+<span class="n">Agent</span><span class="w"> </span><span class="n">agent</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">Agent</span><span class="p">.</span><span class="na">builder</span><span class="p">().</span><span class="na">build</span><span class="p">();</span>
+<span class="sb">```</span>
+
+<span class="sb">```bash</span>
+<span class="c1"># Shell commands</span>
+mvn<span class="w"> </span>clean<span class="w"> </span>install
+<span class="sb">```</span>
+
+<span class="sb">```xml</span>
+<span class="cm">&lt;!-- XML/Maven --&gt;</span>
+<span class="nt">&lt;dependency&gt;</span>
+<span class="w">  </span><span class="nt">&lt;groupId&gt;</span>ai.acolite<span class="nt">&lt;/groupId&gt;</span>
+<span class="w">  </span><span class="nt">&lt;artifactId&gt;</span>openai-agent-sdk<span class="nt">&lt;/artifactId&gt;</span>
+<span class="nt">&lt;/dependency&gt;</span>
+<span class="sb">```</span>
+</code></pre></div>
+
+<h3 id="admonitions-callout-boxes">Admonitions (Callout Boxes)</h3>
+<p>Use for warnings, tips, notes:</p>
+<div class="codehilite"><pre><span></span><code>!!! note
+    This is a note. Use for additional context.
+
+!!! tip
+    This is a tip. Use for helpful suggestions.
+
+!!! warning
+    This is a warning. Use for important caveats.
+
+!!! danger
+    This is danger. Use for critical security warnings.
+</code></pre></div>
+
+<h3 id="tables">Tables</h3>
+<div class="codehilite"><pre><span></span><code>| Feature | Description |
+|---------|-------------|
+| Tools   | Custom functions agents can call |
+| Handoffs| Transfer between agents |
+</code></pre></div>
+
+<h3 id="lists">Lists</h3>
+<div class="codehilite"><pre><span></span><code><span class="k">-</span><span class="w"> </span>Unordered list
+<span class="k">-</span><span class="w"> </span>Another item
+<span class="w">  </span><span class="k">-</span><span class="w"> </span>Nested item
+
+<span class="k">1.</span> Ordered list
+<span class="k">2.</span> Another item
+</code></pre></div>
+
+<hr />
+<h2 id="testing-documentation">Testing Documentation</h2>
+<h3 id="before-committing">Before Committing</h3>
+<ol>
+<li><strong>Check links</strong>: All links to code must point to real files</li>
+<li><strong>Verify examples</strong>: All referenced examples must exist and work</li>
+<li><strong>Test build</strong>: Run <code>mkdocs build</code> locally</li>
+<li><strong>Preview</strong>: Run <code>mkdocs serve</code> and view at http://localhost:8000</li>
+</ol>
+<h3 id="commands">Commands</h3>
+<div class="codehilite"><pre><span></span><code><span class="c1"># Install MkDocs</span>
+pip<span class="w"> </span>install<span class="w"> </span>mkdocs<span class="w"> </span>mkdocs-material<span class="w"> </span>mkdocs-include-markdown-plugin
+
+<span class="c1"># Preview locally</span>
+mkdocs<span class="w"> </span>serve
+
+<span class="c1"># Build static site</span>
+mkdocs<span class="w"> </span>build
+
+<span class="c1"># Validate links (if link checker installed)</span>
+mkdocs<span class="w"> </span>build<span class="w"> </span>--strict
+</code></pre></div>
+
+<h3 id="ci-checks">CI Checks</h3>
+<p>Documentation is automatically checked in CI:
+- All code examples are executed in E2E workflow
+- Broken links fail the build (once configured)
+- MkDocs build errors fail the build</p>
+<hr />
+<h2 id="ai-generated-documentation">AI-Generated Documentation</h2>
+<h3 id="policy">Policy</h3>
+<p><strong>AI-generated documentation must be reviewed by a human before merging.</strong></p>
+<p>From the launch plan (Stage 1.2):</p>
+<blockquote>
+<p>AI generated docs must be reviewed before merge</p>
+</blockquote>
+<h3 id="if-you-use-ai-to-draft-docs">If You Use AI to Draft Docs</h3>
+<ol>
+<li>✅ <strong>Do</strong>: Use AI to draft initial structure</li>
+<li>✅ <strong>Do</strong>: Use AI to improve clarity</li>
+<li>✅ <strong>Do</strong>: Have a human review and edit</li>
+<li>❌ <strong>Don't</strong>: Merge AI-generated docs without review</li>
+<li>❌ <strong>Don't</strong>: Let AI write code examples (write real code instead)</li>
+</ol>
+<h3 id="why">Why?</h3>
+<p>AI can hallucinate APIs that don't exist or generate outdated code. Always verify:
+- Code examples compile
+- APIs actually exist
+- Links point to real files</p>
+<hr />
+<h2 id="examples">Examples</h2>
+<h3 id="good-example">Good Example</h3>
+<div class="codehilite"><pre><span></span><code><span class="gh"># Creating Your First Agent</span>
+
+This guide shows you how to create a basic agent and run your first conversation.
+
+<span class="gu">## Prerequisites</span>
+
+<span class="k">-</span><span class="w"> </span>Java 21+
+<span class="k">-</span><span class="w"> </span>OpenAI API key set in environment: <span class="sb">`OPENAI_API_KEY`</span>
+
+<span class="gu">## Quick Start</span>
+
+```java
+</code></pre></div>
+
+<p><a href="https://github.com/bnbarak/openai-agent-sdk/blob/main/src/main/java/ai/acolite/agentsdk/examples/BasicTextOutputExample.java">View complete example</a></p>
+<h2 id="running-the-agent">Running the Agent</h2>
+<p>Once you have an agent, run it with a message:</p>
+<div class="codehilite"><pre><span></span><code>
+</code></pre></div>
+
+<h2 id="how-it-works">How It Works</h2>
+<p>The <code>Agent.builder()</code> creates a new agent with:
+- <strong>model</strong>: The OpenAI model to use (gpt-4.1, gpt-4.1-mini, etc.)
+- <strong>instructions</strong>: The system prompt that defines agent behavior</p>
+<p>When you call <code>agent.run()</code>, the agent:
+1. Sends your message to OpenAI
+2. Receives the response
+3. Returns a <code>RunResult</code> with the output</p>
+<h2 id="next-steps_1">Next Steps</h2>
+<ul>
+<li><a href="../guides/tools/">Add tools to your agent</a></li>
+<li><a href="../guides/sessions/">Enable conversation memory</a></li>
+</ul>
+<div class="codehilite"><pre><span></span><code><span class="o">**</span><span class="n">Why</span><span class="w"> </span><span class="n">this</span><span class="w"> </span><span class="k">is</span><span class="w"> </span><span class="n">good</span><span class="p">:</span><span class="o">**</span>
+<span class="o">-</span><span class="w"> </span><span class="n">Shows</span><span class="w"> </span><span class="n">real</span><span class="p">,</span><span class="w"> </span><span class="n">tested</span><span class="w"> </span><span class="n">code</span><span class="w"> </span><span class="n">inline</span><span class="w"> </span><span class="p">(</span><span class="n">pulled</span><span class="w"> </span><span class="n">from</span><span class="w"> </span><span class="n">BasicTextOutputExample</span><span class="o">.</span><span class="n">java</span><span class="p">)</span>
+<span class="o">-</span><span class="w"> </span><span class="n">Links</span><span class="w"> </span><span class="n">to</span><span class="w"> </span><span class="n">complete</span><span class="w"> </span><span class="n">example</span><span class="w"> </span><span class="k">for</span><span class="w"> </span><span class="n">context</span>
+<span class="o">-</span><span class="w"> </span><span class="n">Multiple</span><span class="w"> </span><span class="n">code</span><span class="w"> </span><span class="n">snippets</span><span class="w"> </span><span class="n">with</span><span class="w"> </span><span class="n">region</span><span class="w"> </span><span class="n">markers</span>
+<span class="o">-</span><span class="w"> </span><span class="n">Clear</span><span class="w"> </span><span class="n">explanations</span><span class="w"> </span><span class="n">after</span><span class="w"> </span><span class="n">each</span><span class="w"> </span><span class="n">code</span><span class="w"> </span><span class="n">block</span>
+<span class="o">-</span><span class="w"> </span><span class="n">No</span><span class="w"> </span><span class="n">copy</span><span class="o">-</span><span class="n">pasted</span><span class="w"> </span><span class="n">code</span><span class="w"> </span><span class="n">that</span><span class="w"> </span><span class="n">could</span><span class="w"> </span><span class="n">go</span><span class="w"> </span><span class="n">stale</span>
+
+<span class="c1">### Bad Example</span>
+
+<span class="err">```</span><span class="n">markdown</span>
+<span class="c1"># Agent Documentation</span>
+
+<span class="n">The</span><span class="w"> </span><span class="n">Agent</span><span class="w"> </span><span class="k">class</span><span class="w"> </span><span class="k">is</span><span class="w"> </span><span class="n">the</span><span class="w"> </span><span class="n">main</span><span class="w"> </span><span class="k">class</span><span class="w"> </span><span class="k">for</span><span class="w"> </span><span class="n">creating</span><span class="w"> </span><span class="n">agents</span><span class="w"> </span><span class="ow">in</span><span class="w"> </span><span class="n">the</span><span class="w"> </span><span class="n">OpenAI</span><span class="w"> </span><span class="n">Agent</span><span class="w"> </span><span class="n">SDK</span><span class="w"> </span><span class="k">for</span><span class="w"> </span><span class="n">Java</span><span class="o">.</span>
+
+<span class="c1">## Constructor</span>
+
+<span class="n">The</span><span class="w"> </span><span class="n">Agent</span><span class="w"> </span><span class="k">class</span><span class="w"> </span><span class="n">has</span><span class="w"> </span><span class="n">a</span><span class="w"> </span><span class="n">constructor</span><span class="w"> </span><span class="n">that</span><span class="w"> </span><span class="n">takes</span><span class="w"> </span><span class="n">parameters</span><span class="o">.</span>
+
+<span class="c1">## Methods</span>
+
+<span class="c1">### run</span>
+
+<span class="n">The</span><span class="w"> </span><span class="n">run</span><span class="w"> </span><span class="n">method</span><span class="w"> </span><span class="n">runs</span><span class="w"> </span><span class="n">the</span><span class="w"> </span><span class="n">agent</span><span class="o">.</span>
+
+<span class="err">```</span><span class="n">java</span>
+<span class="o">//</span><span class="w"> </span><span class="n">This</span><span class="w"> </span><span class="n">code</span><span class="w"> </span><span class="n">might</span><span class="w"> </span><span class="ow">not</span><span class="w"> </span><span class="n">work</span>
+<span class="n">agent</span><span class="o">.</span><span class="n">run</span><span class="p">();</span>
+</code></pre></div>
+
+<h2 id="see-also">See Also</h2>
+<ul>
+<li>Other documentation
+```</li>
+</ul>
+<p><strong>Problems</strong>:
+- No clear outcome
+- No working example
+- Code snippet not tested
+- Vague descriptions
+- No links to real code</p>
+<hr />
+<h2 id="quick-checklist">Quick Checklist</h2>
+<p>Before submitting documentation:</p>
+<ul>
+<li>[ ] Links point to real files (not fictional paths)</li>
+<li>[ ] Code examples are in <code>src/main/java/.../examples/</code> and tested</li>
+<li>[ ] Writing is clear and concise</li>
+<li>[ ] Tested with <code>mkdocs serve</code> locally</li>
+<li>[ ] No copy-pasted code (only links or includes)</li>
+<li>[ ] Follows file naming conventions</li>
+<li>[ ] Reviewed by a human (if AI-assisted)</li>
+</ul>
+<hr />
+<h2 id="questions">Questions?</h2>
+<ul>
+<li>Check existing docs in <code>docs/</code> for examples</li>
+<li>Open a GitHub issue with the <code>documentation</code> label</li>
+<li>Ask in pull request reviews</li>
+</ul>
+<hr />
+<p><strong>Last Updated</strong>: January 2026</p>
+  </div>
+</article>
+                                <div class="mx-auto flex flex-wrap h-16 w-full max-w-2xl items-center gap-2 px-4 md:px-0">
+    
+    
+</div>
+                                <dialog id="bottom-sidebar" onclick="onBottomSidebarDialogClick(event)" class="bg-transparent"
+    style="position: fixed; left: 0px; top: 0px; transform: translate(0px, 58px); min-width: max-content; --radix-popper-transform-origin: 0% 0px; will-change: transform; z-index: 50; --radix-popper-available-width: 504px; --radix-popper-available-height: 857px; --radix-popper-anchor-width: 72.94999694824219px; --radix-popper-anchor-height: 32px;">
+    <div data-side="bottom" data-align="start" data-state="open" role="dialog" data-slot="popover-content"
+        class="text-popover-foreground data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0 data-[state=closed]:zoom-out-95 data-[state=open]:zoom-in-95 data-[side=bottom]:slide-in-from-top-2 data-[side=left]:slide-in-from-right-2 data-[side=right]:slide-in-from-left-2 data-[side=top]:slide-in-from-bottom-2 z-50 origin-(--radix-popover-content-transform-origin) border outline-hidden bg-background/90 no-scrollbar h-(--radix-popper-available-height) w-(--radix-popper-available-width) overflow-y-auto rounded-none border-none p-0 shadow-none backdrop-blur duration-100"
+        style="--radix-popover-content-transform-origin: var(--radix-popper-transform-origin); --radix-popover-content-available-width: var(--radix-popper-available-width); --radix-popover-content-available-height: var(--radix-popper-available-height); --radix-popover-trigger-width: var(--radix-popper-anchor-width); --radix-popover-trigger-height: var(--radix-popper-anchor-height);"
+        tabindex="-1">
+        <div class="flex flex-col gap-12 overflow-auto px-6 py-6">
+            
+            
+            
+
+            
+            <div class="flex flex-col gap-4">
+                <div class="text-muted-foreground text-sm font-medium">Menu</div>
+                <div class="flex flex-col gap-3">
+                    
+                    <a class="text-2xl font-medium" href="..">
+                        
+                        Home
+                        
+                    </a>
+                    
+                    <a class="text-2xl font-medium" href="../quickstart/">
+                        
+                        Quickstart
+                        
+                    </a>
+                    
+                    <a class="text-2xl font-medium" href="../api/">
+                        
+                        API Reference
+                        
+                    </a>
+                    
+                </div>
+            </div>
+            
+
+            
+            <div class="flex flex-col gap-8">
+                
+                <div class="flex flex-col gap-4">
+                    <div class="text-muted-foreground text-sm font-medium">Guides</div>
+                    
+                    <div class="flex flex-col gap-3">
+                        
+                        <a class="text-2xl font-medium" href="../guides/agents/">
+                            
+                            Agents
+                            
+                        </a>
+                        
+                        <a class="text-2xl font-medium" href="../guides/running-agents/">
+                            
+                            Running Agents
+                            
+                        </a>
+                        
+                        <a class="text-2xl font-medium" href="../guides/run-context/">
+                            
+                            Run Context
+                            
+                        </a>
+                        
+                        <a class="text-2xl font-medium" href="../guides/tools/">
+                            
+                            Tools
+                            
+                        </a>
+                        
+                        <a class="text-2xl font-medium" href="../guides/handoffs/">
+                            
+                            Handoffs
+                            
+                        </a>
+                        
+                        <a class="text-2xl font-medium" href="../guides/sessions/">
+                            
+                            Sessions
+                            
+                        </a>
+                        
+                        <a class="text-2xl font-medium" href="../guides/models/">
+                            
+                            Models
+                            
+                        </a>
+                        
+                        <a class="text-2xl font-medium" href="../guides/realtime/">
+                            
+                            Realtime API
+                            
+                        </a>
+                        
+                        <a class="text-2xl font-medium" href="../guides/guardrails/">
+                            
+                            Guardrails
+                            
+                        </a>
+                        
+                        <a class="text-2xl font-medium" href="../guides/streaming/">
+                            
+                            Streaming
+                            
+                        </a>
+                        
+                        <a class="text-2xl font-medium" href="../guides/tracing/">
+                            
+                            Tracing
+                            
+                        </a>
+                        
+                        <a class="text-2xl font-medium" href="../guides/troubleshooting/">
+                            
+                            Troubleshooting
+                            
+                        </a>
+                        
+                    </div>
+                    
+                </div>
+                
+            </div>
+            
+            
+
+        </div>
+    </div>
+</dialog>
+                            </div>
+                            <div
+                                class="sticky top-[calc(var(--header-height)+1px)] z-30 ml-auto hidden h-[calc(100svh-var(--header-height)-var(--footer-height))] w-72 flex-col gap-4 overflow-hidden overscroll-none pb-8 xl:flex">
+                                <div class="h-(--top-spacing) shrink-0"></div>
+                                <div view-transition-name="toc" class="no-scrollbar overflow-y-auto px-8">
+    <div class="flex flex-col gap-2 p-4 pt-0 text-sm">
+        <p class="text-muted-foreground bg-background sticky top-0 h-6 text-xs">On This Page</p>
+        
+        
+        
+        
+        <a href="#table-of-contents"
+            class="text-muted-foreground hover:text-foreground data-[active=true]:text-foreground text-[0.8rem] no-underline transition-colors data-[depth=3]:pl-4 data-[depth=4]:pl-6"
+            data-active="false" data-depth="2">
+            Table of Contents
+        </a>
+        
+
+        
+        <a href="#philosophy"
+            class="text-muted-foreground hover:text-foreground data-[active=true]:text-foreground text-[0.8rem] no-underline transition-colors data-[depth=3]:pl-4 data-[depth=4]:pl-6"
+            data-active="false" data-depth="2">
+            Philosophy
+        </a>
+        
+        
+        <a href="#one-source-of-truth"
+            class="text-muted-foreground hover:text-foreground data-[active=true]:text-foreground text-[0.8rem] no-underline transition-colors data-[depth=3]:pl-4 data-[depth=4]:pl-6"
+            data-active="false" data-depth="3">
+            One Source of Truth
+        </a>
+        
+        <a href="#docs-people-actually-read"
+            class="text-muted-foreground hover:text-foreground data-[active=true]:text-foreground text-[0.8rem] no-underline transition-colors data-[depth=3]:pl-4 data-[depth=4]:pl-6"
+            data-active="false" data-depth="3">
+            Docs People Actually Read
+        </a>
+        
+        
+
+        
+        <a href="#documentation-structure"
+            class="text-muted-foreground hover:text-foreground data-[active=true]:text-foreground text-[0.8rem] no-underline transition-colors data-[depth=3]:pl-4 data-[depth=4]:pl-6"
+            data-active="false" data-depth="2">
+            Documentation Structure
+        </a>
+        
+        
+        <a href="#when-to-create-a-new-doc"
+            class="text-muted-foreground hover:text-foreground data-[active=true]:text-foreground text-[0.8rem] no-underline transition-colors data-[depth=3]:pl-4 data-[depth=4]:pl-6"
+            data-active="false" data-depth="3">
+            When to Create a New Doc
+        </a>
+        
+        
+
+        
+        <a href="#writing-style"
+            class="text-muted-foreground hover:text-foreground data-[active=true]:text-foreground text-[0.8rem] no-underline transition-colors data-[depth=3]:pl-4 data-[depth=4]:pl-6"
+            data-active="false" data-depth="2">
+            Writing Style
+        </a>
+        
+        
+        <a href="#tone"
+            class="text-muted-foreground hover:text-foreground data-[active=true]:text-foreground text-[0.8rem] no-underline transition-colors data-[depth=3]:pl-4 data-[depth=4]:pl-6"
+            data-active="false" data-depth="3">
+            Tone
+        </a>
+        
+        <a href="#structure"
+            class="text-muted-foreground hover:text-foreground data-[active=true]:text-foreground text-[0.8rem] no-underline transition-colors data-[depth=3]:pl-4 data-[depth=4]:pl-6"
+            data-active="false" data-depth="3">
+            Structure
+        </a>
+        
+        
+
+        
+        <a href="#concepts"
+            class="text-muted-foreground hover:text-foreground data-[active=true]:text-foreground text-[0.8rem] no-underline transition-colors data-[depth=3]:pl-4 data-[depth=4]:pl-6"
+            data-active="false" data-depth="2">
+            Concepts
+        </a>
+        
+
+        
+        <a href="#common-patterns"
+            class="text-muted-foreground hover:text-foreground data-[active=true]:text-foreground text-[0.8rem] no-underline transition-colors data-[depth=3]:pl-4 data-[depth=4]:pl-6"
+            data-active="false" data-depth="2">
+            Common Patterns
+        </a>
+        
+
+        
+        <a href="#troubleshooting"
+            class="text-muted-foreground hover:text-foreground data-[active=true]:text-foreground text-[0.8rem] no-underline transition-colors data-[depth=3]:pl-4 data-[depth=4]:pl-6"
+            data-active="false" data-depth="2">
+            Troubleshooting
+        </a>
+        
+
+        
+        <a href="#next-steps"
+            class="text-muted-foreground hover:text-foreground data-[active=true]:text-foreground text-[0.8rem] no-underline transition-colors data-[depth=3]:pl-4 data-[depth=4]:pl-6"
+            data-active="false" data-depth="2">
+            Next Steps
+        </a>
+        
+        
+        <a href="#what-not-to-do"
+            class="text-muted-foreground hover:text-foreground data-[active=true]:text-foreground text-[0.8rem] no-underline transition-colors data-[depth=3]:pl-4 data-[depth=4]:pl-6"
+            data-active="false" data-depth="3">
+            What NOT to Do
+        </a>
+        
+        
+
+        
+        <a href="#linking-to-api-documentation"
+            class="text-muted-foreground hover:text-foreground data-[active=true]:text-foreground text-[0.8rem] no-underline transition-colors data-[depth=3]:pl-4 data-[depth=4]:pl-6"
+            data-active="false" data-depth="2">
+            Linking to API Documentation
+        </a>
+        
+        
+        <a href="#link-to-javadoc"
+            class="text-muted-foreground hover:text-foreground data-[active=true]:text-foreground text-[0.8rem] no-underline transition-colors data-[depth=3]:pl-4 data-[depth=4]:pl-6"
+            data-active="false" data-depth="3">
+            Link to Javadoc
+        </a>
+        
+        <a href="#link-between-docs"
+            class="text-muted-foreground hover:text-foreground data-[active=true]:text-foreground text-[0.8rem] no-underline transition-colors data-[depth=3]:pl-4 data-[depth=4]:pl-6"
+            data-active="false" data-depth="3">
+            Link Between Docs
+        </a>
+        
+        <a href="#external-links"
+            class="text-muted-foreground hover:text-foreground data-[active=true]:text-foreground text-[0.8rem] no-underline transition-colors data-[depth=3]:pl-4 data-[depth=4]:pl-6"
+            data-active="false" data-depth="3">
+            External Links
+        </a>
+        
+        
+
+        
+        <a href="#file-naming-conventions"
+            class="text-muted-foreground hover:text-foreground data-[active=true]:text-foreground text-[0.8rem] no-underline transition-colors data-[depth=3]:pl-4 data-[depth=4]:pl-6"
+            data-active="false" data-depth="2">
+            File Naming Conventions
+        </a>
+        
+
+        
+        <a href="#mkdocs-syntax"
+            class="text-muted-foreground hover:text-foreground data-[active=true]:text-foreground text-[0.8rem] no-underline transition-colors data-[depth=3]:pl-4 data-[depth=4]:pl-6"
+            data-active="false" data-depth="2">
+            MkDocs Syntax
+        </a>
+        
+        
+        <a href="#headers"
+            class="text-muted-foreground hover:text-foreground data-[active=true]:text-foreground text-[0.8rem] no-underline transition-colors data-[depth=3]:pl-4 data-[depth=4]:pl-6"
+            data-active="false" data-depth="3">
+            Headers
+        </a>
+        
+        <a href="#code-blocks"
+            class="text-muted-foreground hover:text-foreground data-[active=true]:text-foreground text-[0.8rem] no-underline transition-colors data-[depth=3]:pl-4 data-[depth=4]:pl-6"
+            data-active="false" data-depth="3">
+            Code Blocks
+        </a>
+        
+        <a href="#admonitions-callout-boxes"
+            class="text-muted-foreground hover:text-foreground data-[active=true]:text-foreground text-[0.8rem] no-underline transition-colors data-[depth=3]:pl-4 data-[depth=4]:pl-6"
+            data-active="false" data-depth="3">
+            Admonitions (Callout Boxes)
+        </a>
+        
+        <a href="#tables"
+            class="text-muted-foreground hover:text-foreground data-[active=true]:text-foreground text-[0.8rem] no-underline transition-colors data-[depth=3]:pl-4 data-[depth=4]:pl-6"
+            data-active="false" data-depth="3">
+            Tables
+        </a>
+        
+        <a href="#lists"
+            class="text-muted-foreground hover:text-foreground data-[active=true]:text-foreground text-[0.8rem] no-underline transition-colors data-[depth=3]:pl-4 data-[depth=4]:pl-6"
+            data-active="false" data-depth="3">
+            Lists
+        </a>
+        
+        
+
+        
+        <a href="#testing-documentation"
+            class="text-muted-foreground hover:text-foreground data-[active=true]:text-foreground text-[0.8rem] no-underline transition-colors data-[depth=3]:pl-4 data-[depth=4]:pl-6"
+            data-active="false" data-depth="2">
+            Testing Documentation
+        </a>
+        
+        
+        <a href="#before-committing"
+            class="text-muted-foreground hover:text-foreground data-[active=true]:text-foreground text-[0.8rem] no-underline transition-colors data-[depth=3]:pl-4 data-[depth=4]:pl-6"
+            data-active="false" data-depth="3">
+            Before Committing
+        </a>
+        
+        <a href="#commands"
+            class="text-muted-foreground hover:text-foreground data-[active=true]:text-foreground text-[0.8rem] no-underline transition-colors data-[depth=3]:pl-4 data-[depth=4]:pl-6"
+            data-active="false" data-depth="3">
+            Commands
+        </a>
+        
+        <a href="#ci-checks"
+            class="text-muted-foreground hover:text-foreground data-[active=true]:text-foreground text-[0.8rem] no-underline transition-colors data-[depth=3]:pl-4 data-[depth=4]:pl-6"
+            data-active="false" data-depth="3">
+            CI Checks
+        </a>
+        
+        
+
+        
+        <a href="#ai-generated-documentation"
+            class="text-muted-foreground hover:text-foreground data-[active=true]:text-foreground text-[0.8rem] no-underline transition-colors data-[depth=3]:pl-4 data-[depth=4]:pl-6"
+            data-active="false" data-depth="2">
+            AI-Generated Documentation
+        </a>
+        
+        
+        <a href="#policy"
+            class="text-muted-foreground hover:text-foreground data-[active=true]:text-foreground text-[0.8rem] no-underline transition-colors data-[depth=3]:pl-4 data-[depth=4]:pl-6"
+            data-active="false" data-depth="3">
+            Policy
+        </a>
+        
+        <a href="#if-you-use-ai-to-draft-docs"
+            class="text-muted-foreground hover:text-foreground data-[active=true]:text-foreground text-[0.8rem] no-underline transition-colors data-[depth=3]:pl-4 data-[depth=4]:pl-6"
+            data-active="false" data-depth="3">
+            If You Use AI to Draft Docs
+        </a>
+        
+        <a href="#why"
+            class="text-muted-foreground hover:text-foreground data-[active=true]:text-foreground text-[0.8rem] no-underline transition-colors data-[depth=3]:pl-4 data-[depth=4]:pl-6"
+            data-active="false" data-depth="3">
+            Why?
+        </a>
+        
+        
+
+        
+        <a href="#examples"
+            class="text-muted-foreground hover:text-foreground data-[active=true]:text-foreground text-[0.8rem] no-underline transition-colors data-[depth=3]:pl-4 data-[depth=4]:pl-6"
+            data-active="false" data-depth="2">
+            Examples
+        </a>
+        
+        
+        <a href="#good-example"
+            class="text-muted-foreground hover:text-foreground data-[active=true]:text-foreground text-[0.8rem] no-underline transition-colors data-[depth=3]:pl-4 data-[depth=4]:pl-6"
+            data-active="false" data-depth="3">
+            Good Example
+        </a>
+        
+        
+
+        
+        <a href="#running-the-agent"
+            class="text-muted-foreground hover:text-foreground data-[active=true]:text-foreground text-[0.8rem] no-underline transition-colors data-[depth=3]:pl-4 data-[depth=4]:pl-6"
+            data-active="false" data-depth="2">
+            Running the Agent
+        </a>
+        
+
+        
+        <a href="#how-it-works"
+            class="text-muted-foreground hover:text-foreground data-[active=true]:text-foreground text-[0.8rem] no-underline transition-colors data-[depth=3]:pl-4 data-[depth=4]:pl-6"
+            data-active="false" data-depth="2">
+            How It Works
+        </a>
+        
+
+        
+        <a href="#next-steps_1"
+            class="text-muted-foreground hover:text-foreground data-[active=true]:text-foreground text-[0.8rem] no-underline transition-colors data-[depth=3]:pl-4 data-[depth=4]:pl-6"
+            data-active="false" data-depth="2">
+            Next Steps
+        </a>
+        
+
+        
+        <a href="#see-also"
+            class="text-muted-foreground hover:text-foreground data-[active=true]:text-foreground text-[0.8rem] no-underline transition-colors data-[depth=3]:pl-4 data-[depth=4]:pl-6"
+            data-active="false" data-depth="2">
+            See Also
+        </a>
+        
+
+        
+        <a href="#quick-checklist"
+            class="text-muted-foreground hover:text-foreground data-[active=true]:text-foreground text-[0.8rem] no-underline transition-colors data-[depth=3]:pl-4 data-[depth=4]:pl-6"
+            data-active="false" data-depth="2">
+            Quick Checklist
+        </a>
+        
+
+        
+        <a href="#questions"
+            class="text-muted-foreground hover:text-foreground data-[active=true]:text-foreground text-[0.8rem] no-underline transition-colors data-[depth=3]:pl-4 data-[depth=4]:pl-6"
+            data-active="false" data-depth="2">
+            Questions?
+        </a>
+        
+
+        
+        
+        
+        
+
+    </div>
+    <div class="h-12"></div>
+</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
+        <footer view-transition-name="footer"
+    class="group-has-[.section-soft]/body:bg-surface/40 3xl:fixed:bg-transparent dark:bg-transparent">
+    <div class="container-wrapper px-4 xl:px-6">
+        <div class="flex h-(--footer-height) items-center justify-between">
+            <div class="text-muted-foreground w-full text-center text-xs leading-loose sm:text-sm">
+                
+                <a href="https://github.com/asiffer/mkdocs-shadcn">shadcn theme</a> provided by
+                <a href="https://github.com/asiffer">@asiffer</a>
+            </div>
+        </div>
+    </div>
+</footer>
+    </div>
+     
+
+<script src="../search/main.js"></script>
+
+
+    
+
+    <script src="../js/copy-button.js"></script>
+    <script>updatePygmentsStylesheet();</script>
+    
+    <script>fetchStargazers("https://github.com/bnbarak/openai-agent-sdk");</script>
+    
+    
+    
+    <script type="speculationrules">
+{
+  "prerender": [
+    {
+      "where": {
+          "selector_matches": ["#next-button", "#previous-button"],
+      }
+    }
+  ]
+}
+</script>
+</body>
+
+</html>
