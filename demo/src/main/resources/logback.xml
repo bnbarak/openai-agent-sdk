@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<configuration>
+    <!-- Console appender for clean output -->
+    <appender name="CONSOLE" class="ch.qos.logback.core.ConsoleAppender">
+        <encoder>
+            <pattern>%d{HH:mm:ss.SSS} [%thread] %-5level %logger{36} - %msg%n</pattern>
+        </encoder>
+    </appender>
+
+    <!-- Keep library logging quiet - only show warnings and errors -->
+    <logger name="com.openai" level="WARN"/>
+    <logger name="okhttp3" level="WARN"/>
+    <logger name="org.jline" level="WARN"/>
+
+    <!-- Root logger - only show INFO and above -->
+    <root level="INFO">
+        <appender-ref ref="CONSOLE"/>
+    </root>
+</configuration>
