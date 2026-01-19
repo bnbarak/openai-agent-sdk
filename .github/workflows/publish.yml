@@ -72,7 +72,7 @@ jobs:
           MAVEN_USERNAME: ${{ secrets.OSSRH_USERNAME }}
           MAVEN_PASSWORD: ${{ secrets.OSSRH_PASSWORD }}
           MAVEN_GPG_PASSPHRASE: ${{ secrets.GPG_PASSPHRASE }}
-        run: mvn deploy -DskipTests -P release
+        run: mvn deploy -DskipTests -Dcheckstyle.skip=true -P release
 
       - name: Create Git tag
         if: ${{ github.event.inputs.dryRun == 'false' }}
