@@ -2,11 +2,13 @@ package ai.acolite.agentsdk.openai;
 
 import ai.acolite.agentsdk.core.*;
 import ai.acolite.agentsdk.core.types.JsonSchemaOutput;
-import ai.acolite.agentsdk.exceptions.NotImplementedException;
 import com.openai.client.OpenAIClient;
+import com.openai.core.http.StreamResponse;
+import com.openai.helpers.ResponseAccumulator;
 import com.openai.models.responses.Response;
 import com.openai.models.responses.ResponseCreateParams;
 import com.openai.models.responses.ResponseInputItem;
+import com.openai.models.responses.ResponseStreamEvent;
 import com.openai.models.responses.StructuredResponse;
 import com.openai.models.responses.StructuredResponseCreateParams;
 import com.openai.models.responses.Tool;
@@ -253,6 +255,115 @@ public class OpenAIResponsesModel implements Model {
 
   @Override
   public AsyncIterable<StreamEvent> getStreamedResponse(ModelRequest request) {
-    throw new NotImplementedException("Streaming not yet implemented");
+    return new AsyncIterable<StreamEvent>() {
+      @Override
+      public java.util.Iterator<StreamEvent> iterator() {
+        return new java.util.Iterator<StreamEvent>() {
+          private final java.util.concurrent.BlockingQueue<StreamEvent> queue =
+              new java.util.concurrent.LinkedBlockingQueue<>();
+          private volatile boolean completed = false;
+          private volatile boolean started = false;
+          private static final Object END_MARKER = new Object();
+
+          {
+            // Start streaming in a background thread
+            CompletableFuture.runAsync(
+                () -> {
+                  try {
+                    streamResponse(request, queue);
+                  } catch (Exception e) {
+                    // Log error and complete the stream
+                    System.err.println("Error during streaming: " + e.getMessage());
+                  } finally {
+                    completed = true;
+                    queue.offer(
+                        new StreamEvent() {
+                          @Override
+                          public String getType() {
+                            return "END_MARKER";
+                          }
+                        });
+                  }
+                });
+          }
+
+          @Override
+          public boolean hasNext() {
+            if (completed && queue.isEmpty()) {
+              return false;
+            }
+            return true;
+          }
+
+          @Override
+          public StreamEvent next() {
+            try {
+              StreamEvent event = queue.take();
+              if ("END_MARKER".equals(event.getType())) {
+                return null;
+              }
+              return event;
+            } catch (InterruptedException e) {
+              Thread.currentThread().interrupt();
+              return null;
+            }
+          }
+        };
+      }
+    };
+  }
+
+  private void streamResponse(
+      ModelRequest request, java.util.concurrent.BlockingQueue<StreamEvent> queue) {
+    ResponseCreateParams.Builder paramsBuilder = ResponseCreateParams.builder().model(modelName);
+
+    if (request.getInput() != null && !request.getInput().isEmpty()) {
+      List<ResponseInputItem> inputItems =
+          ConversionUtils.convertToResponseInputItems(request.getInput());
+      paramsBuilder.input(ResponseCreateParams.Input.ofResponse(inputItems));
+    }
+
+    if (request.getInstructions() != null && !request.getInstructions().isEmpty()) {
+      paramsBuilder.instructions(request.getInstructions());
+    }
+
+    if (request.getTools() != null && !request.getTools().isEmpty()) {
+      registerTools(paramsBuilder, request.getTools());
+      int maxToolCalls =
+          request.getSettings() != null
+                  && request.getSettings().getMaxToolCalls() != null
+                  && request.getSettings().getMaxToolCalls().isPresent()
+              ? request.getSettings().getMaxToolCalls().get()
+              : 10;
+      paramsBuilder.maxToolCalls(maxToolCalls);
+    }
+
+    ResponseCreateParams params = paramsBuilder.build();
+    ResponseAccumulator accumulator = ResponseAccumulator.create();
+
+    try (StreamResponse<ResponseStreamEvent> streamResponse =
+        client.responses().createStreaming(params)) {
+      streamResponse.stream()
+          .forEach(
+              event -> {
+                accumulator.accumulate(event);
+                event
+                    .outputTextDelta()
+                    .ifPresent(
+                        textDelta -> {
+                          TextDeltaStreamEvent streamEvent =
+                              TextDeltaStreamEvent.builder().delta(textDelta.delta()).build();
+                          queue.offer(streamEvent);
+                        });
+              });
+
+      Response accumulatedResponse = accumulator.response();
+      ModelResponse modelResponse = convertToModelResponse(accumulatedResponse);
+      CompleteResponseStreamEvent completeEvent =
+          CompleteResponseStreamEvent.builder().response(modelResponse).build();
+      queue.offer(completeEvent);
+    } catch (Exception e) {
+      throw new RuntimeException("Streaming failed", e);
+    }
   }
 }

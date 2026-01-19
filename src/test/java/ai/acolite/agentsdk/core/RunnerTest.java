@@ -3,9 +3,11 @@ package ai.acolite.agentsdk.core;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
+import ai.acolite.agentsdk.core.shims.ReadableStreamAsyncIterator;
 import ai.acolite.agentsdk.core.types.TextOutput;
 import ai.acolite.agentsdk.core.types.UnknownContext;
 import ai.acolite.agentsdk.exceptions.MaxTurnsExceededError;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -406,5 +408,86 @@ class RunnerTest {
     assertNotNull(result);
     assertEquals(1, result.getInput().size());
     assertEquals("Original question", result.getInput().get(0));
+  }
+
+  @Test
+  void runStreamed_returnsStreamedResult() {
+    Agent<UnknownContext, TextOutput> agent =
+        Agent.<UnknownContext, TextOutput>builder()
+            .name("StreamingAgent")
+            .instructions("Test streaming")
+            .build();
+    Model mockModel = mock(Model.class);
+    ModelProvider mockProvider = mock(ModelProvider.class);
+    when(mockProvider.getModel(anyString()))
+        .thenReturn(CompletableFuture.completedFuture(mockModel));
+    AsyncIterable<StreamEvent> mockStreamEvents =
+        () ->
+            List.<StreamEvent>of(
+                    TextDeltaStreamEvent.builder().delta("Hello").build(),
+                    TextDeltaStreamEvent.builder().delta(" ").build(),
+                    TextDeltaStreamEvent.builder().delta("world").build())
+                .iterator();
+    when(mockModel.getStreamedResponse(any(ModelRequest.class))).thenReturn(mockStreamEvents);
+    RunConfig config = RunConfig.builder().modelProvider(mockProvider).build();
+
+    StreamedRunResult<UnknownContext, Agent<UnknownContext, TextOutput>> result =
+        Runner.runStreamed(agent, "Hello", config);
+
+    assertNotNull(result);
+    assertNotNull(result.getStream());
+  }
+
+  @Test
+  void runStreamed_emitsTextStreamEvents() {
+    Agent<UnknownContext, TextOutput> agent =
+        Agent.<UnknownContext, TextOutput>builder().name("StreamAgent").build();
+    Model mockModel = mock(Model.class);
+    ModelProvider mockProvider = mock(ModelProvider.class);
+    when(mockProvider.getModel(anyString()))
+        .thenReturn(CompletableFuture.completedFuture(mockModel));
+    AsyncIterable<StreamEvent> mockStreamEvents =
+        () ->
+            List.<StreamEvent>of(
+                    TextDeltaStreamEvent.builder().delta("First").build(),
+                    TextDeltaStreamEvent.builder().delta(" chunk").build())
+                .iterator();
+    when(mockModel.getStreamedResponse(any(ModelRequest.class))).thenReturn(mockStreamEvents);
+    RunConfig config = RunConfig.builder().modelProvider(mockProvider).build();
+
+    StreamedRunResult<UnknownContext, Agent<UnknownContext, TextOutput>> result =
+        Runner.runStreamed(agent, "Test", config);
+
+    ReadableStreamAsyncIterator<String> textIterator = result.toTextStream().values();
+    List<String> chunks = new ArrayList<>();
+    while (textIterator.hasNext()) {
+      String chunk = textIterator.next();
+      if (chunk != null) {
+        chunks.add(chunk);
+      }
+    }
+    assertFalse(chunks.isEmpty());
+  }
+
+  @Test
+  void runStreamed_withConfig_usesProvidedConfig() {
+    Agent<UnknownContext, TextOutput> agent =
+        Agent.<UnknownContext, TextOutput>builder().name("ConfigStreamAgent").build();
+    Model mockModel = mock(Model.class);
+    ModelProvider mockProvider = mock(ModelProvider.class);
+    when(mockProvider.getModel(anyString()))
+        .thenReturn(CompletableFuture.completedFuture(mockModel));
+    AsyncIterable<StreamEvent> mockStreamEvents =
+        () ->
+            List.<StreamEvent>of(TextDeltaStreamEvent.builder().delta("Response").build())
+                .iterator();
+    when(mockModel.getStreamedResponse(any(ModelRequest.class))).thenReturn(mockStreamEvents);
+    RunConfig config = RunConfig.builder().maxTurns(5).modelProvider(mockProvider).build();
+
+    StreamedRunResult<UnknownContext, Agent<UnknownContext, TextOutput>> result =
+        Runner.runStreamed(agent, "Test", config);
+
+    assertNotNull(result);
+    assertEquals(5, config.getEffectiveMaxTurns());
   }
 }
