@@ -512,17 +512,14 @@ public class Runner extends RunHooks<Object, TextOutput> {
             .tools(allTools.isEmpty() ? null : allTools)
             .build();
 
-    long modelTimeout = config.getEffectiveModelTimeoutMs();
-    return model
-        .getResponse(request)
-        .orTimeout(modelTimeout, java.util.concurrent.TimeUnit.MILLISECONDS)
-        .exceptionally(
-            error -> {
-              if (error.getCause() instanceof java.util.concurrent.TimeoutException) {
-                throw new TimeoutError("Model API call", modelTimeout, error.getCause());
-              }
-              throw new SystemError("Model API call failed", error);
-            })
+    return CompletableFuture.supplyAsync(
+        () -> {
+          try {
+            return processStreamedModelResponse(state, model, request, eventEmitter);
+          } catch (Exception e) {
+            throw new SystemError("Failed to process streamed response", e);
+          }
+        })
         .thenCompose(
             response -> {
               state.addModelResponse(response);
@@ -533,16 +530,8 @@ public class Runner extends RunHooks<Object, TextOutput> {
               } catch (Exception e) {
                 throw new ModelBehaviorError("Failed to parse model response", e);
               }
-              for (RunItem item : items) {
-                state.addGeneratedItem(item);
 
-                // EMIT EVENT (thread-safe!)
-                eventEmitter.emit(
-                    RunItemStreamEvent.builder()
-                        .item(item)
-                        .turnIndex(state.getCurrentTurn())
-                        .build());
-              }
+              // Note: We already emitted events during streaming, so we don't emit again here
 
               // Separate tool calls into handoffs and regular tools
               List<RunToolCallItem> toolCalls =
@@ -626,6 +615,58 @@ public class Runner extends RunHooks<Object, TextOutput> {
 
               return CompletableFuture.completedFuture(state);
             });
+  }
+
+  /**
+   * Process streaming model response and emit events in real-time.
+   *
+   * @param state Current run state
+   * @param model Model to use
+   * @param request Model request
+   * @param eventEmitter Event emitter for streaming events
+   * @return ModelResponse after accumulating all stream events
+   */
+  private <TContext, TAgent> ModelResponse processStreamedModelResponse(
+      RunState<TContext, TAgent> state,
+      Model model,
+      ModelRequest request,
+      ReadableStreamImpl<RunStreamEvent> eventEmitter) {
+
+    StringBuilder accumulatedText = new StringBuilder();
+    AsyncIterable<StreamEvent> streamEvents = model.getStreamedResponse(request);
+
+    // Process streaming events
+    java.util.Iterator<StreamEvent> iterator = streamEvents.iterator();
+    while (iterator.hasNext()) {
+      StreamEvent event = iterator.next();
+      if (event instanceof TextDeltaStreamEvent textDelta) {
+        String delta = textDelta.getDelta();
+        accumulatedText.append(delta);
+
+        // Create and emit a RunItem for each text delta
+        RunMessageOutputItem messageItem =
+            RunMessageOutputItem.builder().content(delta).role("assistant").build();
+
+        eventEmitter.emit(
+            RunItemStreamEvent.builder()
+                .item(messageItem)
+                .turnIndex(state.getCurrentTurn())
+                .build());
+      }
+    }
+
+    // Build a ModelResponse from the accumulated text
+    List<Object> output = new ArrayList<>();
+    if (accumulatedText.length() > 0) {
+      output.add(accumulatedText.toString());
+    }
+
+    return ModelResponse.builder()
+        .output(output)
+        .usage(Usage.empty())
+        .responseId(Optional.empty())
+        .providerData(Optional.empty())
+        .build();
   }
 
   /**
