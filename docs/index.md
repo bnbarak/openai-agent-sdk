@@ -16,6 +16,18 @@ Built on the [OpenAI Java SDK](https://github.com/openai/openai-java).
 
 ## Example
 
+```xml
+<dependency>
+    <groupId>ai.acolite</groupId>
+    <artifactId>openai-agent-sdk</artifactId>
+    <version>{{ config.extra.sdk_version }}</version>
+</dependency>
+```
+
+```groovy
+implementation 'ai.acolite:openai-agent-sdk:{{ config.extra.sdk_version }}'
+```
+
 ```java
 import ai.acolite.agentsdk.core.Agent;
 import ai.acolite.agentsdk.core.RunResult;
