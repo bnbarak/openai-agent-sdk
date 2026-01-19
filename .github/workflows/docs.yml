@@ -56,10 +56,15 @@ jobs:
           python -m pip install --upgrade pip
           pip install mkdocs mkdocs-shadcn mkdocs-include-markdown-plugin mkdocs-material pymdown-extensions
 
-      - name: Update version in mkdocs.yml
+      - name: Update version in documentation
         run: |
+          # Update mkdocs.yml
           sed -i 's/sdk_version: ".*"/sdk_version: "${{ steps.get_version.outputs.version }}"/' mkdocs.yml
-          echo "Updated mkdocs.yml with version ${{ steps.get_version.outputs.version }}"
+
+          # Replace template variables in markdown files (MkDocs doesn't process templates in code blocks)
+          find docs -name "*.md" -type f -exec sed -i 's/{{ config\.extra\.sdk_version }}/${{ steps.get_version.outputs.version }}/g' {} +
+
+          echo "Updated version to ${{ steps.get_version.outputs.version }}"
 
       - name: Build MkDocs site
         run: mkdocs build
