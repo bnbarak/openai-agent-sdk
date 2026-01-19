@@ -3,8 +3,10 @@ package ai.acolite.demo;
 import ai.acolite.agentsdk.core.FunctionTool;
 import ai.acolite.agentsdk.core.RunContext;
 import ai.acolite.agentsdk.core.types.UnknownContext;
+import com.fasterxml.jackson.annotation.JsonClassDescription;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonPropertyDescription;
+import com.fasterxml.jackson.annotation.JsonTypeName;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
@@ -142,6 +144,8 @@ public class AddressValidationTool implements FunctionTool<UnknownContext, Addre
         return authId != null && authToken != null;
     }
 
+    @JsonTypeName("validate_address")
+    @JsonClassDescription("Input parameters for US address validation")
     public static class Input {
         @JsonProperty(required = true)
         @JsonPropertyDescription("The street address (e.g., '1600 Amphitheatre Parkway')")

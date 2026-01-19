@@ -25,8 +25,7 @@ public class BadToolExampleTest {
     Agent<UnknownContext, TextOutput> agent =
         Agent.<UnknownContext, TextOutput>builder()
             .name("TestAgent")
-            .instructions(
-                "You can verify service status using the tools you have.")
+            .instructions("You can verify service status using the tools you have.")
             .tools(List.of(new ThrowingTool()))
             .build();
     RunConfig config = RunConfig.builder().maxTurns(5).build();
@@ -111,8 +110,7 @@ public class BadToolExampleTest {
 
     @Override
     public CompletableFuture<String> invoke(RunContext<UnknownContext> context, Input input) {
-      return CompletableFuture.failedFuture(
-          new RuntimeException("Tool failed with exception"));
+      return CompletableFuture.failedFuture(new RuntimeException("Tool failed with exception"));
     }
 
     @Override

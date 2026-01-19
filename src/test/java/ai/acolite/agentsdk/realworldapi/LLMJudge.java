@@ -12,21 +12,20 @@ public class LLMJudge {
   private final OpenAIClient client;
 
   public LLMJudge() {
-    this.client =
-        OpenAIOkHttpClient.builder().apiKey(System.getenv("OPENAI_API_KEY")).build();
+    this.client = OpenAIOkHttpClient.builder().apiKey(System.getenv("OPENAI_API_KEY")).build();
   }
 
   public boolean evaluateErrorHandling(String agentResponse, String expectedBehavior) {
     String prompt =
         """
-            You are evaluating whether an AI agent properly handled a tool error.
+            You are evaluating whether an AI agent responded appropriately.
 
             Expected behavior: %s
 
             Agent's actual response: "%s"
 
             Question: Did the agent's response appropriately handle the situation as described in the expected behavior?
-            Be lenient - the agent doesn't need to use the exact words, just demonstrate understanding of the error.
+            Be lenient - the agent doesn't need to use the exact words, just demonstrate understanding of the situation.
 
             Answer with ONLY "YES" or "NO".
             """

@@ -40,12 +40,13 @@ class AgentTest {
   void builder_withoutName_throwsException() {
     Exception exception =
         assertThrows(
-            NullPointerException.class,
-            () -> {
-              Agent.<UnknownContext, TextOutput>builder().instructions("Test instructions").build();
-            });
+            IllegalArgumentException.class,
+            () ->
+                Agent.<UnknownContext, TextOutput>builder()
+                    .instructions("Test instructions")
+                    .build());
 
-    assertTrue(exception.getMessage().contains("name") || exception.getMessage().contains("null"));
+    assertTrue(exception.getMessage().contains("name"));
   }
 
   @Test

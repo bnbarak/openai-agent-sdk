@@ -23,8 +23,13 @@ import org.junit.jupiter.api.Test;
 class ToolExecutionUtilsTest {
 
   @Data
+  @com.fasterxml.jackson.annotation.JsonTypeName("simple_tool")
+  @com.fasterxml.jackson.annotation.JsonClassDescription("Input for simple tool")
   static class SimpleInput {
+    @com.fasterxml.jackson.annotation.JsonPropertyDescription("Name parameter")
     private String name;
+
+    @com.fasterxml.jackson.annotation.JsonPropertyDescription("Count parameter")
     private int count;
   }
 
