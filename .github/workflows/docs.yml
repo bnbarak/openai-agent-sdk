@@ -1,8 +1,10 @@
 name: Docs
 
 on:
-  push:
-    branches: [main]
+  workflow_run:
+    workflows: ["Publish to Maven Central"]
+    types:
+      - completed
   workflow_dispatch:
 
 permissions:
@@ -12,6 +14,7 @@ jobs:
   deploy:
     name: Deploy Documentation
     runs-on: ubuntu-latest
+    if: ${{ github.event.workflow_run.conclusion == 'success' || github.event_name == 'workflow_dispatch' }}
     steps:
       - uses: actions/checkout@v4
 
@@ -30,10 +33,33 @@ jobs:
         with:
           python-version: "3.11"
 
+      - name: Get latest release version from Maven Central
+        id: get_version
+        run: |
+          # Query Maven Central for latest non-SNAPSHOT version
+          LATEST_RELEASE=$(curl -s "https://search.maven.org/solrsearch/select?q=g:ai.acolite+AND+a:openai-agent-sdk&rows=1&wt=json" | jq -r '.response.docs[0].latestVersion // empty')
+
+          if [ -z "$LATEST_RELEASE" ] || [[ "$LATEST_RELEASE" == *"SNAPSHOT"* ]]; then
+            # Fallback to pom.xml version if no release found or if it's a SNAPSHOT
+            VERSION=$(mvn help:evaluate -Dexpression=project.version -q -DforceStdout)
+            echo "No stable release found on Maven Central, using pom.xml version: $VERSION"
+          else
+            VERSION=$LATEST_RELEASE
+            echo "Using latest release from Maven Central: $VERSION"
+          fi
+
+          echo "version=$VERSION" >> $GITHUB_OUTPUT
+          echo "Documentation will use version: $VERSION"
+
       - name: Install MkDocs deps
         run: |
           python -m pip install --upgrade pip
           pip install mkdocs mkdocs-shadcn mkdocs-include-markdown-plugin mkdocs-material pymdown-extensions
+
+      - name: Update version in mkdocs.yml
+        run: |
+          sed -i 's/sdk_version: ".*"/sdk_version: "${{ steps.get_version.outputs.version }}"/' mkdocs.yml
+          echo "Updated mkdocs.yml with version ${{ steps.get_version.outputs.version }}"
 
       - name: Build MkDocs site
         run: mkdocs build

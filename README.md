@@ -4,7 +4,7 @@ A modern Java SDK for building AI agents with OpenAI's API, inspired by the [Ope
 
 [![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](https://opensource.org/licenses/Apache-2.0)
 [![Java](https://img.shields.io/badge/Java-21+-orange.svg)](https://www.oracle.com/java/)
-[![Maven Central](https://img.shields.io/badge/maven--central-0.1.0--SNAPSHOT-blue.svg)](https://search.maven.org/)
+[![Maven Central](https://img.shields.io/badge/maven--central-0.3.0-SNAPSHOTblue.svg)](https://search.maven.org/)
 [![Documentation](https://img.shields.io/badge/docs-latest-blue.svg)](https://bnbarak.github.io/openai-agent-sdk/)
 
 **📖 [Full Documentation](https://bnbarak.github.io/openai-agent-sdk/)** | **🚀 [Quickstart Guide](https://bnbarak.github.io/openai-agent-sdk/quickstart/)** | **📚 [API Reference](https://bnbarak.github.io/openai-agent-sdk/javadoc/)**
@@ -41,7 +41,7 @@ Add to your `pom.xml`:
 <dependency>
     <groupId>ai.acolite</groupId>
     <artifactId>openai-agent-sdk</artifactId>
-    <version>0.1.0-SNAPSHOT</version>
+    <version>0.3.0-SNAPSHOT</version>
 </dependency>
 ```
 

@@ -2,7 +2,7 @@
 
 Get started with the OpenAI Agent SDK in 5 minutes. By the end of this guide, you'll have a working agent.
 
-A modern Java SDK for building AI agents with OpenAI's API, similar to the TypeScript OpenAI Agents SDK (https://openai.github.io/openai-agents-js/), following its public API and implementation patterns where possible.
+A modern Java SDK for building AI agents with OpenAI's API, similar to the [TypeScript OpenAI Agents SDK](https://openai.github.io/openai-agents-js/), following its public API and implementation patterns where possible.
 
 ## Prerequisites
 
@@ -18,14 +18,14 @@ Add the dependency to your `pom.xml`:
 <dependency>
     <groupId>ai.acolite</groupId>
     <artifactId>openai-agent-sdk</artifactId>
-    <version>0.1.0-SNAPSHOT</version>
+    <version>{{ config.extra.sdk_version }}</version>
 </dependency>
 ```
 
 Or for Gradle (`build.gradle`):
 
 ```groovy
-implementation 'ai.acolite:openai-agent-sdk:0.1.0-SNAPSHOT'
+implementation 'ai.acolite:openai-agent-sdk:{{ config.extra.sdk_version }}'
 ```
 
 ## 2. Set Your API Key
