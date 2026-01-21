@@ -4,7 +4,7 @@ import ai.acolite.agentsdk.core.Agent;
 import ai.acolite.agentsdk.core.RunConfig;
 import ai.acolite.agentsdk.core.RunResult;
 import ai.acolite.agentsdk.core.Runner;
-import ai.acolite.agentsdk.core.memory.MemorySession;
+import ai.acolite.agentsdk.core.memory.SQLiteSession;
 import ai.acolite.agentsdk.core.memory.Session;
 import ai.acolite.agentsdk.core.types.TextOutput;
 import ai.acolite.agentsdk.core.types.UnknownContext;
@@ -13,6 +13,8 @@ import org.jline.reader.LineReaderBuilder;
 import org.jline.terminal.Terminal;
 import org.jline.terminal.TerminalBuilder;
 
+import java.nio.file.Path;
+
 public class AsyncChatDemo {
     public static void main(String[] args) throws Exception {
         Agent<UnknownContext, TextOutput> agent = DemoAgent.create();
@@ -20,7 +22,7 @@ public class AsyncChatDemo {
         LineReader reader = LineReaderBuilder.builder().terminal(terminal).build();
         printWelcome(terminal);
 
-        Session session = new MemorySession("async-chat-demo");
+        Session session = SQLiteSession.fromFile("async-chat-demo", Path.of("demo-conversations.db"));
         RunConfig config = RunConfig.builder()
                 .session(session)
                 .maxTurns(20)
