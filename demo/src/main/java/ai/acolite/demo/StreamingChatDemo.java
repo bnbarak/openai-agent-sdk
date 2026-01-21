@@ -67,7 +67,7 @@ public class StreamingChatDemo {
                 terminal.writer().println();
                 terminal.writer().flush();
 
-                // Wait for execution to complete (including session saving)
+                // Wait for execution to complete (including session saving).
                 result.getExecutionFuture().join();
 
             } catch (Exception e) {
