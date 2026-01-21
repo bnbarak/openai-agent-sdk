@@ -5,9 +5,8 @@ import ai.acolite.agentsdk.core.RunItem;
 import ai.acolite.agentsdk.core.RunMessageOutputItem;
 import ai.acolite.agentsdk.core.RunToolCallItem;
 import ai.acolite.agentsdk.openai.SerializationUtils;
-import com.openai.models.responses.ResponseFunctionToolCall;
-import com.openai.models.responses.ResponseFunctionWebSearch;
-import com.openai.models.responses.ResponseOutputItem;
+import com.openai.models.responses.*;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -59,6 +58,11 @@ public class ResponseParser {
 
     if (outputItem instanceof String) {
       return RunMessageOutputItem.builder().content(outputItem).role("assistant").build();
+    }
+
+    // Handle ResponseOutputMessage - store the original message object for conversation history.
+    if (outputItem instanceof ResponseOutputMessage message) {
+      return RunMessageOutputItem.builder().content(message).role("assistant").build();
     }
 
     if (outputItem instanceof ResponseFunctionToolCall functionCall) {
@@ -116,8 +120,18 @@ public class ResponseParser {
 
     for (int i = items.size() - 1; i >= 0; i--) {
       RunItem item = items.get(i);
-      if (item instanceof RunMessageOutputItem) {
-        return ((RunMessageOutputItem) item).getContent();
+      if (item instanceof RunMessageOutputItem messageItem) {
+        Object content = messageItem.getContent();
+
+        if (content instanceof ResponseOutputMessage message) {
+          return message.content().stream()
+              .flatMap(c -> c.outputText().stream())
+              .map(ResponseOutputText::text)
+              .findFirst()
+              .orElse("");
+        }
+
+        return content;
       }
     }
 

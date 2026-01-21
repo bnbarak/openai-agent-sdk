@@ -965,7 +965,8 @@ public class Runner extends RunHooks<Object, TextOutput> {
       return "";
     }
 
-    return lastResponse.getOutput().get(lastResponse.getOutput().size() - 1);
+    List<RunItem> parsedItems = ResponseParser.parseResponseItems(lastResponse);
+    return ResponseParser.extractFinalOutput(parsedItems);
   }
 
   /**
