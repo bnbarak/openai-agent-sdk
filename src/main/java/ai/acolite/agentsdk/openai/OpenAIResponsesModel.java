@@ -243,10 +243,8 @@ public class OpenAIResponsesModel implements Model {
       } else if (item.isFileSearchCall()) {
         output.add(item.asFileSearchCall());
       } else {
-        item.message().stream()
-            .flatMap(message -> message.content().stream())
-            .flatMap(content -> content.outputText().stream())
-            .forEach(outputText -> output.add(outputText.text()));
+        // Store the ResponseOutputMessage objects so they can be reused in conversation history
+        item.message().stream().forEach(message -> output.add(message));
       }
     }
 

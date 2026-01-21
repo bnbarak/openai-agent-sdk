@@ -5,6 +5,7 @@ import ai.acolite.agentsdk.core.RunToolCallItem;
 import ai.acolite.agentsdk.core.RunToolCallOutputItem;
 import com.openai.models.responses.ResponseFunctionToolCall;
 import com.openai.models.responses.ResponseInputItem;
+import com.openai.models.responses.ResponseOutputMessage;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -60,9 +61,16 @@ public class ConversionUtils {
                 .outputAsJson(result)
                 .build();
         inputItems.add(ResponseInputItem.ofFunctionCallOutput(output));
-      } else if (item instanceof RunMessageOutputItem) {
-        // Skip assistant messages - they're outputs, not inputs
-        // The API doesn't need these passed back
+      } else if (item instanceof RunMessageOutputItem messageOutput) {
+        // Include assistant messages from history for conversation context
+        // See: https://github.com/openai/openai-java/blob/main/openai-java-example/src/main/java/com/openai/example/ResponsesConversationExample.java
+        Object content = messageOutput.getContent();
+        if (content instanceof ResponseOutputMessage responseMessage) {
+          // Use the original ResponseOutputMessage object for proper conversation continuity
+          inputItems.add(ResponseInputItem.ofResponseOutputMessage(responseMessage));
+        }
+        // Skip messages that don't have the original ResponseOutputMessage
+        // (This shouldn't happen in normal flow, but be defensive)
       }
     }
 
